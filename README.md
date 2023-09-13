@@ -15,3 +15,4 @@ Project applying machinelearning
 
 1. logboek    * Rmd
 2. verslag    * M&M results
+3. Op het einde een pitch
