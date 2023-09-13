@@ -1,0 +1,26 @@
+---
+title: "Logbook"
+author: "L T Stein"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 13-09-2023
+
+The data is gathered by screening the voices of 31 people.
+
+Code for reading the dataset
+
+```{r}
+patient.data <- read.table("parkinsons.data", header = T, sep = ",")
+head(patient.data)
+```
+
+
+## Explorative Data Analysis
+
+In this chapter the dataset will be analysed and visualised as an attempt to
