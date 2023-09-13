@@ -1,6 +1,6 @@
 # Datamining_09
 Project applying machinelearning
-
+Door Luka Stein van de Hanzehogeschool Groningen
 
 
 ## Tijdlijn
