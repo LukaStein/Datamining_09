@@ -16,3 +16,10 @@ Door Luka Stein van de Hanzehogeschool Groningen
 1. logboek    * Rmd
 2. verslag    * M&M results
 3. Op het einde een pitch
+
+## Dataset en publicatie
+
+Links naar de de gekozen dataset en de bijbehorende achtergrond informatie.
+
+- https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
+- https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3051371/
