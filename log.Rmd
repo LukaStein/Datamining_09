@@ -1,5 +1,5 @@
 ---
-title: "Logbook"
+title: "Datamining and parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -9,18 +9,56 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#### 13-09-2023
 
-The data is gathered by screening the voices of 31 people.
+# Introduction
 
-Code for reading the dataset
+
+## Goal
+
+
+## Theory
+
+# Methods
+
+
+In this chapter the dataset is analysed and visualised conducted by the rules
+of Explorative Data Analysis (EDA). Furthermore the used softwares and dataset
+are tabelized.
+
+
+## The software model
+
+In this chapter the data is read and visualized for interpretation.
+
+
+The data is gathered by screening the voices of 31 people. Each person has
+six or seven measurements totaling in 195 recordings per row.
+
 
 ```{r}
 patient.data <- read.table("parkinsons.data", header = T, sep = ",")
-head(patient.data)
+patient.data
 ```
 
+## Model configuration
 
-## Explorative Data Analysis
 
-In this chapter the dataset will be analysed and visualised as an attempt to
+
+# Results
+
+
+
+# Discussion and Conclusion
+## Discussion
+
+
+
+## General conclusion and perspective
+
+
+
+# Bibliography
+
+Link about EDA
+https://r4ds.had.co.nz/exploratory-data-analysis.html 
+
