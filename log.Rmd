@@ -1,5 +1,5 @@
 ---
-title: "Datamining and parkinson dysphonia"
+title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -9,56 +9,94 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 # Introduction
 
-
-## Goal
-
-
-## Theory
-
-# Methods
+The data is extracted from Kaggle and its article is published on ncbi by Max A. Little, Patrick E. McSharry, Eric J. Hunter, Lorraine O. Ramig (2008). 'Suitability of dysphonia measurements for telemonitoring of Parkinson's disease', *IEEE Transactions on Biomedical Engineering (to appear)*.
 
 
-In this chapter the dataset is analysed and visualised conducted by the rules
-of Explorative Data Analysis (EDA). Furthermore the used softwares and dataset
-are tabelized.
+---
+
+# Read data
 
 
-## The software model
-
-In this chapter the data is read and visualized for interpretation.
-
-
-The data is gathered by screening the voices of 31 people. Each person has
-six or seven measurements totaling in 195 recordings per row.
+First a look of what the data looks like from a .csv file. The data is divided
+by header and is comma separated. 
 
 
 ```{r}
 patient.data <- read.table("parkinsons.data", header = T, sep = ",")
-patient.data
+head(patient.data)
 ```
 
-## Model configuration
+Verify if everything is read correctly.
+
+```{r}
+cat(ncol(patient.data), "columns and", nrow(patient.data), "rows")
+```
+
+There are 2 nominal and 22 numeric columns.
 
 
+Showing the amount of recordings of healthy people and sick people. The original labels
+of one and zero are replaced respectfully with sick and healthy 
 
-# Results
+```{r}
+# Adding labels instead of "1" and "0"
+patient.data$status[patient.data$status == "1"] <- "sick"
+patient.data$status[patient.data$status == "0"] <- "healthy"
 
 
+amount.sick.recordings <- sum(patient.data$status == "sick")
+amount.healthy.recordings <- sum(patient.data$status == "healthy")
+cat(" There are [", amount.sick.recordings, "] recordings of Parkinson patients.\n",
+    "There are [", amount.healthy.recordings, "] recordings of healthy people.\n",
+    "In total there are: [", amount.sick.recordings + amount.healthy.recordings, "] recordings.")
+```
 
-# Discussion and Conclusion
-## Discussion
+
+In order to make it more clear what the data means, the columns are put into a table.
 
 
+```{r}
+columns <- colnames(patient.data)
+definitions <- read.csv("definitions.csv", header = FALSE, sep = ",")
+attributes <- data.frame(Attributes = c(columns),
+                          Unit = c("-", rep("Hz", 3), "%", "ms", rep("-", 4), "dB", rep("-", 13)),
+                         Datatype = c(sapply(patient.data, class)[1]),
+                         Definition = c(definitions[1]))
+attributes
+```
 
-## General conclusion and perspective
+**Retrospective**
+All the data is read correctly with the corresponding amount of rows and columns
+as the article suggests. 
 
+
+---
+
+## Explorative Data Analysis
+
+It's important to check if there are any NA or missing values.
+
+```{r}
+cat("There are", sum(is.na(patient.data)), "missing values")
+```
+
+**Retrospective**
+No NA values are found.
+
+
+By applying a summary to the dataset's dataframe, its statistical meanings are returned.
+
+```{r}
+summary(patient.data)
+```
 
 
 # Bibliography
 
 Link about EDA
 https://r4ds.had.co.nz/exploratory-data-analysis.html 
+Link article
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/ 
 
