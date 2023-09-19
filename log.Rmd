@@ -13,6 +13,10 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 The data is extracted from Kaggle and its article is published on ncbi by Max A. Little, Patrick E. McSharry, Eric J. Hunter, Lorraine O. Ramig (2008). 'Suitability of dysphonia measurements for telemonitoring of Parkinson's disease', *IEEE Transactions on Biomedical Engineering (to appear)*.
 
+Background information..
+
+The research paper's goal is to find out if healthy people can be discerned from people with Parkinson's disease using different sorts of voice recordings.
+Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "What voice measurements can be identified as nodes using machine learning algorithms whom discerns a Parkinson's patient from a healthy person?"
 
 ---
 
@@ -91,57 +95,68 @@ By applying a summary to the dataset's dataframe, its statistical meanings are r
 ```{r}
 summary(patient.data)
 ```
+Based on the names different groups are formed for visualisation
+
+```{r}
+MDVP.large <- 2:4
+MDVP.small <- 5:9
+MDVP.shimmer <- 10:15
+NHR.HNR <- 16:17
+RPDE.DEA <- 19:20
+spread <- 21:22
+D2.PPE <- 23:24
+```
 
 Boxplotting the data to show the differences in MDVP measured attributes containing large numbers.
 
 ```{r}
-boxplot(patient.data[2:4])
+boxplot(patient.data[MDVP.large])
 ```
 Boxplotting the data to show the differences in MDVP measured attributes containing small numbers.
 
 ```{r}
 par(cex.axis = 0.8)
-boxplot(patient.data[5:9])
+boxplot(patient.data[MDVP.small])
 ```
 
 Boxplotting the data to show the differences in MDVP/ shimmer attributes.
 
 ```{r}
 par(cex.axis = 0.7)
-boxplot(patient.data[10:15], las = 2)
+boxplot(patient.data[MDVP.shimmer], las = 2)
 ```
 Boxplotting the data to show the differences in NHR / HNR attributes.
 
 
 ```{r}
-boxplot(patient.data[16:17])
+boxplot(patient.data[NHR.HNR])
 ```
 Boxplotting the data to show the differences in RPDE/ DEA attributes.
 
 ```{r}
-boxplot(patient.data[19:20])
+boxplot(patient.data[RPDE.DEA])
 ```
 Boxplotting the data to show the differences in spread attributes.
 
 ```{r}
-boxplot(patient.data[21:22])
+boxplot(patient.data[spread])
 ```
 Boxplotting the data to show the differences in D2/ PPE attributes.
 
 ```{r}
-boxplot(patient.data[23:24])
+boxplot(patient.data[D2.PPE])
 ```
 Overview of all boxplots
 
 ```{r}
 par(mfrow=c(3,3))
-boxplot(patient.data[2:4])
-boxplot(patient.data[5:9])
-boxplot(patient.data[10:15])
-boxplot(patient.data[16:17])
-boxplot(patient.data[19:20])
-boxplot(patient.data[21:22])
-boxplot(patient.data[23:24])
+boxplot(patient.data[MDVP.large])
+boxplot(patient.data[MDVP.small])
+boxplot(patient.data[MDVP.shimmer])
+boxplot(patient.data[NHR.HNR])
+boxplot(patient.data[RPDE.DEA])
+boxplot(patient.data[spread])
+boxplot(patient.data[D2.PPE])
 ```
 *Retrospective*
 
@@ -154,7 +169,8 @@ Histogram of attributes in order to see if the attribute data is normally distri
 par(mfrow = c(3,8))
 for (i in 1:ncol(patient.data)) {
   if (is.numeric(patient.data[, i])) {
-  hist(patient.data[, i], col = "lightblue")
+  hist(patient.data[, i], col = "lightblue",
+       main = colnames(patient.data[i]))
   }
   
 }
@@ -167,7 +183,7 @@ Barplot for showing amount of sick and healthy people
 
 ```{r}
 barplot(c(amount.sick.recordings, amount.healthy.recordings), 
-        legend.text = c("Sick", "Healthy"), col = c("red", "green"),
+        legend.text = c("Sick", "Healthy"), col = c("deeppink3", "darkolivegreen1"),
         main = "Number of healthy and sick people",
         xlab = "Status",
         ylab = "Amount of people")
@@ -179,9 +195,15 @@ In this dataset there are nearly thrice as much people recorded whom are sick op
 Pair plot showing if attributes form pairs thus have correlating data.
 
 ```{r}
-patient.data.numeric <- patient.data[,!names(patient.data) %in% c("status", "name")]
-patient.data.numeric
-pairs(patient.data)
+# install required packages
+#install.packages("ggplot2")
+#install.packages("GGally")
+#load packages
+#library("ggplot2")
+#library("GGally")
+
+data.numeric <- subset(patient.data, select = c(-name, -status))
+ggpairs(data.numeric[MDVP.large])
 ```
 
 # Bibliography
