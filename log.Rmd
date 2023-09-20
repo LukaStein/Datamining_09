@@ -93,7 +93,7 @@ No NA values are found.
 By applying a summary to the dataset's dataframe, its statistical meanings are returned.
 
 ```{r}
-summary(patient.data)
+head(summary(patient.data))
 ```
 Based on the names different groups are formed for visualisation
 
@@ -107,45 +107,20 @@ spread <- 21:22
 D2.PPE <- 23:24
 ```
 
+Install and load required packages
+```{r}
+#install.packages("ggcorrplot")
+#install.packages("ggplot2")
+library("ggplot2")
+library("ggcorrplot")
+```
+
 Boxplotting the data to show the differences in MDVP measured attributes containing large numbers.
 
 ```{r}
-boxplot(patient.data[MDVP.large])
-```
-Boxplotting the data to show the differences in MDVP measured attributes containing small numbers.
-
-```{r}
-par(cex.axis = 0.8)
-boxplot(patient.data[MDVP.small])
+ggplot(patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"] ~ patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"] + geom_boxplot())
 ```
 
-Boxplotting the data to show the differences in MDVP/ shimmer attributes.
-
-```{r}
-par(cex.axis = 0.7)
-boxplot(patient.data[MDVP.shimmer], las = 2)
-```
-Boxplotting the data to show the differences in NHR / HNR attributes.
-
-
-```{r}
-boxplot(patient.data[NHR.HNR])
-```
-Boxplotting the data to show the differences in RPDE/ DEA attributes.
-
-```{r}
-boxplot(patient.data[RPDE.DEA])
-```
-Boxplotting the data to show the differences in spread attributes.
-
-```{r}
-boxplot(patient.data[spread])
-```
-Boxplotting the data to show the differences in D2/ PPE attributes.
-
-```{r}
-boxplot(patient.data[D2.PPE])
-```
 Overview of all boxplots
 
 ```{r}
@@ -166,14 +141,14 @@ Due to the small values it was difficult to fully show each boxplot per attribut
 Histogram of attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
-par(mfrow = c(3,8))
-for (i in 1:ncol(patient.data)) {
-  if (is.numeric(patient.data[, i])) {
-  hist(patient.data[, i], col = "lightblue",
-       main = colnames(patient.data[i]))
-  }
+#par(mfrow = c(3,8))
+#for (i in 1:ncol(patient.data)) {
+#  if (is.numeric(patient.data[, i])) {
+#  hist(patient.data[, i], col = "lightblue",
+#       main = colnames(patient.data[i]))
+#  }
   
-}
+#}
 ```
 *Retrospective*
 
@@ -192,19 +167,37 @@ barplot(c(amount.sick.recordings, amount.healthy.recordings),
 
 In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
 
-Pair plot showing if attributes form pairs thus have correlating data.
+Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
 ```{r}
-# install required packages
-#install.packages("ggplot2")
-#install.packages("GGally")
-#load packages
-#library("ggplot2")
-#library("GGally")
+# load library needed for ggpairs
+library(GGally)
 
 data.numeric <- subset(patient.data, select = c(-name, -status))
-ggpairs(data.numeric[MDVP.large])
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
 ```
+
+The columns MDVP.PPQ and MDVP.RAP correlate the best in difference. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990.
+
+```{r}
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
+```
+Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly.
+
+
+A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into two.
+
+```{r}
+# creating two matrices
+corr.matrix1 <- cor(data.numeric[1:12])
+corr.matrix2 <- cor(data.numeric[11:22])
+corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
+# plotting heat map
+ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black")
+ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black")
+ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black")
+```
+
 
 # Bibliography
 
