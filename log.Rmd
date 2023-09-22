@@ -172,18 +172,44 @@ Function for plotting several histograms
 ```{r}
 # loading library for shared plot space
 library("gridExtra")
+```
 
+```{r}
 ggplots <- function(data, left, right) {
-  for (i in left:right) {
-    if (is.numeric(data[, i])) {
-      names(patient.data)[i] <- ggplot(data, aes(x=data[i+1])) + geom_histogram(color = "black")
-      return(names(patient.data)[i])
-  }
-  }
-  
+  # grabbing columns
+  attributes <- data[, left:right]
+  # exclude non numeric columns
+  numeric.attributes <- attributes[sapply(attributes, is.numeric)]
+  cat(names(numeric.attributes))
+  # pass columns to list via lapply
+  hist.plots <- lapply(numeric.attributes, function(attribute_name) {
+    ggplot(data, aes(x = attribute_name, fill = status)) + geom_histogram(color = "black")
+  })
+  return(hist.plots)
 }
 
-ggplots(patient.data, 1, 4)
+plots <- ggplots(patient.data, 1, 8)
+plots
+#plots[[1:8]]
+#grid.arrange(plots, ncol = 1, nrow = 8)
+```
+
+```{r}
+ggplots <- function(data, left, right) {
+  hist.plots <- list()
+  for (i in left:right) {
+    if (is.numeric(data[, i])) {
+      plot <- ggplot(data, aes(x=data[, i])) + geom_histogram(color = "black")
+      
+    hist.plots[[i]] <- plot
+  }
+  }
+  return(hist.plots)
+}
+plots <- ggplots(patient.data, 1, 8)
+grid.arrange(grobs = plots[2:4], ncol = 2, nrow = 4)
+
+#ggplot(patient.data, aes(x=patient.data[, 2])) + geom_histogram(color = "black")
 ```
 
 #### Identifying the data's distribution
@@ -248,9 +274,24 @@ F.6.log<- ggplot(patient.data, aes(x=log(MDVP.PPQ), fill = status)) + geom_histo
 F.7.log <- ggplot(patient.data, aes(x=log(Jitter.DDP), fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.1.log, F.2.log, F.3.log, F.4.log, F.5.log, F.6.log, F.7.log, ncol = 2, nrow = 4)
 ```
+Other 7 histograms of log-transformed attributed
 
+```{r}
+F.8.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.9.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer.dB.), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.10.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ3), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.11.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ5), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.12.log <- ggplot(patient.data, aes(x=log(MDVP.APQ), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.13.log <- ggplot(patient.data, aes(x=log(Shimmer.DDA), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.14.log <- ggplot(patient.data, aes(x=log(NHR), fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.8.log, F.9.log, F.10.log, F.11.log, F.12.log, F.13.log, F.14.log, ncol = 2, nrow = 4)
+```
+After log-transforming the two figures above the data seems more normally distributed.
 
-Most data seems distributed to the left, only a quarter has normal distributed data.
+*Retrospective* 
+
+The majority of the dataset originally doesn't have normal distributed data. After log-transforming it with fold ten, it instead seems to spread more evenly.
+
 
 Barplot for showing amount of sick and healthy people
 
@@ -297,7 +338,7 @@ ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), 
 Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly.
 
 
-
+#### Testing differences in dataset
 
 # Bibliography
 
