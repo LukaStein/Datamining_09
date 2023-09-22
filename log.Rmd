@@ -115,42 +115,140 @@ library("ggplot2")
 library("ggcorrplot")
 ```
 
-Boxplotting the data to show the differences in MDVP measured attributes containing large numbers.
+Boxplotting the data to show the differences for sick people in MDVP measured attributes containing large numbers. Also a log-fold 2 is applied in a separate boxplot to see if the means of the attributes coincide.
 
 ```{r}
-ggplot(patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"] ~ patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"] + geom_boxplot())
-```
+Fo <- patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"]
+Fhi <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "sick"]
+Flo <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "sick"]
+difference.in.nums.sick <- data.frame(
+                                 labs = c(rep("Fo.sick", length(Fo)),
+                                          rep("Fhi.sick", length(Fhi)),
+                                          rep("Flo.sick", length(Flo))),
+                                 values = c(Fo, Fhi, Flo))
 
-Overview of all boxplots
+difference.in.nums.sick.log2 <- data.frame(
+                                 labs = c(rep("Fo.sick", length(Fo)),
+                                          rep("Fhi.sick", length(Fhi)),
+                                          rep("Flo.sick", length(Flo))),
+                                 values = c(log2(Fo), log2(Fhi), log2(Flo)))
+
+ggplot(difference.in.nums.sick,aes(x=labs, y=values)) + geom_boxplot(fill = "coral") + ggtitle("MDVP.Hz attributes of people with PD")
+ggplot(difference.in.nums.sick.log2,aes(x=labs, y=values)) + geom_boxplot(fill = "brown1") + ggtitle("Log-fold 2 of MDVP.Hz attributes")
+
+```
+In the two boxplots it becomes clear that the MDVP.HZ attribute means are very similar to each other for sick people. They are closest around a value of 150 Hz. Though Fhi.sick and Flo.sick seem to produce more similar values.
+
+
+In order to hypothesise whether the means of healthy are different from sick people as shown above, two boxplots are made for healthy people.
 
 ```{r}
-par(mfrow=c(3,3))
-boxplot(patient.data[MDVP.large])
-boxplot(patient.data[MDVP.small])
-boxplot(patient.data[MDVP.shimmer])
-boxplot(patient.data[NHR.HNR])
-boxplot(patient.data[RPDE.DEA])
-boxplot(patient.data[spread])
-boxplot(patient.data[D2.PPE])
+Fo.healthy <- patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"]
+Fhi.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
+Flo.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
+difference.in.nums.healthy <- data.frame(
+                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
+                                          rep("Fhi.healthy", length(Fhi.healthy)),
+                                          rep("Flo.healthy", length(Flo.healthy))),
+                                 values = c(Fo.healthy, Fhi.healthy, Flo.healthy))
+
+difference.in.nums.healthy.log2 <- data.frame(
+                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
+                                          rep("Fhi.healthy", length(Fhi.healthy)),
+                                          rep("Flo.healthy", length(Flo.healthy))),
+                                 values = c(log2(Fo.healthy), log2(Fhi.healthy), log2(Flo.healthy)))
+
+ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") + ggtitle("MDVP.Hz attributes of people with PD")
+ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) + geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes")
 ```
+The means of the three healthy MDVP.HZ attributes seem very similar to each other between 200 and 250 Hz. Fhi.healthy and Flo.healthy again seem to produce similar values. 
+
 *Retrospective*
 
-Due to the small values it was difficult to fully show each boxplot per attribute.
+From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. From observing this data it can be concluded that healthy people are measured higher frequencies than sick people.
 
 
-Histogram of attributes in order to see if the attribute data is normally distributed.
-
+Function for plotting several histograms
 ```{r}
-#par(mfrow = c(3,8))
-#for (i in 1:ncol(patient.data)) {
-#  if (is.numeric(patient.data[, i])) {
-#  hist(patient.data[, i], col = "lightblue",
-#       main = colnames(patient.data[i]))
-#  }
+# loading library for shared plot space
+library("gridExtra")
+
+ggplots <- function(data, left, right) {
+  for (i in left:right) {
+    if (is.numeric(data[, i])) {
+      names(patient.data)[i] <- ggplot(data, aes(x=data[i+1])) + geom_histogram(color = "black")
+      return(names(patient.data)[i])
+  }
+  }
   
-#}
+}
+
+ggplots(patient.data, 1, 4)
 ```
+
+#### Identifying the data's distribution
+
+Histogram of first eight attributes in order to see if the attribute data is normally distributed.
+
+```{r}
+F.1 <- ggplot(patient.data, aes(x=MDVP.Fo.Hz., fill = status)) + geom_histogram(color = "black", bins = 39)
+F.2 <- ggplot(patient.data, aes(x=MDVP.Fhi.Hz., fill = status)) + geom_histogram(color = "black", bins = 39)
+F.3 <- ggplot(patient.data, aes(x=`MDVP.Flo.Hz.`, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.4 <- ggplot(patient.data, aes(x=`MDVP.Jitter...`, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.5 <- ggplot(patient.data, aes(x=MDVP.Jitter.Abs., fill = status)) + geom_histogram(color = "black", bins = 39)
+F.6 <- ggplot(patient.data, aes(x=MDVP.RAP, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.7 <- ggplot(patient.data, aes(x=MDVP.PPQ, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.8 <- ggplot(patient.data, aes(x=Jitter.DDP, fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.1, F.2, F.3, F.4, F.5, F.6, F.7, F.8, ncol = 2, nrow = 4)
+```
+Apart from the first attribute MDVP.Fo.HZ, the rest of the histogram's data majorly orients towards the left side. Because of that they will be log-tranformed with fold ten.
+
+Histogram of second eight attributes in order to see if the attribute data is normally distributed.
+
+```{r}
+F.9 <- ggplot(patient.data, aes(x=MDVP.Shimmer, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.10 <- ggplot(patient.data, aes(x=MDVP.Shimmer.dB., fill = status)) + geom_histogram(color = "black", bins = 39)
+F.11 <- ggplot(patient.data, aes(x=Shimmer.APQ3, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.12 <- ggplot(patient.data, aes(x=Shimmer.APQ5, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.13 <- ggplot(patient.data, aes(x=MDVP.APQ, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.14 <- ggplot(patient.data, aes(x=Shimmer.DDA, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.15 <- ggplot(patient.data, aes(x=NHR, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.16 <- ggplot(patient.data, aes(x=HNR, fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.9, F.10, F.11, F.12, F.13, F.14, F.15, F.16, ncol = 2, nrow = 4)
+```
+
+Seven of the eigth attributes plotted above are oriented towards the left side. Because of that these attributes will be log-transformed with fold ten.
+
+
+Histogram of the last six attributes in order to see if the attribute data is normally distributed.
+
+```{r}
+F.17 <- ggplot(patient.data, aes(x=RPDE, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.18 <- ggplot(patient.data, aes(x=DFA, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.19 <- ggplot(patient.data, aes(x=spread1, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.20 <- ggplot(patient.data, aes(x=spread2, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.21 <- ggplot(patient.data, aes(x=D2, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.22 <- ggplot(patient.data, aes(x=PPE, fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.17, F.18, F.19, F.20, F.21, F.22, ncol = 2, nrow = 4)
+```
+The last six attributes seem to have well distributed data. Attribute PPE has left oriented data, but since it isn't extremely one-sided it will not be log-transformed.
+
 *Retrospective*
+
+Fourteen out of the 22 numeric attributes are not normally distributed. Because of that they will be log-transformed.
+
+Histograms of seven log-transformed attributes.
+```{r}
+F.1.log <- ggplot(patient.data, aes(x=log(MDVP.Fhi.Hz.), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.2.log <- ggplot(patient.data, aes(x=log(`MDVP.Flo.Hz.`), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.3.log <- ggplot(patient.data, aes(x=log(`MDVP.Jitter...`), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.4.log <- ggplot(patient.data, aes(x=log(MDVP.Jitter.Abs.), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.5.log <- ggplot(patient.data, aes(x=log(MDVP.RAP), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.6.log<- ggplot(patient.data, aes(x=log(MDVP.PPQ), fill = status)) + geom_histogram(color = "black", bins = 39)
+F.7.log <- ggplot(patient.data, aes(x=log(Jitter.DDP), fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.1.log, F.2.log, F.3.log, F.4.log, F.5.log, F.6.log, F.7.log, ncol = 2, nrow = 4)
+```
+
 
 Most data seems distributed to the left, only a quarter has normal distributed data.
 
@@ -166,6 +264,20 @@ barplot(c(amount.sick.recordings, amount.healthy.recordings),
 *Retrospective*
 
 In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
+
+A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into two.
+
+```{r}
+# creating two matrices
+corr.matrix1 <- cor(data.numeric[1:12])
+corr.matrix2 <- cor(data.numeric[11:22])
+corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
+# plotting heat map
+ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black")
+ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black")
+ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black")
+```
+
 
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
@@ -185,18 +297,6 @@ ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), 
 Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly.
 
 
-A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into two.
-
-```{r}
-# creating two matrices
-corr.matrix1 <- cor(data.numeric[1:12])
-corr.matrix2 <- cor(data.numeric[11:22])
-corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
-# plotting heat map
-ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black")
-ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black")
-ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black")
-```
 
 
 # Bibliography
