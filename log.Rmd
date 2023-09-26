@@ -9,18 +9,38 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
+```{r}
+# loading required packages
+# loading knitting package
+library("pander")
+panderOptions("table.continues", "")
+# loading plotting packages
+library("ggplot2")
+library("ggcorrplot")
+# loading plot grid package
+library("gridExtra")
+# load package needed for pairs plot
+library("GGally")
+```
+
+
+
 # Introduction
 
 The data is extracted from Kaggle and its article is published on ncbi by Max A. Little, Patrick E. McSharry, Eric J. Hunter, Lorraine O. Ramig (2008). 'Suitability of dysphonia measurements for telemonitoring of Parkinson's disease', *IEEE Transactions on Biomedical Engineering (to appear)*.
 
-Background information..
+*Background information*
+Background information...
+
 
 The research paper's goal is to find out if healthy people can be discerned from people with Parkinson's disease using different sorts of voice recordings.
 Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "What voice measurements can be identified as nodes using machine learning algorithms whom discerns a Parkinson's patient from a healthy person?"
 
 ---
 
-# Read data
+\pagebreak
+
+# Observe data
 
 
 First a look of what the data looks like from a .csv file. The data is divided
@@ -29,7 +49,7 @@ by header and is comma separated.
 
 ```{r}
 patient.data <- read.table("parkinsons.data", header = T, sep = ",")
-head(patient.data)
+pander::pander(head(patient.data))
 ```
 
 Verify if everything is read correctly.
@@ -67,8 +87,9 @@ definitions <- read.csv("definitions.csv", header = FALSE, sep = ",")
 attributes <- data.frame(Attributes = c(columns),
                           Unit = c("-", rep("Hz", 3), "%", "ms", rep("-", 4), "dB", rep("-", 13)),
                          Datatype = c(sapply(patient.data, class)[1]),
-                         Definition = c(definitions[1]))
-head(attributes)
+                         Definitions = c(definitions[1]))
+colnames(attributes) <- sub("V1", "Description", colnames(attributes))
+pander::pander(attributes, style = "rmarkdown")
 ```
 
 **Retrospective**
@@ -93,8 +114,10 @@ No NA values are found.
 By applying a summary to the dataset's dataframe, its statistical meanings are returned.
 
 ```{r}
-head(summary(patient.data))
+pander::pander(head(summary(patient.data)), style = "rmarkdown")
 ```
+From observing the data above it becomes clear from the means that the values between attributes can differ highly.
+
 Based on the names different groups are formed for visualisation
 
 ```{r}
@@ -107,13 +130,6 @@ spread <- 21:22
 D2.PPE <- 23:24
 ```
 
-Install and load required packages
-```{r}
-#install.packages("ggcorrplot")
-#install.packages("ggplot2")
-library("ggplot2")
-library("ggcorrplot")
-```
 
 Boxplotting the data to show the differences for sick people in MDVP measured attributes containing large numbers. Also a log-fold 2 is applied in a separate boxplot to see if the means of the attributes coincide.
 
@@ -158,7 +174,7 @@ difference.in.nums.healthy.log2 <- data.frame(
                                           rep("Flo.healthy", length(Flo.healthy))),
                                  values = c(log2(Fo.healthy), log2(Fhi.healthy), log2(Flo.healthy)))
 
-ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") + ggtitle("MDVP.Hz attributes of people with PD")
+ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") + ggtitle("MDVP.Hz attributes of people without PD")
 ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) + geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes")
 ```
 The means of the three healthy MDVP.HZ attributes seem very similar to each other between 200 and 250 Hz. Fhi.healthy and Flo.healthy again seem to produce similar values. 
@@ -169,10 +185,6 @@ From only boxplotting the three MDVP.HZ attributes it becomes clear that sick pe
 
 
 Function for plotting several histograms
-```{r}
-# loading library for shared plot space
-library("gridExtra")
-```
 
 ```{r}
 ggplots <- function(data, left, right) {
@@ -306,9 +318,12 @@ barplot(c(amount.sick.recordings, amount.healthy.recordings),
 
 In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
 
-A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into two.
+A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into three.
 
 ```{r}
+# preparing dataset containing only type numeric
+data.numeric <- subset(patient.data, select = c(-name, -status))
+
 # creating two matrices
 corr.matrix1 <- cor(data.numeric[1:12])
 corr.matrix2 <- cor(data.numeric[11:22])
@@ -319,26 +334,58 @@ ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black")
 ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black")
 ```
 
+The correlation matrix shows the similarity of all attributes. Assuming 1 means attributes producing very similar values and towards -1 more unique values. 
+
 
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
 ```{r}
-# load library needed for ggpairs
-library(GGally)
-
-data.numeric <- subset(patient.data, select = c(-name, -status))
 ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
 ```
 
-The columns MDVP.PPQ and MDVP.RAP correlate the best in difference. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990.
+The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
 
 ```{r}
 ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
 ```
-Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly.
+Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. 
+
+
+*Retrospective*:
+A higher correlation shows similarity in attributes for the correlation heatmap.
+
+Though the pairplot shows similarity between groups healthy and sick. When a high correlation value is met between the pair it means, the data is very similar. An assumption is that high similarity shows there's no difference of that attribute for both groups which means that attribute may not be used to diagnose a PD patient.
+
 
 
 #### Testing differences in dataset
+
+
+After observing several differences and correlations between different attributes, it is important to find out if these relations are really significant.
+
+First of all how different are the sick values of each attribute against their healthy values? Each attribute will be tested with a Welch two-sample t-test.
+
+```{r}
+Welch.t.test <- function(data) {
+  for (i in 1:ncol(data)) {
+    if (is.numeric(data[, i])) {
+      sick <- data[, i][data$status == "sick"]
+      healthy <- data[, i][data$status == "healthy"]
+      cat("P.value of", colnames(data)[i], "= [",  t.test(sick, healthy)$p.value, "]\n\n")
+      
+    }
+  }
+}
+
+Welch.t.test(patient.data)
+```
+The p-values smaller that alpha = 0.05 show significant difference between the groups sick and healthy. A higher difference offers the assumption that these attributes may differentiate a healthy person from a person with PD.
+
+Earlier it became clear from the boxplots of attributes MDVP.Flo/Fo and Fhi that on average the sick values were higher than the healthy values. The first three p-values affirm that observation. Since the p-values are below 0.05 there is a significant difference between the statuses.
+
+
+*Retrospective*
+All attributes show significant differences between the statuses though some more extreme than others. Those more extreme indicate more difference and are therefore more interesting for steps later in diagnosing.
 
 # Bibliography
 
