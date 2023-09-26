@@ -3,13 +3,14 @@ title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output: pdf_document
+toc: True
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r}
+```{r, warning=FALSE}
 # loading required packages
 # loading knitting package
 library("pander")
@@ -30,11 +31,11 @@ library("GGally")
 The data is extracted from Kaggle and its article is published on ncbi by Max A. Little, Patrick E. McSharry, Eric J. Hunter, Lorraine O. Ramig (2008). 'Suitability of dysphonia measurements for telemonitoring of Parkinson's disease', *IEEE Transactions on Biomedical Engineering (to appear)*.
 
 *Background information*
-Background information...
+The article has found out a certain combination of measurements to predict the difference between a person with Parkinson's disease (PD) and without PD. Patients exhibit symptoms of loss in function of certain voice features which can be brought to light using different methods or tests. These results can differentiate the states of PD or disease's presence at all. The numerical attributes of this data set represent the measurements created with different tools or tests accompanying with a variety of methods for identifying voice disorders. 
 
 
 The research paper's goal is to find out if healthy people can be discerned from people with Parkinson's disease using different sorts of voice recordings.
-Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "What voice measurements can be identified as nodes using machine learning algorithms whom discerns a Parkinson's patient from a healthy person?"
+Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "Which type of voice measurements can be used to discern a Parkinson's patient from a healthy person?"
 
 ---
 
