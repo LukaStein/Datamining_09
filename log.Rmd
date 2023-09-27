@@ -3,15 +3,15 @@ title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output: pdf_document
-toc: True
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
+# Packages
+
 ```{r, warning=FALSE}
-# loading required packages
 # loading knitting package
 library("pander")
 panderOptions("table.continues", "")
@@ -24,15 +24,19 @@ library("gridExtra")
 library("GGally")
 ```
 
-
+\pagebreak
 
 # Introduction
 
 The data is extracted from Kaggle and its article is published on ncbi by Max A. Little, Patrick E. McSharry, Eric J. Hunter, Lorraine O. Ramig (2008). 'Suitability of dysphonia measurements for telemonitoring of Parkinson's disease', *IEEE Transactions on Biomedical Engineering (to appear)*.
 
-*Background information*
+&nbsp;
+
+**Background information** &nbsp;
 The article has found out a certain combination of measurements to predict the difference between a person with Parkinson's disease (PD) and without PD. Patients exhibit symptoms of loss in function of certain voice features which can be brought to light using different methods or tests. These results can differentiate the states of PD or disease's presence at all. The numerical attributes of this data set represent the measurements created with different tools or tests accompanying with a variety of methods for identifying voice disorders. 
 
+&nbsp;
+&nbsp;
 
 The research paper's goal is to find out if healthy people can be discerned from people with Parkinson's disease using different sorts of voice recordings.
 Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "Which type of voice measurements can be used to discern a Parkinson's patient from a healthy person?"
@@ -47,10 +51,11 @@ Based on the data that the article gives as appendix, the purpose of this projec
 First a look of what the data looks like from a .csv file. The data is divided
 by header and is comma separated. 
 
+&nbsp;
 
 ```{r}
 patient.data <- read.table("parkinsons.data", header = T, sep = ",")
-pander::pander(head(patient.data))
+pander::pander(head(patient.data), caption = "First look of datastructure")
 ```
 
 Verify if everything is read correctly.
@@ -61,6 +66,7 @@ cat(ncol(patient.data), "columns and", nrow(patient.data), "rows")
 
 There are 2 nominal and 22 numeric columns.
 
+\pagebreak
 
 Showing the amount of recordings of healthy people and sick people. The original labels
 of one and zero are replaced respectfully with sick and healthy 
@@ -78,6 +84,7 @@ cat(" There are [", amount.sick.recordings, "] recordings of Parkinson patients.
     "In total there are: [", amount.sick.recordings + amount.healthy.recordings, "] recordings.")
 ```
 
+\pagebreak
 
 In order to make it more clear what the data means, the columns are put into a table.
 
@@ -90,8 +97,9 @@ attributes <- data.frame(Attributes = c(columns),
                          Datatype = c(sapply(patient.data, class)[1]),
                          Definitions = c(definitions[1]))
 colnames(attributes) <- sub("V1", "Description", colnames(attributes))
-pander::pander(attributes, style = "rmarkdown")
+pander::pander(attributes, style = "rmarkdown", caption = "Discriptions of attributes")
 ```
+
 
 **Retrospective**
 All the data is read correctly with the corresponding amount of rows and columns
@@ -100,7 +108,9 @@ as the article suggests.
 
 ---
 
-## Explorative Data Analysis
+\pagebreak
+
+# Explorative Data Analysis
 
 It's important to check if there are any NA or missing values.
 
@@ -115,8 +125,9 @@ No NA values are found.
 By applying a summary to the dataset's dataframe, its statistical meanings are returned.
 
 ```{r}
-pander::pander(head(summary(patient.data)), style = "rmarkdown")
+pander::pander(head(summary(patient.data)), style = "rmarkdown", caption = "Summary of dataset")
 ```
+
 From observing the data above it becomes clear from the means that the values between attributes can differ highly.
 
 Based on the names different groups are formed for visualisation
@@ -150,10 +161,17 @@ difference.in.nums.sick.log2 <- data.frame(
                                           rep("Flo.sick", length(Flo))),
                                  values = c(log2(Fo), log2(Fhi), log2(Flo)))
 
-ggplot(difference.in.nums.sick,aes(x=labs, y=values)) + geom_boxplot(fill = "coral") + ggtitle("MDVP.Hz attributes of people with PD")
-ggplot(difference.in.nums.sick.log2,aes(x=labs, y=values)) + geom_boxplot(fill = "brown1") + ggtitle("Log-fold 2 of MDVP.Hz attributes")
+ggplot(difference.in.nums.sick,aes(x=labs, y=values)) + 
+  geom_boxplot(fill = "coral") + ggtitle("MDVP.Hz attributes of people with PD") +
+  labs(caption = "Boxplot of three attributes of MDVP.Hz for people with PD")
+  
+
+ggplot(difference.in.nums.sick.log2,aes(x=labs, y=values)) + 
+  geom_boxplot(fill = "brown1") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + 
+  labs(caption = "Normalized boxplot with log2")
 
 ```
+
 In the two boxplots it becomes clear that the MDVP.HZ attribute means are very similar to each other for sick people. They are closest around a value of 150 Hz. Though Fhi.sick and Flo.sick seem to produce more similar values.
 
 
@@ -175,59 +193,27 @@ difference.in.nums.healthy.log2 <- data.frame(
                                           rep("Flo.healthy", length(Flo.healthy))),
                                  values = c(log2(Fo.healthy), log2(Fhi.healthy), log2(Flo.healthy)))
 
-ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") + ggtitle("MDVP.Hz attributes of people without PD")
-ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) + geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes")
+ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") +
+  ggtitle("MDVP.Hz attributes of people without PD") + labs(caption = "Boxplot of three attributes of MDVP.Hz for people without PD")
+ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) +
+  geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + labs(caption = "Normalized boxplot with log2")
 ```
+
 The means of the three healthy MDVP.HZ attributes seem very similar to each other between 200 and 250 Hz. Fhi.healthy and Flo.healthy again seem to produce similar values. 
 
-*Retrospective*
+**Retrospective**
 
 From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. From observing this data it can be concluded that healthy people are measured higher frequencies than sick people.
 
 
-Function for plotting several histograms
+\pagebreak
 
-```{r}
-ggplots <- function(data, left, right) {
-  # grabbing columns
-  attributes <- data[, left:right]
-  # exclude non numeric columns
-  numeric.attributes <- attributes[sapply(attributes, is.numeric)]
-  cat(names(numeric.attributes))
-  # pass columns to list via lapply
-  hist.plots <- lapply(numeric.attributes, function(attribute_name) {
-    ggplot(data, aes(x = attribute_name, fill = status)) + geom_histogram(color = "black")
-  })
-  return(hist.plots)
-}
+## Identifying the data's distribution
 
-plots <- ggplots(patient.data, 1, 8)
-plots
-#plots[[1:8]]
-#grid.arrange(plots, ncol = 1, nrow = 8)
-```
 
-```{r}
-ggplots <- function(data, left, right) {
-  hist.plots <- list()
-  for (i in left:right) {
-    if (is.numeric(data[, i])) {
-      plot <- ggplot(data, aes(x=data[, i])) + geom_histogram(color = "black")
-      
-    hist.plots[[i]] <- plot
-  }
-  }
-  return(hist.plots)
-}
-plots <- ggplots(patient.data, 1, 8)
-grid.arrange(grobs = plots[2:4], ncol = 2, nrow = 4)
+Histograms can used to visualize if attributes' data are normally distributed. This will be done in a shared grid per (n) attributes. After observing if needed attributes with no normal distribution will be log-transformed, to see if that pushes the data more towards the center.
 
-#ggplot(patient.data, aes(x=patient.data[, 2])) + geom_histogram(color = "black")
-```
-
-#### Identifying the data's distribution
-
-Histogram of first eight attributes in order to see if the attribute data is normally distributed.
+Histograms of first eight attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
 F.1 <- ggplot(patient.data, aes(x=MDVP.Fo.Hz., fill = status)) + geom_histogram(color = "black", bins = 39)
@@ -240,9 +226,13 @@ F.7 <- ggplot(patient.data, aes(x=MDVP.PPQ, fill = status)) + geom_histogram(col
 F.8 <- ggplot(patient.data, aes(x=Jitter.DDP, fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.1, F.2, F.3, F.4, F.5, F.6, F.7, F.8, ncol = 2, nrow = 4)
 ```
+                                              Shared histogram plot of first eight attributes
+
+&nbsp;
+
 Apart from the first attribute MDVP.Fo.HZ, the rest of the histogram's data majorly orients towards the left side. Because of that they will be log-tranformed with fold ten.
 
-Histogram of second eight attributes in order to see if the attribute data is normally distributed.
+Histograms of second eight attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
 F.9 <- ggplot(patient.data, aes(x=MDVP.Shimmer, fill = status)) + geom_histogram(color = "black", bins = 39)
@@ -255,6 +245,9 @@ F.15 <- ggplot(patient.data, aes(x=NHR, fill = status)) + geom_histogram(color =
 F.16 <- ggplot(patient.data, aes(x=HNR, fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.9, F.10, F.11, F.12, F.13, F.14, F.15, F.16, ncol = 2, nrow = 4)
 ```
+                                              Shared histogram plot of next eight attributes
+                                              
+&nbsp;
 
 Seven of the eigth attributes plotted above are oriented towards the left side. Because of that these attributes will be log-transformed with fold ten.
 
@@ -270,13 +263,20 @@ F.21 <- ggplot(patient.data, aes(x=D2, fill = status)) + geom_histogram(color = 
 F.22 <- ggplot(patient.data, aes(x=PPE, fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.17, F.18, F.19, F.20, F.21, F.22, ncol = 2, nrow = 4)
 ```
+                                                        Shared histogram plot of last six attributes
+
+&nbsp;
+
 The last six attributes seem to have well distributed data. Attribute PPE has left oriented data, but since it isn't extremely one-sided it will not be log-transformed.
 
-*Retrospective*
+**Retrospective**
 
 Fourteen out of the 22 numeric attributes are not normally distributed. Because of that they will be log-transformed.
 
+\pagebreak
+
 Histograms of seven log-transformed attributes.
+
 ```{r}
 F.1.log <- ggplot(patient.data, aes(x=log(MDVP.Fhi.Hz.), fill = status)) + geom_histogram(color = "black", bins = 39)
 F.2.log <- ggplot(patient.data, aes(x=log(`MDVP.Flo.Hz.`), fill = status)) + geom_histogram(color = "black", bins = 39)
@@ -287,6 +287,9 @@ F.6.log<- ggplot(patient.data, aes(x=log(MDVP.PPQ), fill = status)) + geom_histo
 F.7.log <- ggplot(patient.data, aes(x=log(Jitter.DDP), fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.1.log, F.2.log, F.3.log, F.4.log, F.5.log, F.6.log, F.7.log, ncol = 2, nrow = 4)
 ```
+                                              Shared histogram plot of first seven attributes that are log-transformed
+&nbsp;
+
 Other 7 histograms of log-transformed attributed
 
 ```{r}
@@ -299,9 +302,12 @@ F.13.log <- ggplot(patient.data, aes(x=log(Shimmer.DDA), fill = status)) + geom_
 F.14.log <- ggplot(patient.data, aes(x=log(NHR), fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.8.log, F.9.log, F.10.log, F.11.log, F.12.log, F.13.log, F.14.log, ncol = 2, nrow = 4)
 ```
+                                          "Shared histogram plot of remaining seven attributes that are log-transformed"
+
+                                        
 After log-transforming the two figures above the data seems more normally distributed.
 
-*Retrospective* 
+**Retrospective**
 
 The majority of the dataset originally doesn't have normal distributed data. After log-transforming it with fold ten, it instead seems to spread more evenly.
 
@@ -309,17 +315,20 @@ The majority of the dataset originally doesn't have normal distributed data. Aft
 Barplot for showing amount of sick and healthy people
 
 ```{r}
-barplot(c(amount.sick.recordings, amount.healthy.recordings), 
-        legend.text = c("Sick", "Healthy"), col = c("deeppink3", "darkolivegreen1"),
-        main = "Number of healthy and sick people",
-        xlab = "Status",
-        ylab = "Amount of people")
+ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status") + 
+  ylab("Amount of people") + labs(title = "Number of healthy and sick people")
 ```
-*Retrospective*
+&nbsp;
+
+**Retrospective**
 
 In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
 
+\pagebreak
+
 A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en a matrix of their p-values. Since the dataset is too large for a pretty heatmap, it's split into three.
+
+&nbsp;
 
 ```{r}
 # preparing dataset containing only type numeric
@@ -330,43 +339,59 @@ corr.matrix1 <- cor(data.numeric[1:12])
 corr.matrix2 <- cor(data.numeric[11:22])
 corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
 # plotting heat map
-ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black")
-ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black")
-ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black")
+ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of first half of the dataset")
+```
+
+\pagebreak
+
+```{r}
+ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of other half of the dataset")
+```
+
+\pagebreak
+
+```{r}
+ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of first and last attributes")
 ```
 
 The correlation matrix shows the similarity of all attributes. Assuming 1 means attributes producing very similar values and towards -1 more unique values. 
 
+\pagebreak
 
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
 ```{r}
-ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them")
 ```
 
 The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
 
 ```{r}
-ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE)
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them")
 ```
+
 Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. 
 
 
-*Retrospective*:
+**Retrospective**
 A higher correlation shows similarity in attributes for the correlation heatmap.
 
-Though the pairplot shows similarity between groups healthy and sick. When a high correlation value is met between the pair it means, the data is very similar. An assumption is that high similarity shows there's no difference of that attribute for both groups which means that attribute may not be used to diagnose a PD patient.
+Though the pairplot shows similarity between groups healthy and sick. When a high correlation value is met between a pair it means, the data is very similar. An assumption is that high similarity shows there's less to none difference in attributes and their statuses, which means that combination of attributes may not be used to diagnose a PD patient.
 
 
+\pagebreak
+## Testing differences in dataset
 
-#### Testing differences in dataset
-
+&nbsp;
 
 After observing several differences and correlations between different attributes, it is important to find out if these relations are really significant.
 
+&nbsp;
+
+
 First of all how different are the sick values of each attribute against their healthy values? Each attribute will be tested with a Welch two-sample t-test.
 
-```{r}
+```{r, comment="|"}
 Welch.t.test <- function(data) {
   for (i in 1:ncol(data)) {
     if (is.numeric(data[, i])) {
@@ -380,18 +405,29 @@ Welch.t.test <- function(data) {
 
 Welch.t.test(patient.data)
 ```
+---
+
 The p-values smaller that alpha = 0.05 show significant difference between the groups sick and healthy. A higher difference offers the assumption that these attributes may differentiate a healthy person from a person with PD.
 
 Earlier it became clear from the boxplots of attributes MDVP.Flo/Fo and Fhi that on average the sick values were higher than the healthy values. The first three p-values affirm that observation. Since the p-values are below 0.05 there is a significant difference between the statuses.
 
 
-*Retrospective*
+**Retrospective**
 All attributes show significant differences between the statuses though some more extreme than others. Those more extreme indicate more difference and are therefore more interesting for steps later in diagnosing.
 
-# Bibliography
+\pagebreak
 
-Link about EDA
-https://r4ds.had.co.nz/exploratory-data-analysis.html 
-Link article
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/ 
+
+```{=tex}
+\begin{thebibliography}{9}
+
+\bibitem{Dysphonic voice analysis}
+Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+  
+\end{thebibliography}
+```
+
+
+
 
