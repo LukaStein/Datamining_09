@@ -2,7 +2,7 @@
 title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -103,7 +103,8 @@ pander::pander(attributes, style = "rmarkdown", caption = "Discriptions of attri
 
 **Retrospective**
 All the data is read correctly with the corresponding amount of rows and columns
-as the article suggests. 
+as the article suggests. Noise-to-harmonics ratio and harmonics-to-noise ratio suggest
+they're the opposites of each other, it is interesting to observe this later on.
 
 
 ---
@@ -128,7 +129,26 @@ By applying a summary to the dataset's dataframe, its statistical meanings are r
 pander::pander(head(summary(patient.data)), style = "rmarkdown", caption = "Summary of dataset")
 ```
 
-From observing the data above it becomes clear from the means that the values between attributes can differ highly.
+From observing the data above it becomes clear from the means that the values between attributes can differ highly. 
+Also the data of NHR and HRN seem to affirm that they are opposite attributes of each other.
+
+
+&nbsp;
+
+Barplot for showing amount of sick and healthy people
+
+```{r}
+ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status") + 
+  ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
+```
+
+&nbsp;
+
+**Retrospective**
+
+In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
+
+&nbsp;
 
 Based on the names different groups are formed for visualisation
 
@@ -142,24 +162,39 @@ spread <- 21:22
 D2.PPE <- 23:24
 ```
 
+To find out if NHR and HNR correlate oppositely to one another a pairwise plot is made.
 
-Boxplotting the data to show the differences for sick people in MDVP measured attributes containing large numbers. Also a log-fold 2 is applied in a separate boxplot to see if the means of the attributes coincide.
+```{r}
+ggpairs(patient.data[NHR.HNR])
+```
+
+The two attributes correlate to each other oppositely, though their values are not the exact opposites. There are too many points that deviate from the downwards curve that the data moves in. An explanation might be that the formulas to calculate the two attributes differ from each other, thus not result in exact opposite values.
+
+&nbsp;
+
+Boxplotting the data to show the differences for sick people and healthy people in MDVP measured attributes containing large numbers. 
 
 ```{r}
 Fo <- patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"]
 Fhi <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "sick"]
-Flo <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "sick"]
+Flo <- patient.data$MDVP.Flo.Hz.[patient.data$status == "sick"]
+
+Fo.healthy <- patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"]
+Fhi.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
+Flo.healthy <- patient.data$MDVP.Flo.Hz.[patient.data$status == "healthy"]
+
 difference.in.nums.sick <- data.frame(
                                  labs = c(rep("Fo.sick", length(Fo)),
                                           rep("Fhi.sick", length(Fhi)),
                                           rep("Flo.sick", length(Flo))),
                                  values = c(Fo, Fhi, Flo))
 
-difference.in.nums.sick.log2 <- data.frame(
-                                 labs = c(rep("Fo.sick", length(Fo)),
-                                          rep("Fhi.sick", length(Fhi)),
-                                          rep("Flo.sick", length(Flo))),
-                                 values = c(log2(Fo), log2(Fhi), log2(Flo)))
+difference.in.nums.healthy <- data.frame(
+                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
+                                          rep("Fhi.healthy", length(Fhi.healthy)),
+                                          rep("Flo.healthy", length(Flo.healthy))),
+                                 values = c(Fo.healthy, Fhi.healthy, Flo.healthy))
+
 
 ggplot(difference.in.nums.sick,aes(x=labs, y=values)) + 
   geom_boxplot(fill = "coral") + ggtitle("MDVP.Hz attributes of people with PD") +
@@ -167,47 +202,47 @@ ggplot(difference.in.nums.sick,aes(x=labs, y=values)) +
   xlab("Sick MDVP attributes") + ylab("Measured values (Hz)")
   
 
-ggplot(difference.in.nums.sick.log2,aes(x=labs, y=values)) + 
-  geom_boxplot(fill = "brown1") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + 
-  labs(caption = "Normalized boxplot with log2")  + 
-  xlab("Sick MDVP attributes") + ylab("Measured values (Hz)")
-
-```
-
-In the two boxplots it becomes clear that the MDVP.HZ attribute means are very similar to each other for sick people. They are closest around a value of 150 Hz. Though Fhi.sick and Flo.sick seem to produce more similar values.
-
-
-In order to hypothesise whether the means of healthy are different from sick people as shown above, two boxplots are made for healthy people.
-
-```{r}
-Fo.healthy <- patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"]
-Fhi.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
-Flo.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
-difference.in.nums.healthy <- data.frame(
-                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
-                                          rep("Fhi.healthy", length(Fhi.healthy)),
-                                          rep("Flo.healthy", length(Flo.healthy))),
-                                 values = c(Fo.healthy, Fhi.healthy, Flo.healthy))
-
-difference.in.nums.healthy.log2 <- data.frame(
-                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
-                                          rep("Fhi.healthy", length(Fhi.healthy)),
-                                          rep("Flo.healthy", length(Flo.healthy))),
-                                 values = c(log2(Fo.healthy), log2(Fhi.healthy), log2(Flo.healthy)))
-
 ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") +
   ggtitle("MDVP.Hz attributes of people without PD") + labs(caption = "Boxplot of three attributes of MDVP.Hz for people without PD") + 
   xlab("Healthy MDVP attributes") + ylab("Measured values (Hz)")
-ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) +
-  geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + labs(caption = "Normalized boxplot with log2") + 
+```
+
+Between the MDVP.Hz boxplots it becomes clear that the MDVP.HZ attribute means are similar to each other for sick people, because their data seem to overlap.
+From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. The frequencies (Hz) of the healthy labels per box are all higher than for the boxplot with sick people.
+
+
+In order to find out if a log10-transformation skewers the amount of outliers that are present above, the boxplots from above are log-transformed.
+
+```{r}
+difference.in.nums.sick.log10 <- data.frame(
+                                 labs = c(rep("Fo.sick", length(Fo)),
+                                          rep("Fhi.sick", length(Fhi)),
+                                          rep("Flo.sick", length(Flo))),
+                                 values = c(log(Fo), log(Fhi), log(Flo)))
+
+difference.in.nums.healthy.log10 <- data.frame(
+                                 labs = c(rep("Fo.healthy", length(Fo.healthy)),
+                                          rep("Fhi.healthy", length(Fhi.healthy)),
+                                          rep("Flo.healthy", length(Flo.healthy))),
+                                 values = c(log(Fo.healthy), log(Fhi.healthy), log(Flo.healthy)))
+
+
+ggplot(difference.in.nums.sick.log10,aes(x=labs, y=values)) + 
+  geom_boxplot(fill = "brown1") + ggtitle("Log-fold 10 of MDVP.Hz attributes") + 
+  labs(caption = "Normalized boxplot with log10")  + 
+  xlab("Sick MDVP attributes") + ylab("Measured values (Hz)")
+
+ggplot(difference.in.nums.healthy.log10,aes(x=labs, y=values)) +
+  geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 10 of MDVP.Hz attributes") + labs(caption = "Normalized boxplot with log10") + 
   xlab("Healthy MDVP attributes") + ylab("Measured values (Hz)")
 ```
 
-The means of the three healthy MDVP.HZ attributes seem very similar to each other between 200 and 250 Hz. Fhi.healthy and Flo.healthy again seem to produce similar values. 
+After log-transforming the majority of outliers disappear. The healthy instance frequencies remain higher than the sick instances.
 
 **Retrospective**
 
-From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. From observing this data it can be concluded that healthy people are measured higher frequencies than sick people.
+From observing this data it can be concluded that healthy people are measured higher frequencies than sick people. Also log-transforming
+successfully skewers outliers.
 
 
 \pagebreak
@@ -337,7 +372,7 @@ F.22 <- ggplot(patient.data, aes(x=PPE, fill = status)) + geom_histogram(color =
   ylab("Instances") + theme(axis.title.y = element_text(size = 8))
 grid.arrange(F.17, F.18, F.19, F.20, F.21, F.22, ncol = 2, nrow = 4)
 ```
-                                                        Shar                            ed histogram plot of last six attributes
+                                                        Shared histogram plot of last six attributes
 
 &nbsp;
 
@@ -361,12 +396,11 @@ These new normalised data will be added to the data set, for processing later on
 \pagebreak
 
 
-Adding log-transformed data next to the original data set and writing the new dataframe to a csv file.
+Writing log-transformed data to new file for model training later.
 
 
 ```{r}
-combined.patient.data <- data.frame(patient.data, 
-                                    log.MDVP.Fhi.Hz. = log(patient.data$MDVP.Fhi.Hz.),
+logTransformed.patient.data <- data.frame(log.MDVP.Fhi.Hz. = log(patient.data$MDVP.Fhi.Hz.),
                                     log.MDVP.Flo.Hz. = log(patient.data$MDVP.Flo.Hz.),
                                     log.MDVP.Jitter = log(patient.data$MDVP.Jitter...),
                                     log.MDVP.Jitter.Abs. = log(patient.data$MDVP.Jitter.Abs.),
@@ -378,24 +412,14 @@ combined.patient.data <- data.frame(patient.data,
                                     log.Shimmer.APQ5 = log(patient.data$Shimmer.APQ5),
                                     log.MDVP.APQ = log(patient.data$MDVP.APQ),
                                     log.Shimmer.DDA = log(patient.data$Shimmer.DDA),
-                                    log.NHR = log(patient.data$NHR))
+                                    log.NHR = log(patient.data$NHR),
+                                    status = patient.data$status)
 
-#write.csv(combined.patient.data, file = "weka.patient.data")
+write.csv(logTransformed.patient.data, file = "weka.patient.data")
 ```
 
 &nbsp;
 
-Barplot for showing amount of sick and healthy people
-
-```{r}
-ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status") + 
-  ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
-```
-&nbsp;
-
-**Retrospective**
-
-In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
 
 \pagebreak
 
@@ -434,14 +458,14 @@ The correlation matrix shows the similarity of all attributes. Assuming 1 means 
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
 ```{r}
-ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE, upper = "blank") + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
         axis.text.y = element_blank())                                                                                                                                                                
 ```
 
-The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter correlate also largely. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
+The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
 
 ```{r}
-ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE, upper = "blank") + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
 ```
 
 Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. 
@@ -463,7 +487,7 @@ After observing several differences and correlations between different attribute
 &nbsp;
 
 
-First of all how different are the sick values of each attribute against their healthy values? Each attribute will be tested with a Welch two-sample t-test.
+First of all how different are the sick values of each attribute against their healthy values? Each attribute will be tested with a Welch two-sample t-test. The data is copied to an csv file for clearer representation of the data.
 
 ```{r, comment="|"}
 Welch.t.test <- function(data) {
@@ -471,14 +495,16 @@ Welch.t.test <- function(data) {
     if (is.numeric(data[, i])) {
       sick <- data[, i][data$status == "sick"]
       healthy <- data[, i][data$status == "healthy"]
-      cat("P.value of", colnames(data)[i], "= [",  t.test(sick, healthy)$p.value, "]\n\n")
+      cat(colnames(data)[i], ",",  t.test(sick, healthy)$p.value, "\n\n")
       
     }
   }
 }
 
-Welch.t.test(patient.data)
-
+#Welch.t.test(patient.data), "p.values")
+pValues <- read.csv("p.values", header = TRUE, sep = ",")
+#data.Pvalues <- data.frame(pValues, is_significant = c(apply(pValues, pValues$p.values < 0.05)))
+#pander:pander(data.pValues)
 ```
 
 ---

@@ -1,0 +1,17 @@
+---
+title: "Diagnostiseren Parkinson dysphonia"
+author: "L T Stein"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Resultaten
+
+Uit het observeren van alle attributen als histogrammen werd het duidelijk dat 14 attributen niet normaal verdeeld waren.
+Daarom zijn deze met log10 getransformeerd en met succes vertoonden ze daarna wel normaal verdelingen. 
+
+## Discussie
