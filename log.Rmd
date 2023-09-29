@@ -163,12 +163,14 @@ difference.in.nums.sick.log2 <- data.frame(
 
 ggplot(difference.in.nums.sick,aes(x=labs, y=values)) + 
   geom_boxplot(fill = "coral") + ggtitle("MDVP.Hz attributes of people with PD") +
-  labs(caption = "Boxplot of three attributes of MDVP.Hz for people with PD")
+  labs(caption = "Boxplot of three attributes of MDVP.Hz for people with PD") + 
+  xlab("Sick MDVP attributes") + ylab("Measured values (Hz)")
   
 
 ggplot(difference.in.nums.sick.log2,aes(x=labs, y=values)) + 
   geom_boxplot(fill = "brown1") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + 
-  labs(caption = "Normalized boxplot with log2")
+  labs(caption = "Normalized boxplot with log2")  + 
+  xlab("Sick MDVP attributes") + ylab("Measured values (Hz)")
 
 ```
 
@@ -194,9 +196,11 @@ difference.in.nums.healthy.log2 <- data.frame(
                                  values = c(log2(Fo.healthy), log2(Fhi.healthy), log2(Flo.healthy)))
 
 ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "aquamarine") +
-  ggtitle("MDVP.Hz attributes of people without PD") + labs(caption = "Boxplot of three attributes of MDVP.Hz for people without PD")
+  ggtitle("MDVP.Hz attributes of people without PD") + labs(caption = "Boxplot of three attributes of MDVP.Hz for people without PD") + 
+  xlab("Healthy MDVP attributes") + ylab("Measured values (Hz)")
 ggplot(difference.in.nums.healthy.log2,aes(x=labs, y=values)) +
-  geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + labs(caption = "Normalized boxplot with log2")
+  geom_boxplot(fill = "cyan2") + ggtitle("Log-fold 2 of MDVP.Hz attributes") + labs(caption = "Normalized boxplot with log2") + 
+  xlab("Healthy MDVP attributes") + ylab("Measured values (Hz)")
 ```
 
 The means of the three healthy MDVP.HZ attributes seem very similar to each other between 200 and 250 Hz. Fhi.healthy and Flo.healthy again seem to produce similar values. 
@@ -216,33 +220,73 @@ Histograms can used to visualize if attributes' data are normally distributed. T
 Histograms of first eight attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
-F.1 <- ggplot(patient.data, aes(x=MDVP.Fo.Hz., fill = status)) + geom_histogram(color = "black", bins = 39)
-F.2 <- ggplot(patient.data, aes(x=MDVP.Fhi.Hz., fill = status)) + geom_histogram(color = "black", bins = 39)
-F.3 <- ggplot(patient.data, aes(x=`MDVP.Flo.Hz.`, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.4 <- ggplot(patient.data, aes(x=`MDVP.Jitter...`, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.5 <- ggplot(patient.data, aes(x=MDVP.Jitter.Abs., fill = status)) + geom_histogram(color = "black", bins = 39)
-F.6 <- ggplot(patient.data, aes(x=MDVP.RAP, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.7 <- ggplot(patient.data, aes(x=MDVP.PPQ, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.8 <- ggplot(patient.data, aes(x=Jitter.DDP, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.1 <- ggplot(patient.data, aes(x=MDVP.Fo.Hz., fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.2 <- ggplot(patient.data, aes(x=MDVP.Fhi.Hz., fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.3 <- ggplot(patient.data, aes(x=`MDVP.Flo.Hz.`, fill = status)) + geom_histogram(color = "black", bins = 39) +
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.4 <- ggplot(patient.data, aes(x=`MDVP.Jitter...`, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (%)") + theme(axis.title.y = element_text(size = 8))
+F.5 <- ggplot(patient.data, aes(x=MDVP.Jitter.Abs., fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (ms)") + theme(axis.title.y = element_text(size = 8))
+F.6 <- ggplot(patient.data, aes(x=MDVP.RAP, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.7 <- ggplot(patient.data, aes(x=MDVP.PPQ, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.8 <- ggplot(patient.data, aes(x=Jitter.DDP, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
 grid.arrange(F.1, F.2, F.3, F.4, F.5, F.6, F.7, F.8, ncol = 2, nrow = 4)
 ```
                                               Shared histogram plot of first eight attributes
 
 &nbsp;
 
-Apart from the first attribute MDVP.Fo.HZ, the rest of the histogram's data majorly orients towards the left side. Because of that they will be log-tranformed with fold ten.
+Apart from the first attribute MDVP.Fo.HZ, the rest of the histogram's data majorly orients towards the left side. Because of that they will be log-transformed with fold ten.
+
+```{r}
+F.1.log <- ggplot(patient.data, aes(x=log(MDVP.Fhi.Hz.), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.2.log <- ggplot(patient.data, aes(x=log(`MDVP.Flo.Hz.`), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.3.log <- ggplot(patient.data, aes(x=log(`MDVP.Jitter...`), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (Hz)") + theme(axis.title.y = element_text(size = 8))
+F.4.log <- ggplot(patient.data, aes(x=log(MDVP.Jitter.Abs.), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (%)") + theme(axis.title.y = element_text(size = 8))
+F.5.log <- ggplot(patient.data, aes(x=log(MDVP.RAP), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (ms) ") + theme(axis.title.y = element_text(size = 8))
+F.6.log<- ggplot(patient.data, aes(x=log(MDVP.PPQ), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.7.log <- ggplot(patient.data, aes(x=log(Jitter.DDP), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+grid.arrange(F.1.log, F.2.log, F.3.log, F.4.log, F.5.log, F.6.log, F.7.log, ncol = 2, nrow = 4)
+```
+                                       Shared histogram plot of first seven attributes that are log-transformed
+&nbsp;
+
+After log-transforming the figures above seem more normally distributed.
+
+&nbsp;
 
 Histograms of second eight attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
-F.9 <- ggplot(patient.data, aes(x=MDVP.Shimmer, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.10 <- ggplot(patient.data, aes(x=MDVP.Shimmer.dB., fill = status)) + geom_histogram(color = "black", bins = 39)
-F.11 <- ggplot(patient.data, aes(x=Shimmer.APQ3, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.12 <- ggplot(patient.data, aes(x=Shimmer.APQ5, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.13 <- ggplot(patient.data, aes(x=MDVP.APQ, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.14 <- ggplot(patient.data, aes(x=Shimmer.DDA, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.15 <- ggplot(patient.data, aes(x=NHR, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.16 <- ggplot(patient.data, aes(x=HNR, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.9 <- ggplot(patient.data, aes(x=MDVP.Shimmer, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.10 <- ggplot(patient.data, aes(x=MDVP.Shimmer.dB., fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (dB)") + theme(axis.title.y = element_text(size = 8))
+F.11 <- ggplot(patient.data, aes(x=Shimmer.APQ3, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.12 <- ggplot(patient.data, aes(x=Shimmer.APQ5, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.13 <- ggplot(patient.data, aes(x=MDVP.APQ, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.14 <- ggplot(patient.data, aes(x=Shimmer.DDA, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.15 <- ggplot(patient.data, aes(x=NHR, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.16 <- ggplot(patient.data, aes(x=HNR, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
 grid.arrange(F.9, F.10, F.11, F.12, F.13, F.14, F.15, F.16, ncol = 2, nrow = 4)
 ```
                                               Shared histogram plot of next eight attributes
@@ -251,72 +295,101 @@ grid.arrange(F.9, F.10, F.11, F.12, F.13, F.14, F.15, F.16, ncol = 2, nrow = 4)
 
 Seven of the eigth attributes plotted above are oriented towards the left side. Because of that these attributes will be log-transformed with fold ten.
 
+```{r}
+F.8.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.9.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer.dB.), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances (dB)") + theme(axis.title.y = element_text(size = 8))
+F.10.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ3), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.11.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ5), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.12.log <- ggplot(patient.data, aes(x=log(MDVP.APQ), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.13.log <- ggplot(patient.data, aes(x=log(Shimmer.DDA), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.14.log <- ggplot(patient.data, aes(x=log(NHR), fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+grid.arrange(F.8.log, F.9.log, F.10.log, F.11.log, F.12.log, F.13.log, F.14.log, ncol = 2, nrow = 4)
+```
+                                          Shared histogram plot of remaining seven attributes that are log-transformed
+
+&nbsp;
+
+After log-transforming the figures above the data seems more normally distributed.
+
+&nbsp;
 
 Histogram of the last six attributes in order to see if the attribute data is normally distributed.
 
 ```{r}
-F.17 <- ggplot(patient.data, aes(x=RPDE, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.18 <- ggplot(patient.data, aes(x=DFA, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.19 <- ggplot(patient.data, aes(x=spread1, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.20 <- ggplot(patient.data, aes(x=spread2, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.21 <- ggplot(patient.data, aes(x=D2, fill = status)) + geom_histogram(color = "black", bins = 39)
-F.22 <- ggplot(patient.data, aes(x=PPE, fill = status)) + geom_histogram(color = "black", bins = 39)
+F.17 <- ggplot(patient.data, aes(x=RPDE, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.18 <- ggplot(patient.data, aes(x=DFA, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.19 <- ggplot(patient.data, aes(x=spread1, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.20 <- ggplot(patient.data, aes(x=spread2, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.21 <- ggplot(patient.data, aes(x=D2, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
+F.22 <- ggplot(patient.data, aes(x=PPE, fill = status)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Instances") + theme(axis.title.y = element_text(size = 8))
 grid.arrange(F.17, F.18, F.19, F.20, F.21, F.22, ncol = 2, nrow = 4)
 ```
-                                                        Shared histogram plot of last six attributes
+                                                        Shar                            ed histogram plot of last six attributes
 
 &nbsp;
 
-The last six attributes seem to have well distributed data. Attribute PPE has left oriented data, but since it isn't extremely one-sided it will not be log-transformed.
+The last six attributes seem to have well distributed data. Attribute PPE has left oriented data, because of that it will be log-transformed in the hope that the data shifts more towards the center.
+
+```{r}
+F.22.log <- ggplot(patient.data, aes(x=log(PPE), fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.22.log, ncol = 1, nrow = 2)
+```
+                                                                      Histogram of log-tranformed attribute "PPE"
+&nbsp;
+
+After log-transforming attribute "PPE" the data has shifted more towards the center with a better normal distribution.
+
 
 **Retrospective**
 
-Fourteen out of the 22 numeric attributes are not normally distributed. Because of that they will be log-transformed.
+Fourteen out of the 22 numeric attributes are not normally distributed. After log-transforming it with fold ten, it instead seems to spread more evenly.
+These new normalised data will be added to the data set, for processing later on.
 
 \pagebreak
 
-Histograms of seven log-transformed attributes.
+
+Adding log-transformed data next to the original data set and writing the new dataframe to a csv file.
+
 
 ```{r}
-F.1.log <- ggplot(patient.data, aes(x=log(MDVP.Fhi.Hz.), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.2.log <- ggplot(patient.data, aes(x=log(`MDVP.Flo.Hz.`), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.3.log <- ggplot(patient.data, aes(x=log(`MDVP.Jitter...`), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.4.log <- ggplot(patient.data, aes(x=log(MDVP.Jitter.Abs.), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.5.log <- ggplot(patient.data, aes(x=log(MDVP.RAP), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.6.log<- ggplot(patient.data, aes(x=log(MDVP.PPQ), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.7.log <- ggplot(patient.data, aes(x=log(Jitter.DDP), fill = status)) + geom_histogram(color = "black", bins = 39)
-grid.arrange(F.1.log, F.2.log, F.3.log, F.4.log, F.5.log, F.6.log, F.7.log, ncol = 2, nrow = 4)
+combined.patient.data <- data.frame(patient.data, 
+                                    log.MDVP.Fhi.Hz. = log(patient.data$MDVP.Fhi.Hz.),
+                                    log.MDVP.Flo.Hz. = log(patient.data$MDVP.Flo.Hz.),
+                                    log.MDVP.Jitter = log(patient.data$MDVP.Jitter...),
+                                    log.MDVP.Jitter.Abs. = log(patient.data$MDVP.Jitter.Abs.),
+                                    log.MDVP.RAP = log(patient.data$MDVP.RAP),
+                                    log.MDVP.PPQ = log(patient.data$MDVP.PPQ),
+                                    log.MDVP.Shimmer = log(patient.data$MDVP.Shimmer),
+                                    log.MDVP.Shimmer.dB. = log(patient.data$MDVP.Shimmer.dB.),
+                                    log.Shimmer.APQ3 = log(patient.data$Shimmer.APQ3),
+                                    log.Shimmer.APQ5 = log(patient.data$Shimmer.APQ5),
+                                    log.MDVP.APQ = log(patient.data$MDVP.APQ),
+                                    log.Shimmer.DDA = log(patient.data$Shimmer.DDA),
+                                    log.NHR = log(patient.data$NHR))
+
+#write.csv(combined.patient.data, file = "weka.patient.data")
 ```
-                                              Shared histogram plot of first seven attributes that are log-transformed
+
 &nbsp;
-
-Other 7 histograms of log-transformed attributed
-
-```{r}
-F.8.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.9.log <- ggplot(patient.data, aes(x=log(MDVP.Shimmer.dB.), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.10.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ3), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.11.log <- ggplot(patient.data, aes(x=log(Shimmer.APQ5), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.12.log <- ggplot(patient.data, aes(x=log(MDVP.APQ), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.13.log <- ggplot(patient.data, aes(x=log(Shimmer.DDA), fill = status)) + geom_histogram(color = "black", bins = 39)
-F.14.log <- ggplot(patient.data, aes(x=log(NHR), fill = status)) + geom_histogram(color = "black", bins = 39)
-grid.arrange(F.8.log, F.9.log, F.10.log, F.11.log, F.12.log, F.13.log, F.14.log, ncol = 2, nrow = 4)
-```
-                                          "Shared histogram plot of remaining seven attributes that are log-transformed"
-
-                                        
-After log-transforming the two figures above the data seems more normally distributed.
-
-**Retrospective**
-
-The majority of the dataset originally doesn't have normal distributed data. After log-transforming it with fold ten, it instead seems to spread more evenly.
-
 
 Barplot for showing amount of sick and healthy people
 
 ```{r}
 ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status") + 
-  ylab("Amount of people") + labs(title = "Number of healthy and sick people")
+  ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
 ```
 &nbsp;
 
@@ -361,13 +434,14 @@ The correlation matrix shows the similarity of all attributes. Assuming 1 means 
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
 
 ```{r}
-ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them")
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE, upper = "blank") + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
+        axis.text.y = element_blank())                                                                                                                                                                
 ```
 
-The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
+The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter correlate also largely. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
 
 ```{r}
-ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them")
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE, upper = "blank") + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
 ```
 
 Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. 
@@ -404,7 +478,9 @@ Welch.t.test <- function(data) {
 }
 
 Welch.t.test(patient.data)
+
 ```
+
 ---
 
 The p-values smaller that alpha = 0.05 show significant difference between the groups sick and healthy. A higher difference offers the assumption that these attributes may differentiate a healthy person from a person with PD.
