@@ -479,20 +479,30 @@ corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
 # plotting heat map
 ggcorrplot(corr.matrix1, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of first half of the dataset")
 ```
+The correlation matrix shows the similarity of all attributes. Assuming 1 means attributes producing very similar values and towards -1 more unique values. 
+
+Shimmer attributes seem to correlate a lot with each other, but also with a few MDVP and jitter attributes.
+Why are these attributes' instances so similar?
+
 
 \pagebreak
 
 ```{r}
 ggcorrplot(corr.matrix2, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of other half of the dataset")
 ```
+NHR and HNR show very strong negative correlation like was established earlier after observing the data's summary. DFA generally shows very weak correlation from all other attributes, indicating its data is very different. The shimmer attributes present moderate correlations with spread1, spread2, D2 and PPE. Apparently attributes PPE and spread1 have very similar data.
+
 
 \pagebreak
 
 ```{r}
 ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of first and last attributes")
 ```
+The first six and last six attributes correlate very diverse. HNR shows either very low similarity or strong negative similarity. From observing this matrix it becomes apparent that these attributes mostly are very different from one another, but nine squares correlate somewhat more.
 
-The correlation matrix shows the similarity of all attributes. Assuming 1 means attributes producing very similar values and towards -1 more unique values. 
+**Retrospective**
+
+Several attributes are very similar to each other. Some show their data to be face to face with strong negative values. From observing these differences and similarities in the dataset its attributes PPE (pitch period entropy), HNR (harmonics to noise ration), spread1 (nonlinear measurements) and DFA (exponent for invariance of mean and deviation against time) stand out the most. 
 
 \pagebreak
 
