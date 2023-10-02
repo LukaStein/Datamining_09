@@ -130,7 +130,7 @@ pander::pander(head(summary(patient.data)), style = "rmarkdown", caption = "Summ
 ```
 
 From observing the data above it becomes clear from the means that the values between attributes can differ highly. 
-Also the data of NHR and HRN seem to affirm that they are opposite attributes of each other.
+Also the data of NHR (Noise-to-harmonics ration) and HRN (Harmonics-to-noise ratio) seem to pose that they are opposite attributes of each other.
 
 
 &nbsp;
@@ -146,7 +146,24 @@ ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status
 
 **Retrospective**
 
-In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people.
+In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people. This means that values of the healthy status that are measured by coincidence, deal more impact to its dataset. 
+
+Normally it's preferred to have a dataset with lots of values for each group. In further research the sum of false positives therefore might be more than desired.
+
+
+
+If alpha is 0.05 then the amount of false positives per status equals to the following results
+
+```{r}
+alpha <- 0.05
+false.healthy.positives <- alpha * amount.healthy.recordings
+false.sick.positives <- alpha * amount.sick.recordings
+cat(false.healthy.positives, false.sick.positives)
+```
+This estimates that of the 48 healthy instances two values are measured by coincidence and of the 147 sick instances seven values are measured by chance.
+
+**Retrospective**
+There are approximately ten false positives that probably deviate from the instances in its attribute.
 
 &nbsp;
 
@@ -170,9 +187,10 @@ ggpairs(patient.data[NHR.HNR])
 
 The two attributes correlate to each other oppositely, though their values are not the exact opposites. There are too many points that deviate from the downwards curve that the data moves in. An explanation might be that the formulas to calculate the two attributes differ from each other, thus not result in exact opposite values.
 
+
 &nbsp;
 
-Boxplotting the data to show the differences for sick people and healthy people in MDVP measured attributes containing large numbers. 
+Boxplotting the data to show the differences for sick people and healthy people in MDVP measured attributes containing large numbers. These values are expressed in Hertz measuring the vocal frequencies (Fo=average, Fhi=maximum and Flo=minimum). It would be very curious to see if vocal frequencies are enough to distinguish sick from healthy people.
 
 ```{r}
 Fo <- patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"]
@@ -208,8 +226,21 @@ ggplot(difference.in.nums.healthy,aes(x=labs, y=values)) + geom_boxplot(fill = "
 ```
 
 Between the MDVP.Hz boxplots it becomes clear that the MDVP.HZ attribute means are similar to each other for sick people, because their data seem to overlap.
+
 From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. The frequencies (Hz) of the healthy labels per box are all higher than for the boxplot with sick people.
 
+With a ANOVA test these differences can be determined.
+
+```{r}
+aov.MDVP.Hz. <- summary(aov(MDVP.Fo.Hz. + MDVP.Fhi.Hz. + MDVP.Flo.Hz. ~ status, data = patient.data))
+aov.MDVP.Hz[[1]]$`Pr(>F)`
+```
+With a p-value of 3.12e-08 < 0.05 there's a significant difference between the attributes and the statuses.
+
+**Retrospective**
+There is a significant difference in the attributes MDVP.Fo.Hz, MDVP.Fhi.Hz, MDVP.Flo.Hz and the levels healthy and sick. These attributes might be interesting to use in differentiating people of PD with healthy people.
+
+&nbsp;
 
 In order to find out if a log10-transformation skewers the amount of outliers that are present above, the boxplots from above are log-transformed.
 
@@ -239,10 +270,20 @@ ggplot(difference.in.nums.healthy.log10,aes(x=labs, y=values)) +
 
 After log-transforming the majority of outliers disappear. The healthy instance frequencies remain higher than the sick instances.
 
+To see if after normalizing the data really has differences between the data and its levels an ANOVA test is done on the log10 of the attributes.
+
+```{r}
+aov.MDVP.Hz.log <- summary(aov(log(MDVP.Fo.Hz.) + log(MDVP.Fhi.Hz.) + log(MDVP.Flo.Hz.) ~ status, data = patient.data))
+aov.MDVP.Hz.log[[1]]$`Pr(>F)`
+```
+After normalizing the data, compared to the previous p-value of 3.12e-08, an even stronger significant difference is portrayed with a p-value of 5.48e-08 < 0.05. 
+
 **Retrospective**
 
-From observing this data it can be concluded that healthy people are measured higher frequencies than sick people. Also log-transforming
-successfully skewers outliers.
+From observing this data it can be concluded that healthy people are measured higher frequencies than sick people. Also log-transforming successfully skewers outliers.
+
+
+
 
 
 \pagebreak
@@ -476,6 +517,7 @@ A higher correlation shows similarity in attributes for the correlation heatmap.
 
 Though the pairplot shows similarity between groups healthy and sick. When a high correlation value is met between a pair it means, the data is very similar. An assumption is that high similarity shows there's less to none difference in attributes and their statuses, which means that combination of attributes may not be used to diagnose a PD patient.
 
+#TODO welke attributen vallen op
 
 \pagebreak
 ## Testing differences in dataset
