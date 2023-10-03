@@ -2,7 +2,9 @@
 title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
-output: word_document
+output:
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -229,16 +231,23 @@ Between the MDVP.Hz boxplots it becomes clear that the MDVP.HZ attribute means a
 
 From only boxplotting the three MDVP.HZ attributes it becomes clear that sick people result in frequencies around 150 and healthy people are measured between 200-250. The frequencies (Hz) of the healthy labels per box are all higher than for the boxplot with sick people.
 
-With a ANOVA test these differences can be determined.
+With ANOVA tests these differences can be determined per attribute.
 
 ```{r}
-aov.MDVP.Hz. <- summary(aov(MDVP.Fo.Hz. + MDVP.Fhi.Hz. + MDVP.Flo.Hz. ~ status, data = patient.data))
-aov.MDVP.Hz[[1]]$`Pr(>F)`
+aov.Fo.Hz <- summary(aov(MDVP.Fo.Hz. ~ status, data = patient.data))
+aov.Fhi.Hz <- summary(aov(MDVP.Fhi.Hz. ~ status, data = patient.data))
+aov.Flo.Hz <- summary(aov(MDVP.Flo.Hz. ~ status, data = patient.data))
+cat("Fo.Hz = ", aov.Fo.Hz[[1]]$`Pr(>F)`[1], "\nFhi.Hz = ", 
+    aov.Fhi.Hz[[1]]$`Pr(>F)`[1], "\nFlo.Hz = ", aov.Flo.Hz[[1]]$`Pr(>F)`[1])
 ```
-With a p-value of 3.12e-08 < 0.05 there's a significant difference between the attributes and the statuses.
+With all p-values smaller than alpha = 0.05 there's a significant difference between the statuses of each attribute.
+
+&nbsp;
+
+
 
 **Retrospective**
-There is a significant difference in the attributes MDVP.Fo.Hz, MDVP.Fhi.Hz, MDVP.Flo.Hz and the levels healthy and sick. These attributes might be interesting to use in differentiating people of PD with healthy people.
+There are significant differences between the levels "healthy" and "sick" in the attributes MDVP.Fo.Hz, MDVP.Fhi.Hz, MDVP.Flo.Hz. These attributes might be interesting to use in differentiating people of PD with healthy people.
 
 &nbsp;
 
@@ -270,13 +279,16 @@ ggplot(difference.in.nums.healthy.log10,aes(x=labs, y=values)) +
 
 After log-transforming the majority of outliers disappear. The healthy instance frequencies remain higher than the sick instances.
 
-To see if after normalizing the data really has differences between the data and its levels an ANOVA test is done on the log10 of the attributes.
+An ANOVA test is done to see if after normalizing the data, its differences between the levels remain as significant.
 
 ```{r}
-aov.MDVP.Hz.log <- summary(aov(log(MDVP.Fo.Hz.) + log(MDVP.Fhi.Hz.) + log(MDVP.Flo.Hz.) ~ status, data = patient.data))
-aov.MDVP.Hz.log[[1]]$`Pr(>F)`
+aov.Fo.Hz.log <- summary(aov(log(MDVP.Fo.Hz.) ~ status, data = patient.data))
+aov.Fhi.Hz.log <- summary(aov(log(MDVP.Fhi.Hz.) ~ status, data = patient.data))
+aov.Flo.Hz.log <- summary(aov(log(MDVP.Flo.Hz.) ~ status, data = patient.data))
+cat("Fo.Hz = ", aov.Fo.Hz.log[[1]]$`Pr(>F)`[1], "\nFhi.Hz = ", 
+    aov.Fhi.Hz.log[[1]]$`Pr(>F)`[1], "\nFlo.Hz = ", aov.Flo.Hz.log[[1]]$`Pr(>F)`[1])
 ```
-After normalizing the data, compared to the previous p-value of 3.12e-08, an even stronger significant difference is portrayed with a p-value of 5.48e-08 < 0.05. 
+After normalizing the data the differences between the levels remain significant. Though attributes Fo.Hz and Flo.Hz are less significant. This can be explained by the fact that their outliers held on more diverse values, that are now reduced.
 
 **Retrospective**
 
@@ -506,70 +518,72 @@ Several attributes are very similar to each other. Some show their data to be fa
 
 \pagebreak
 
-Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted.
+Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted to see if their statuses are also similar. The first group contains the attributes [MDVP.Jitter... MDVP.Jitter.Abs. MDVP.RAP MDVP.PPQ Jitter.DDP]. 
 
 ```{r}
-ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status, alpha = 0.5), progress = FALSE) + labs(caption = "Pair plot showing correlations between six MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
         axis.text.y = element_blank())                                                                                                                                                                
 ```
 
-The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a large non-correlation, between sick and healthy. This combination might distinguish a person with PD from a healthy person.
+The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a strong negative correlation, between sick and healthy. 
+
+Though what does negative correlation really indicate? An article from Indeed states "one variable increases in value while the other decreases.". This statement is what attributes NHR and HNR showed earlier and clarifies that the attributes MDVP.Jitter.Abs and MDVP.Flo.Hz have values that stand face to face. Since the healthy and sick values are both negative with a large difference it really tells how divided the levels are with this attributes combination. Therefore are these attributes in later modelling research very exhilirating to observe. 
+
+
+
+With a welch t-test attributes MDVP.Jitter.Abs and MDVP.Flo.Hz will be compared to see how different their data really is.
 
 ```{r}
-ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status), progress = FALSE) + labs(caption = "Pair plot showing correlations between four MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
+t.test(patient.data$MDVP.Jitter.Abs.,  patient.data$MDVP.Flo.Hz.)
+```
+There is a very strong significant difference between the attributes of 2.2e-16 < 0.05. 
+
+
+The shimmer attributes correlated very strongly, therefore it's assumed the statuses also have very similar values. The attributes [MDVP.Shimmer MDVP.Shimmer.dB. Shimmer.APQ3 Shimmer.APQ5 MDVP.APQ Shimmer.DDA] are going to be compared.
+
+```{r}
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status, alpha = 0.5), progress = FALSE) + labs(caption = "Pair plot showing correlations between six MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
 ```
 
-Attributes Shimmer.APQ4 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. 
+Attributes Shimmer.APQ3 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. The higher the correlation means the more positive the attributes react onto each other to increase their values. This can be seen in the graphs that move from the zero corner to the top right corner.
+
+
+Does behaviour of how instances move in a chart represent the similarity in data between attributes? This will be tested with a welch t-test with attributes Shimmer.APQ3 and MDVP.Shimmer.
+
+```{r}
+t.test(patient.data$Shimmer.APQ3,  patient.data$MDVP.Shimmer)
+```
+Likewise to the attributes with a negative correlation, these attributes with a high positive correlation have very dissimilar data with a p-value of 2.2e-16 < 0.05. This answers the question that correlation rather shows data's behaviour than similarity of values.
 
 
 **Retrospective**
-A higher correlation shows similarity in attributes for the correlation heatmap.
 
-Though the pairplot shows similarity between groups healthy and sick. When a high correlation value is met between a pair it means, the data is very similar. An assumption is that high similarity shows there's less to none difference in attributes and their statuses, which means that combination of attributes may not be used to diagnose a PD patient.
+When a high correlation value is met between a pair it means, the data behaves in a similar way. An assumption is that high correlation shows there's less to none impact of attributes and their statuses onto each other, which means that combination of attributes may not be used to diagnose a PD patient.
 
-#TODO welke attributen vallen op
+
+Remarkably the combination [MDVP.Jitter.Abs and MDVP.Flo.Hz] differentiated sick values from healthy values. This combination will later be tested in model training, to affirm is that's really the case.
+
+
+Instead of looking at how similar data performs on the statuses a final pair plot will be made of the four attributes that stood out in the correlation matrix as more unique data. The attributes PPE, HNR, spread1 and DFA are plotted along with two other attributes for a broader image of their differences. The attributes Shimmer.APQ3 and D2 are added, because they have high and moderate correlations.
+
+```{r}
+striking.attributes <- data.numeric[,c("PPE", "HNR", "spread1", "DFA", "Shimmer.APQ3", "D2")]
+ggpairs(striking.attributes, ggplot2:: aes(color=patient.data$status, alpha = 0.05), progress = FALSE) + labs(caption = "Pair plot showing correlations between six attributes with generally high (dis)similarity\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                          
+```
+Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. 
+
+
+**Retrospective**
+
+The six attributes show low differences in the statuses or negative correlations. Four attributes have been found with larger differences, which might indicate that these combinations can be used for distinguishing.
 
 \pagebreak
-## Testing differences in dataset
 
-&nbsp;
-
-After observing several differences and correlations between different attributes, it is important to find out if these relations are really significant.
-
-&nbsp;
-
-
-First of all how different are the sick values of each attribute against their healthy values? Each attribute will be tested with a Welch two-sample t-test. The data is copied to an csv file for clearer representation of the data.
-
-```{r, comment="|"}
-Welch.t.test <- function(data) {
-  for (i in 1:ncol(data)) {
-    if (is.numeric(data[, i])) {
-      sick <- data[, i][data$status == "sick"]
-      healthy <- data[, i][data$status == "healthy"]
-      cat(colnames(data)[i], ",",  t.test(sick, healthy)$p.value, "\n\n")
-      
-    }
-  }
-}
-
-#Welch.t.test(patient.data), "p.values")
-pValues <- read.csv("p.values", header = TRUE, sep = ",")
-#data.Pvalues <- data.frame(pValues, is_significant = c(apply(pValues, pValues$p.values < 0.05)))
-#pander:pander(data.pValues)
-```
 
 ---
 
-The p-values smaller that alpha = 0.05 show significant difference between the groups sick and healthy. A higher difference offers the assumption that these attributes may differentiate a healthy person from a person with PD.
-
-Earlier it became clear from the boxplots of attributes MDVP.Flo/Fo and Fhi that on average the sick values were higher than the healthy values. The first three p-values affirm that observation. Since the p-values are below 0.05 there is a significant difference between the statuses.
 
 
-**Retrospective**
-All attributes show significant differences between the statuses though some more extreme than others. Those more extreme indicate more difference and are therefore more interesting for steps later in diagnosing.
-
-\pagebreak
 
 
 ```{=tex}
@@ -578,6 +592,8 @@ All attributes show significant differences between the statuses though some mor
 \bibitem{Dysphonic voice analysis}
 Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
 
+\bibitem{Indeed negative correlation}
+Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
   
 \end{thebibliography}
 ```
