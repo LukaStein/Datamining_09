@@ -184,7 +184,9 @@ D2.PPE <- 23:24
 To find out if NHR and HNR correlate oppositely to one another a pairwise plot is made.
 
 ```{r}
-ggpairs(patient.data[NHR.HNR])
+ggpairs(patient.data[NHR.HNR]) + labs(title = "Correlation between NHR and HNR") + xlab("Values of instances") +
+                                      ylab("Amount of instances per value") + 
+                      theme(axis.title.x = element_text(vjust=-0.5), axis.title.y = element_text(vjust=1))
 ```
 
 The two attributes correlate to each other oppositely, though their values are not the exact opposites. There are too many points that deviate from the downwards curve that the data moves in. An explanation might be that the formulas to calculate the two attributes differ from each other, thus not result in exact opposite values.

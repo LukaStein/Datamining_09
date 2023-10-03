@@ -2,7 +2,7 @@
 title: "Diagnostiseren Parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +11,71 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Resultaten
 
+### Volledigheid
+
+Het csv bestand was volledig en er waren geen NA waarden. Daarom hoefden er geen beslissingen genomen worden om waarden te verwijderen. Het bestand bestaat uit 24 kolommen en 195 rijen. Van deze kolommen zijn er 22 numeriek en twee nominaal, namelijk de namen van de patiënten en interessanter de statussen (levels) gezond (geen Parkinson) en ziek (Parkinson patient). Zes kolommen hebben eenheden, namelijk Hertz, procent, miliseconden en decibel; zoals eerder besproken in de inleiding.
+
+De rijen zijn verdeeld in 48 gezonden instanties en 147 PD patiënten instanties. Deze zijn in een barplot hieronder te zien.
+
+ ![](Plots/barplot.png)
+
+ **Figuur 1** Barplot dat de aantallen per levels laat zien. Op de x-as zijn de statussen gezond (healthy) en sick(PD patiënt) en op de y-as is de hoeveelheid uitgedrukt in mensen.
+ 
+Zoals te zien in figuur 1 zijn er bijna drie keer zo veel zieken mensen dan gezonden mensen in de data set. Vanwege dit feit moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha 0.05 te vermenigvuldigen met het aantal rijen.
+
+
+### Attributen observeren
+
+Uit de samenvatting van de data vielen attributen NHR (noise-to-harmonics ratio) en HNR (harmonics-to-noise ratio) op.
+Deze hebben namelijk waarde die bijna tegenover elkaar lijken te staan, deze zijn te zien in de bijlage bij het samenvattende tabel. Om na te gaan of er inderdaad een verband is tussen de twee wordt er een 'ggpairs' plot gemaakt. Deze plot methode maakt een matrix van de ontvangen attributen en kijkt naar hoe de waarden zijn opgebouwd en vergelijkt deze met elkaar. Dit kan ook wel het gedrag van de gemeten data worden genoemd en de vergelijking wordt uitgedrukt in een correlatie coëfficiënt. Deze ligt tussen 1 (positieve feedback in gedrag), naar nul (weinig tot geen feedback in gedrag) tot -1 (negatieve feedback in gedrag).
+
+ ![](Plots/NHR.png)
+
+**Figuur 2** GGpairs plot van attributen NHR en HNR. Op de x-as zijn de groottes van de gemeten waarden en op de y-as de hoeveelheid waarden per grootte. Links boven en rechts onder zijn deze hoeveelheden geplot. Links onder is de correlatie dat in een niet vloeiende boog van links boven naar rechts onder loopt. Rechts boven staat het correlatie coëfficient.
+
+
+In figuur 2 is te zien dat de boog afloopt, dit geeft aan dat er een negatieve correlatie is. Het feit dat deze niet vloeiend loopt is terug te zien in het correlatie coëfficiënt van -0.714. Dus zijn de gemeten waarden niet exact omgekeerd van elkaar, een verklaring kan zijn dat de formules gebruikt voor het meten niet evenredig omgekeerd zijn.
+
+
+
+Verder zijn er boxplots gemaakt per level van drie MDVP attributen met eenheid Hertz (Hz). 
+
+ ![](Plots/Boxplots.png)
+**Figuur 3** Attributen van metingen MDVP in Hertz per status. Op de x-as staan de attributen en op de y-as de frequenties (Hz).
+
+In figuur 3 hebben gezonde mensen hogere frequenties dan mensen met PD.
+
+
 Uit het observeren van alle attributen als histogrammen werd het duidelijk dat 14 attributen niet normaal verdeeld waren.
-Daarom zijn deze met log10 getransformeerd en met succes vertoonden ze daarna wel normaal verdelingen. 
+Daarom zijn deze met log10 getransformeerd en met succes vertoonden ze daarna wel normaal verdelingen. Als voorbeeld zijn worden de histogrammen van attributen MDVP getoond, omdat deze veel data naar links verdeeld hadden.
+
+ ![](Plots/stapel_histogram.png)
+ **Figuur 4** Stapel histogrammen van MDVP attributen voor en na log-transformatie. Op de x-as staat de verdeling per attribuut en op de y-as de grootte van de gemeten waarden. Rood is gezond en blauw is ziek.
+ 
+In figuur 4 is te zien dat na log-tranformatie de data naar het midden verschuift.
+
+
+
+Vervolgens zijn er drie correlatie matricen gemaakt om de data op te delen en te vergelijken. In de onderstaande plot staat de tweede helft van alle numerieke attributen.
+
+ ![](Plots/heatmap.png)
+ ![](Plots/stapel_histogram.png)
+
+**Figuur 5** Correlatie heatmap van tweede helft van de dataset. Op zowel de x-as als y-as staan attributen die hun eigen data representeren. De coëfficiënten worden verdeeld van paars (negatief één) naar wit (neutraal nul) tot rood (positief één).
+
+In de heatmap is te zien hoe erg de attributen waarden op elkaar reageren qua gedrag. Links onder in zijn de Shimmer attributen met correlaties van bijna één, dus meetwaarden met erg vergelijkbare oploop. Attributen HNR en NHR zijn paars, deze bevestigen hun negatieve correlatie. Verder zijn er waarden rond nul te zien en heel veel tussen nul en één in.
+
+
+Om meer beeld te krijgen van het gedrag tussen data dat correlatie aantoont kunnen er grotere GGpairs grafieken gemaakt worden waar de statussen zichtbaar zijn. In de volgende grafiek zijn attributen gekozen die of negatieve correlaties vertoonden of juist erg positief.
+
+ ![](Plots/paar_plot.png)
+**Figuur 6** Correlatie paar plot tussen verschillende attributen en de twee statussen. Op de x-as de grootte van hun waarden en op de y-as verschillende weergaves om verschillen of correlaties aan te tonen.
+
+In figuur 6 zijn drie typen weergaven te zien. Links onder in een driehoek met puntgrafieken. Het gedrag van de correlaties is hieruit af te lezen. Bijvoorbeeld de vijfde van de eerste kolom PPE gaat van links onder naar rechts boven. Die vertoond een postieve correlatie. Daar rechts naast is een grafiek met meer een wolk spreiding van links boven naar rechts onder. Deze vertoond negatieve correlatie. 
+
+Verder wordt links onder van rechts onder gescheiden door berg grafieken die de overlapping tussen statussen per attribuut weergeeft. In andere woorden hoe erg de waarden op elkaar lijken die gemeten zijn. In D2 zit er weinig verschil tussen de meetwaarden van de groepen, maar bij PPE lijkt juist een veel groter verschil.
+
+Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle correlatie coëfficiënt waarden tussen paren van  attributen en hun statussen. Spread1 en PPE heeft een erg positieve correlatie van 0.963 en de groepen verschillen maar met acht. Deze attributen reageren dus erg positief op elkaar. Daartegenover staan Shimmer.APQ3 en DFA met een correlatie vlakbij nul. Er is weinig reactie op elkaar en ook amper verschil tussen de groepen. Tevens hebben D2 en HNR juist een negatieve correlatie, ze reageren juist van elkaar weg.
+
 
 ## Discussie
