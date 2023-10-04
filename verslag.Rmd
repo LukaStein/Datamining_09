@@ -2,7 +2,9 @@
 title: "Diagnostiseren Parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
-output: word_document
+output:
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +23,7 @@ De rijen zijn verdeeld in 48 gezonden instanties en 147 PD patiënten instanties
 
  **Figuur 1** Barplot dat de aantallen per levels laat zien. Op de x-as zijn de statussen gezond (healthy) en sick(PD patiënt) en op de y-as is de hoeveelheid uitgedrukt in mensen.
  
-Zoals te zien in figuur 1 zijn er bijna drie keer zo veel zieken mensen dan gezonden mensen in de data set. Vanwege dit feit moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha 0.05 te vermenigvuldigen met het aantal rijen.
+Zoals te zien in figuur 1 zijn er bijna drie keer zo veel opnames van zieke mensen dan gezonden mensen in de data set. 
 
 
 ### Attributen observeren
@@ -34,7 +36,7 @@ Deze hebben namelijk waarde die bijna tegenover elkaar lijken te staan, deze zij
 **Figuur 2** GGpairs plot van attributen NHR en HNR. Op de x-as zijn de groottes van de gemeten waarden en op de y-as de hoeveelheid waarden per grootte. Links boven en rechts onder zijn deze hoeveelheden geplot. Links onder is de correlatie dat in een niet vloeiende boog van links boven naar rechts onder loopt. Rechts boven staat het correlatie coëfficient.
 
 
-In figuur 2 is te zien dat de boog afloopt, dit geeft aan dat er een negatieve correlatie is. Het feit dat deze niet vloeiend loopt is terug te zien in het correlatie coëfficiënt van -0.714. Dus zijn de gemeten waarden niet exact omgekeerd van elkaar, een verklaring kan zijn dat de formules gebruikt voor het meten niet evenredig omgekeerd zijn.
+In figuur 2 is te zien dat de boog afloopt, dit geeft aan dat er een negatieve correlatie is. Het feit dat deze niet vloeiend loopt is terug te zien in het correlatie coëfficiënt van -0.714. Dus zijn de gemeten waarden niet exact omgekeerd van elkaar.
 
 
 
@@ -43,7 +45,17 @@ Verder zijn er boxplots gemaakt per level van drie MDVP attributen met eenheid H
  ![](Plots/Boxplots.png)
 **Figuur 3** Attributen van metingen MDVP in Hertz per status. Op de x-as staan de attributen en op de y-as de frequenties (Hz).
 
-In figuur 3 hebben gezonde mensen hogere frequenties dan mensen met PD.
+In figuur 3 hebben gezonde mensen hogere frequenties (F = 150>200) dan mensen met PD (F= 150<200). Uit de EDA werd dit nog sterker bevestigd met ANOVA toetsen die de volgende p-waarden gaven: 
+
+Fo.Hz =  3.121919e-08 
+Fhi.Hz =  0.02027567 
+Flo.Hz =  4.197004e-08
+
+Attributes | P-values 
+------------- | ------------- 
+Fo.Hz | 3.121919e-08  
+Fhi.Hz | 0.02027567
+Flo.Hz | 4.197004e
 
 
 Uit het observeren van alle attributen als histogrammen werd het duidelijk dat 14 attributen niet normaal verdeeld waren.
@@ -59,7 +71,6 @@ In figuur 4 is te zien dat na log-tranformatie de data naar het midden verschuif
 Vervolgens zijn er drie correlatie matricen gemaakt om de data op te delen en te vergelijken. In de onderstaande plot staat de tweede helft van alle numerieke attributen.
 
  ![](Plots/heatmap.png)
- ![](Plots/stapel_histogram.png)
 
 **Figuur 5** Correlatie heatmap van tweede helft van de dataset. Op zowel de x-as als y-as staan attributen die hun eigen data representeren. De coëfficiënten worden verdeeld van paars (negatief één) naar wit (neutraal nul) tot rood (positief één).
 
@@ -79,3 +90,13 @@ Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle corre
 
 
 ## Discussie
+
+Vanwege het feit dat de hoeveelheid zieke mensen bijna drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha 0.05 te vermenigvuldigen met het aantal rijen. Al hoewel het voor onderzoek en modeltraining genoeg data is zou als vervolg onderzoek een grotere data set gebruikt kunnen worden om zekerder te zijn van alle observaties.
+
+
+In figuur 2 is er sprake van geen volledige negatieve correlatie; een verklaring kan zijn dat de formules gebruikt voor het meten van HNR en NHR niet evenredig omgekeerd zijn. Als voorbeeld 2log(8) = 3 en 2^3 = 8, de formules zijn evenredig omgekeerd verbonden aan elkaar.
+
+In figuur 3 werd het duidelijk dat de eerste MDVP attributen met status "Gezond" significant hogere frequenties vertoonden dan die met status "PD patiënt". Het feit dat deze opnames op zichzelf al zo een groot onderscheidt maken tussen de statussen, geeft de gedachte dat ze gebruikt kunnen worden als knopen in een modeltraining om de data op te splitsen. OneR zou in dat geval interessant zijn om deze te testen, aangezien het algoritme de attribuut uitkiest die de data het beste splitst vergeleken met de andere attributen.
+
+Figuur 4 laat zien dat log10 transformeren effectief de data normaliseerd. Het is interessant om deze getransformeerde data in een apart bestand te zetten, om te zien of de attributen met outliers van voor het log-transformeren anders worden beoordeeld door het model dan een dataset met wel getransformeerde data. Een argument hiervoor is dat outliers meer verspreid zijn en daarom zal de splitwaarde van de statussen anders zijn, dan wanneer de data dichter bij elkaar is gebracht.
+
