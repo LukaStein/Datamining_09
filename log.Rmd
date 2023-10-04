@@ -56,7 +56,7 @@ by header and is comma separated.
 &nbsp;
 
 ```{r}
-patient.data <- read.table("parkinsons.data", header = T, sep = ",")
+patient.data <- read.table("parkinsons_data.csv", header = T, sep = ",")
 pander::pander(head(patient.data), caption = "First look of datastructure")
 ```
 
@@ -71,7 +71,7 @@ There are 2 nominal and 22 numeric columns.
 \pagebreak
 
 Showing the amount of recordings of healthy people and sick people. The original labels
-of one and zero are replaced respectfully with sick and healthy 
+of one and zero are replaced respectfully with sick and healthy. The new dataframe is written to a csv file for model training later on.
 
 ```{r}
 # Adding labels instead of "1" and "0"
@@ -446,31 +446,25 @@ After log-transforming attribute "PPE" the data has shifted more towards the cen
 **Retrospective**
 
 Fourteen out of the 22 numeric attributes are not normally distributed. After log-transforming it with fold ten, it instead seems to spread more evenly.
-These new normalised data will be added to the data set, for processing later on.
+Realizing the log10 really changes the distributions, the entire data will be log-transformed for processing later. When comparing the original dataset with this new dataset the fourteen attributes found will be observed more carefully.
 
 \pagebreak
 
 
-Writing log-transformed data to new file for model training later.
+All numeric attributes are log10-transformed for later model processing. Attribute spread1 remains unchanged, because it has negative values that are not suitable for log-tranformating.
 
 
 ```{r}
-logTransformed.patient.data <- data.frame(log.MDVP.Fhi.Hz. = log(patient.data$MDVP.Fhi.Hz.),
-                                    log.MDVP.Flo.Hz. = log(patient.data$MDVP.Flo.Hz.),
-                                    log.MDVP.Jitter = log(patient.data$MDVP.Jitter...),
-                                    log.MDVP.Jitter.Abs. = log(patient.data$MDVP.Jitter.Abs.),
-                                    log.MDVP.RAP = log(patient.data$MDVP.RAP),
-                                    log.MDVP.PPQ = log(patient.data$MDVP.PPQ),
-                                    log.MDVP.Shimmer = log(patient.data$MDVP.Shimmer),
-                                    log.MDVP.Shimmer.dB. = log(patient.data$MDVP.Shimmer.dB.),
-                                    log.Shimmer.APQ3 = log(patient.data$Shimmer.APQ3),
-                                    log.Shimmer.APQ5 = log(patient.data$Shimmer.APQ5),
-                                    log.MDVP.APQ = log(patient.data$MDVP.APQ),
-                                    log.Shimmer.DDA = log(patient.data$Shimmer.DDA),
-                                    log.NHR = log(patient.data$NHR),
-                                    status = patient.data$status)
-
-write.csv(logTransformed.patient.data, file = "weka.patient.data")
+# preparing dataset with scaled log data and an unchanged spread1 column.
+data.for.scaling <- subset(patient.data, select = c(-name, -status, -spread1))
+logTransformed.patient.data.left <- data.frame(log(data.for.scaling[1:18]), spread1 = patient.data$spread1)
+logTransformed.patient.data.right <- data.frame(log(data.for.scaling[19:21]))
+logTransformed.patient.data <- combine(logTransformed.patient.data.left, logTransformed.patient.data.right)
+                                          
+logTransformed.patient.data.left
+logTransformed.patient.data.right
+logTransformed.patient.data
+write.csv(logTransformed.patient.data, file = "log_patient_data.csv")
 ```
 
 &nbsp;
@@ -483,10 +477,9 @@ A correlation heatmap using ggcorplot. It takes a matrix of the numeric data en 
 &nbsp;
 
 ```{r}
-# preparing dataset containing only type numeric
+# preparing dataset containing only of type numeric
 data.numeric <- subset(patient.data, select = c(-name, -status))
-
-# creating two matrices
+# creating three matrices
 corr.matrix1 <- cor(data.numeric[1:12])
 corr.matrix2 <- cor(data.numeric[11:22])
 corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
@@ -584,6 +577,28 @@ The six attributes show low differences in the statuses or negative correlations
 
 
 ---
+
+## Exploring Weka algorithms on smaller datasets
+
+This testing fase is executed in the Experimenter environment of Weka. By pressing "New" in the topright corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose" several algorithms can be added for comparison. Under "Experiment Type" the kind of training can be chosen i.e. training dataset or cross validation. 
+
+Next go to "Run" and press start, for this run the error "Class attribute is not nominal!" appeared. This might be because it's expected that the class attribute is the last column of the dataframe. This is tested by moving the status column to the end.
+
+```{r}
+# Excluding the rownames
+edit.patientData <- data.frame(patient.data[2:24])
+laatste.kolom <- edit.patientData$PPE
+edit.patientData$PPE <- edit.patientData$status
+edit.patientData$status <- laatste.kolom
+
+colnames(edit.patientData)[23] <- "status"
+colnames(edit.patientData)[17] <- "PPE"
+# Writing dataframe to csv file
+write.csv(edit.patientData, file = "patient_data_labels.csv")
+```
+
+When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
+
 
 
 
