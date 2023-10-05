@@ -542,12 +542,15 @@ ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status, a
 
 Attributes Shimmer.APQ3 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. The higher the correlation means the more positive the attributes react onto each other to increase their values. This can be seen in the graphs that move from the zero corner to the top right corner.
 
+Also what's quite remarkable is that the majority of the scatterplots show that healthy values cluster against the more spread lines of the sick values. This mainly occurs in graphs that correlates positively. A way of interpreting the clustering is that the values of healthy are different with a clear border from the sick values. Another idea is that the fact that most healthy values cluster, it means that all those values react according to the correlation coëfficiënt. For example all values of healthy between Shimmer.APQ5 and MDVP.APQ impact the sick values to increase in value. 
+
 
 Does behaviour of how instances move in a chart represent the similarity in data between attributes? This will be tested with a welch t-test with attributes Shimmer.APQ3 and MDVP.Shimmer.
 
 ```{r}
 t.test(patient.data$Shimmer.APQ3,  patient.data$MDVP.Shimmer)
 ```
+
 Likewise to the attributes with a negative correlation, these attributes with a high positive correlation have very dissimilar data with a p-value of 2.2e-16 < 0.05. This answers the question that correlation rather shows data's behaviour than similarity of values.
 
 
@@ -566,7 +569,7 @@ striking.attributes <- data.numeric[,c("PPE", "HNR", "spread1", "DFA", "Shimmer.
 ggpairs(striking.attributes, ggplot2:: aes(color=patient.data$status, alpha = 0.05), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six attributes with generally high (dis)similarity\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                          
 ```
 
-Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. 
+Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. PPE and spread1 show the cleanest positive correlation in the plot with a clear difference in statuses visually. It's is interesting to find out if observing the correlation coëfficiënts is better or not than observing the scatterplots for choosing a pair that might be good for diagnosing.
 
 
 **Retrospective**
