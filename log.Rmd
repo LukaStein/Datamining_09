@@ -3,8 +3,8 @@ title: "Logbook parkinson dysphonia"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -60,6 +60,8 @@ patient.data <- read.table("parkinsons_data.csv", header = T, sep = ",")
 pander::pander(head(patient.data), caption = "First look of datastructure")
 ```
 
+&nbsp;
+
 Verify if everything is read correctly.
 
 ```{r}
@@ -78,14 +80,16 @@ of one and zero are replaced respectfully with sick and healthy. The new datafra
 patient.data$status[patient.data$status == "1"] <- "sick"
 patient.data$status[patient.data$status == "0"] <- "healthy"
 
+# preparing factor of levels
+levels.of.status <- factor(patient.data$status)
 
-amount.sick.recordings <- sum(patient.data$status == "sick")
-amount.healthy.recordings <- sum(patient.data$status == "healthy")
-cat(" There are [", amount.sick.recordings, "] recordings of Parkinson patients.\n",
-    "There are [", amount.healthy.recordings, "] recordings of healthy people.\n",
-    "In total there are: [", amount.sick.recordings + amount.healthy.recordings, "] recordings.")
+amount.sick.recordings <- sum(levels.of.status == "sick")
+amount.healthy.recordings <- sum(levels.of.status == "healthy")
+cat(amount.sick.recordings, amount.healthy.recordings, amount.sick.recordings + amount.healthy.recordings)
 ```
-
+There are 147 recordings of Parkinson patient and 48 recordings of healthy people.
+In total there are: 195 recordings.
+ 
 \pagebreak
 
 In order to make it more clear what the data means, the columns are put into a table.
@@ -197,13 +201,13 @@ The two attributes correlate to each other oppositely, though their values are n
 Boxplotting the data to show the differences for sick people and healthy people in MDVP measured attributes containing large numbers. These values are expressed in Hertz measuring the vocal frequencies (Fo=average, Fhi=maximum and Flo=minimum). It would be very curious to see if vocal frequencies are enough to distinguish sick from healthy people.
 
 ```{r}
-Fo <- patient.data$MDVP.Fo.Hz.[patient.data$status == "sick"]
-Fhi <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "sick"]
-Flo <- patient.data$MDVP.Flo.Hz.[patient.data$status == "sick"]
+Fo <- patient.data$MDVP.Fo.Hz.[levels.of.status == "sick"]
+Fhi <- patient.data$MDVP.Fhi.Hz.[levels.of.status == "sick"]
+Flo <- patient.data$MDVP.Flo.Hz.[levels.of.status == "sick"]
 
-Fo.healthy <- patient.data$MDVP.Fo.Hz.[patient.data$status == "healthy"]
-Fhi.healthy <- patient.data$MDVP.Fhi.Hz.[patient.data$status == "healthy"]
-Flo.healthy <- patient.data$MDVP.Flo.Hz.[patient.data$status == "healthy"]
+Fo.healthy <- patient.data$MDVP.Fo.Hz.[levels.of.status == "healthy"]
+Fhi.healthy <- patient.data$MDVP.Fhi.Hz.[levels.of.status == "healthy"]
+Flo.healthy <- patient.data$MDVP.Flo.Hz.[levels.of.status == "healthy"]
 
 difference.in.nums.sick <- data.frame(
                                  labs = c(rep("Fo.sick", length(Fo)),
@@ -459,12 +463,11 @@ All numeric attributes are log10-transformed for later model processing. Attribu
 data.for.scaling <- subset(patient.data, select = c(-name, -status, -spread1))
 logTransformed.patient.data.left <- data.frame(log(data.for.scaling[1:18]), spread1 = patient.data$spread1)
 logTransformed.patient.data.right <- data.frame(log(data.for.scaling[19:21]))
-logTransformed.patient.data <- combine(logTransformed.patient.data.left, logTransformed.patient.data.right)
+combined.log.data <- merge(logTransformed.patient.data.left, logTransformed.patient.data.right)
                                           
-logTransformed.patient.data.left
-logTransformed.patient.data.right
-logTransformed.patient.data
-write.csv(logTransformed.patient.data, file = "log_patient_data.csv")
+logTransformed.patient.data <- data.frame(combined.log.data, 
+                                         status = patient.data$status)
+#write.csv(logTransformed.patient.data, file = "log_patient_data.csv")
 ```
 
 &nbsp;
@@ -516,7 +519,7 @@ Several attributes are very similar to each other. Some show their data to be fa
 Pair plot showing if attributes form pairs thus have correlating data. Only the groups that have correlations above 0.9 are plotted to see if their statuses are also similar. The first group contains the attributes [MDVP.Jitter... MDVP.Jitter.Abs. MDVP.RAP MDVP.PPQ Jitter.DDP]. 
 
 ```{r}
-ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=patient.data$status, alpha = 0.5), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=levels.of.status, alpha = 0.5), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
         axis.text.y = element_blank())                                                                                                                                                                
 ```
 
@@ -537,7 +540,7 @@ There is a very strong significant difference between the attributes of 2.2e-16 
 The shimmer attributes correlated very strongly, therefore it's assumed the statuses also have very similar values. The attributes [MDVP.Shimmer MDVP.Shimmer.dB. Shimmer.APQ3 Shimmer.APQ5 MDVP.APQ Shimmer.DDA] are going to be compared.
 
 ```{r}
-ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=patient.data$status, alpha = 0.5), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
+ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=levels.of.status, alpha = 0.5), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six MDVP.shimmer attributes\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                                  
 ```
 
 Attributes Shimmer.APQ3 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. The higher the correlation means the more positive the attributes react onto each other to increase their values. This can be seen in the graphs that move from the zero corner to the top right corner.
@@ -566,7 +569,7 @@ Instead of looking at how similar data performs on the statuses a final pair plo
 
 ```{r}
 striking.attributes <- data.numeric[,c("PPE", "HNR", "spread1", "DFA", "Shimmer.APQ3", "D2")]
-ggpairs(striking.attributes, ggplot2:: aes(color=patient.data$status, alpha = 0.05), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six attributes with generally high (dis)similarity\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                          
+ggpairs(striking.attributes, ggplot2:: aes(color=levels.of.status, alpha = 0.05), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six attributes with generally high (dis)similarity\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                          
 ```
 
 Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. PPE and spread1 show the cleanest positive correlation in the plot with a clear difference in statuses visually. It's is interesting to find out if observing the correlation coëfficiënts is better or not than observing the scatterplots for choosing a pair that might be good for diagnosing.
@@ -597,7 +600,7 @@ edit.patientData$status <- laatste.kolom
 colnames(edit.patientData)[23] <- "status"
 colnames(edit.patientData)[17] <- "PPE"
 # Writing dataframe to csv file
-write.csv(edit.patientData, file = "patient_data_labels.csv")
+#write.csv(edit.patientData, file = "patient_data_labels.csv")
 ```
 
 When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
@@ -605,7 +608,7 @@ When running the experimenter with the new csv ordered file no errors occur. Thu
 
 
 
-
+\pagebreak
 
 ```{=tex}
 \begin{thebibliography}{9}
