@@ -461,13 +461,11 @@ All numeric attributes are log10-transformed for later model processing. Attribu
 ```{r}
 # preparing dataset with scaled log data and an unchanged spread1 column.
 data.for.scaling <- subset(patient.data, select = c(-name, -status, -spread1))
+data.for.scaling
 logTransformed.patient.data.left <- data.frame(log(data.for.scaling[1:18]), spread1 = patient.data$spread1)
 logTransformed.patient.data.right <- data.frame(log(data.for.scaling[19:21]))
-combined.log.data <- merge(logTransformed.patient.data.left, logTransformed.patient.data.right)
-                                          
-logTransformed.patient.data <- data.frame(combined.log.data, 
-                                         status = patient.data$status)
-#write.csv(logTransformed.patient.data, file = "log_patient_data.csv")
+combined.log.data <- data.frame(logTransformed.patient.data.left, logTransformed.patient.data.right, status = patient.data$status)
+write.csv(combined.log.data, file = "log_patient_data.csv", row.names = FALSE)
 ```
 
 &nbsp;
@@ -584,29 +582,146 @@ The six attributes show low differences in the statuses or negative correlations
 
 ---
 
-## Exploring Weka algorithms on smaller datasets
+## Exploring Weka algorithms on dataset
 
-This testing fase is executed in the Experimenter environment of Weka. By pressing "New" in the topright corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose" several algorithms can be added for comparison. Under "Experiment Type" the kind of training can be chosen i.e. training dataset or cross validation. 
+First let's see in the Explorer mode how several algorithms perform on the original data.
+
+ZeroR
+
+ZeroR predicts class value: sick
+Correctly Classified Instances         147               75.3846 %
+Incorrectly Classified Instances        48               24.6154 %
+
+As expected does ZeroR a fair guess what rows are labeled sick.
+
+&nbsp;
+
+OneR
+
+PPE:
+	< 0.1044335	-> healthy
+	< 0.1165645	-> sick
+	< 0.129713	-> healthy
+	>= 0.129713	-> sick
+  (175/195 instances correct)
+
+Correctly Classified Instances         168               86.1538 %
+Incorrectly Classified Instances        27               13.8462 %
+
+OneR does better at guessing. Though its thresholds aren´t very logical. For attribute PPE it says
+two times healthy and sick constantly higher than the previous. There isn't a real boundary.
+
+&nbspl
+
+The last Explored mode will be J48 pruned tree
+
+Correctly Classified Instances         157               80.5128 %
+Incorrectly Classified Instances        38               19.4872 %
+
+A better view is constructed of dividing the levels since more attributes are shown.
+
+&nbsp;
+
+For example 
+
+MDVP.Flo.Hz. <= 100.209: healthy (2.0)
+|   |   |   |   |   |   |   MDVP.Flo.Hz. > 100.209: sick (6.0)
+
+MDVP.Flo.Hz. shows a clear threshold
+
+&nbsp;
+
+Another example
+
+spread2 <= 0.213353: healthy (12.0)
+|   |   |   spread2 > 0.213353: sick (3.0)
+
+spread2 also gives a clear threshold
+
+Even though the J48 tree is less accurate it does give more predictions. Let's move on to the Experimenter environment to compare more algorithms.
+
+
+This testing fase is executed in the Experimenter environment of Weka. By pressing "New" in the topright corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose"; several algorithms can be added for comparison. Under "Experiment Type" the kind of training can be chosen i.e. training dataset or cross validation. 
 
 Next go to "Run" and press start, for this run the error "Class attribute is not nominal!" appeared. This might be because it's expected that the class attribute is the last column of the dataframe. This is tested by moving the status column to the end.
 
 ```{r}
 # Excluding the rownames
-edit.patientData <- data.frame(patient.data[2:24])
-laatste.kolom <- edit.patientData$PPE
-edit.patientData$PPE <- edit.patientData$status
-edit.patientData$status <- laatste.kolom
-
-colnames(edit.patientData)[23] <- "status"
-colnames(edit.patientData)[17] <- "PPE"
+edit.patientData <- data.frame(patient.data[, c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,24,19,20,21,22,23,18)])
 # Writing dataframe to csv file
-#write.csv(edit.patientData, file = "patient_data_labels.csv")
+write.csv(edit.patientData, file = "patient_data_labels.csv", row.names = FALSE)
 ```
 
 When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
 
 
+For the first test the algorithms Ibk, J48, ZeroR, OneR and NaiveBayes are tested with the default parameters
 
+Dataset                   (1) trees.J4 | (2) bayes (3) lazy. (4) rules (5) rules
+--------------------------------------------------------------------------------
+patient_data_labels      (100)   84.79 |   70.14 *   95.91 v   75.39 *   87.70  
+--------------------------------------------------------------------------------
+                               (v/ /*) |   (0/0/1)   (1/0/0)   (0/0/1)   (0/1/0)
+                               
+                               
+NaiveBayes is the least accurate and IBk is the most.
+
+
+What would happen if for J48 the unpruning is set to true with a minNumObj to three? Also for OneR the bucketsize is set to 20.
+
+Dataset                   (1) trees.J48 '-U  | (2) bayes.Naive (3) lazy.IBk '- (4) rules.ZeroR (5) rules.OneR 
+--------------------------------------------------------------------------------------------------------------
+patient_data_labels      (100)   84.83(7.85) |   70.14(9.30) *   95.91(4.52) v   75.39(1.87) *   85.10(5.54)  
+--------------------------------------------------------------------------------------------------------------
+                                     (v/ /*) |         (0/0/1)         (1/0/0)         (0/0/1)         (0/1/0)
+
+
+J48 seems to increase in accuracy with a small amount, which means that either an increasing group of objects results in a better outcome or that a part is pruned that actually later become more accurate. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where a best attribute is chosen from. The less buckets are made in a dataset the chance then increases for errors to be made.
+
+
+Next lets include the log dataset and see what dataset is handled better. An extra dataset can be added again under "Add new...".
+
+Dataset                   (1) rules.Ze | (2) rules (3) trees (4) lazy. (5) bayes
+--------------------------------------------------------------------------------
+patient_data_labels      (100)   75.39 |   87.70 v   84.79 v   95.91 v   70.14  
+log_patient_data         (100)   75.39 |   87.81 v   84.63 v   93.03 v   72.75  
+--------------------------------------------------------------------------------
+                               (v/ /*) |   (2/0/0)   (2/0/0)   (2/0/0)   (0/2/0)
+                               
+                               
+For the log patient data J48 and IBk are a bit better This might be because the data is more similar thus less branches and classification lines are made.
+Though what dataset is significantly better? Be applying Swap a * behind the algorithm should show if that's the case.
+
+Dataset                   (1) patient_ | (2) log_p
+--------------------------------------------------
+rules.ZeroR '' 4805554146(100)   75.39 |   75.39  
+rules.OneR '-B 6' -345942(100)   87.70 |   87.81  
+trees.J48 '-C 0.25 -M 2' (100)   84.79 |   84.63  
+lazy.IBk '-K 1 -W 0 -A \"(100)   95.91 |   93.03 *
+bayes.NaiveBayes '' 59952(100)   70.14 |   72.75  
+--------------------------------------------------
+                               (v/ /*) |   (0/4/1)
+                               
+                               
+It's clear that only IBk does significantly better on the log_p data. All other algorithms don't do any better significantly. This means that the log data is better to use for differentiating the levels.
+
+The run time data can also be saved to csv by choosing CSV file under "Results destination", giving the desired location and then run the setup again.
+Let's see what the run data looks like
+
+```{r}
+experimenter.two.files <- read.csv("Experimenter/default_two_files.csv", header = T, sep = ",")
+head(experimenter.two.files)
+```
+
+There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Then it's show how many number of times the levels are guessed correctly and incorrectly. The means of that data is shown in the tables above. Additionally to those tables a histogram is made of the amount of true positives, false positives, false negatives and true negatives.
+
+```{r}
+ggplot(experimenter.two.files, aes(x=Key_Scheme, y=Num_true_positives)) + geom_histogram(color = "black", bins = 39) + 
+  ylab("Number of TPs") + theme(axis.title.y = element_text(size = 8))
+
+ggplot(patient.data, aes(x = Key_Scheme, y = Num_true_positives)) + geom_bar() + xlab("Status") + 
+  ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
+```
 
 \pagebreak
 
