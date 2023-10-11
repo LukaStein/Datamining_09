@@ -584,6 +584,8 @@ The six attributes show low differences in the statuses or negative correlations
 
 ## Exploring Weka algorithms on dataset
 
+### Explorer
+
 First let's see in the Explorer mode how several algorithms perform on the original data.
 
 ZeroR
@@ -613,7 +615,7 @@ two times healthy and sick constantly higher than the previous. There isn't a re
 
 &nbspl
 
-The last Explored mode will be J48 pruned tree
+The next Explored mode will be J48 pruned tree
 
 Correctly Classified Instances         157               80.5128 %
 Incorrectly Classified Instances        38               19.4872 %
@@ -640,6 +642,7 @@ spread2 also gives a clear threshold
 
 Even though the J48 tree is less accurate it does give more predictions. Let's move on to the Experimenter environment to compare more algorithms.
 
+### Experimenter
 
 This testing fase is executed in the Experimenter environment of Weka. By pressing "New" in the topright corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose"; several algorithms can be added for comparison. Under "Experiment Type" the kind of training can be chosen i.e. training dataset or cross validation. 
 
@@ -655,73 +658,123 @@ write.csv(edit.patientData, file = "patient_data_labels.csv", row.names = FALSE)
 When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
 
 
-For the first test the algorithms Ibk, J48, ZeroR, OneR and NaiveBayes are tested with the default parameters
+For the first test the algorithms Ibk, J48, ZeroR, OneR, RandomForest and NaiveBayes are tested with the default parameters and Weka settings.
 
-Dataset                   (1) trees.J4 | (2) bayes (3) lazy. (4) rules (5) rules
---------------------------------------------------------------------------------
-patient_data_labels      (100)   84.79 |   70.14 *   95.91 v   75.39 *   87.70  
---------------------------------------------------------------------------------
-                               (v/ /*) |   (0/0/1)   (1/0/0)   (0/0/1)   (0/1/0)
+Dataset                |   (1) rules.Zero | (2) rules.One |(3) bayes |(4) trees (J48) |(5) trees (RandomForest) |(6) lazy.
+log_patient_data       |  (100)   75.39 |   87.81 v |  72.75   |  84.63 v |  91.70 v |  93.03 v
+patient_data_labels    |  (100)   75.39 |   87.70 v |  70.14   |  84.79 v |  91.41 v |  95.91 v
+                       |        (v/ /*) |   (2/0/0) |  (0/2/0) |  (2/0/0) |  (2/0/0) |  (2/0/0)
+
                                
                                
-NaiveBayes is the least accurate and IBk is the most.
+NaiveBayes is the least accurate and IBk is the most, though the model IBk is overfitted with the default option of KNN = 1. RandomForest tries voting for better results, which is reflected with it's accuracy if ~ 91 percent.
+
+Next let's compare the default models with edited models. 
+
+What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? Also for OneR the bucketsize is set to 20. What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. Also by pressing Swap and then e.g. IBk (6) the models are compared to that model. The differences of those models with that model is shown with the (v) and less significant than that is the star (*) symbol.
 
 
-What would happen if for J48 the unpruning is set to true with a minNumObj to three? Also for OneR the bucketsize is set to 20.
-
-Dataset                   (1) trees.J48 '-U  | (2) bayes.Naive (3) lazy.IBk '- (4) rules.ZeroR (5) rules.OneR 
---------------------------------------------------------------------------------------------------------------
-patient_data_labels      (100)   84.83(7.85) |   70.14(9.30) *   95.91(4.52) v   75.39(1.87) *   85.10(5.54)  
---------------------------------------------------------------------------------------------------------------
-                                     (v/ /*) |         (0/0/1)         (1/0/0)         (0/0/1)         (0/1/0)
-
-
-J48 seems to increase in accuracy with a small amount, which means that either an increasing group of objects results in a better outcome or that a part is pruned that actually later become more accurate. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where a best attribute is chosen from. The less buckets are made in a dataset the chance then increases for errors to be made.
-
-
-Next lets include the log dataset and see what dataset is handled better. An extra dataset can be added again under "Add new...".
-
-Dataset                   (1) rules.Ze | (2) rules (3) trees (4) lazy. (5) bayes
---------------------------------------------------------------------------------
-patient_data_labels      (100)   75.39 |   87.70 v   84.79 v   95.91 v   70.14  
-log_patient_data         (100)   75.39 |   87.81 v   84.63 v   93.03 v   72.75  
---------------------------------------------------------------------------------
-                               (v/ /*) |   (2/0/0)   (2/0/0)   (2/0/0)   (0/2/0)
-                               
-                               
-For the log patient data J48 and IBk are a bit better This might be because the data is more similar thus less branches and classification lines are made.
-Though what dataset is significantly better? Be applying Swap a * behind the algorithm should show if that's the case.
-
-Dataset                   (1) patient_ | (2) log_p
+Dataset                   (1) log_pati | (2) patie
 --------------------------------------------------
 rules.ZeroR '' 4805554146(100)   75.39 |   75.39  
-rules.OneR '-B 6' -345942(100)   87.70 |   87.81  
-trees.J48 '-C 0.25 -M 2' (100)   84.79 |   84.63  
-lazy.IBk '-K 1 -W 0 -A \"(100)   95.91 |   93.03 *
-bayes.NaiveBayes '' 59952(100)   70.14 |   72.75  
+rules.OneR '-B 20' -34594(100)   85.00 |   85.10  
+rules.OneR '-B 6' -345942(100)   87.81 |   87.70  
+trees.J48 '-C 0.25 -M 2' (100)   84.63 |   84.79  
+trees.J48 '-U -M 3' -2177(100)   84.93 |   84.83  
+bayes.NaiveBayes '' 59952(100)   72.75 |   70.14  
+bayes.NaiveBayes '-batch-(100)   72.75 |   70.14  
+trees.RandomForest '-P 10(100)   91.70 |   91.41  
+lazy.IBk '-K 1 -W 0 -A (100)     93.03 |   95.91 v
+lazy.IBk '-K 20 -W 0 -A (100)    84.78 |   82.52  
 --------------------------------------------------
-                               (v/ /*) |   (0/4/1)
+                               (v/ /*) |   (1/9/0)
+
+First of all generally the log_patient data does better than the normal patient data. Though there are no real significant differences in accuracy, except for the overfitted IBk.
+
+J48 seems to increase in accuracy with a small amount with no pruning, which means that pruning removes some branches that are actually good. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where a best attribute is chosen from. The less buckets are made in a dataset the chance then increases for errors to be made. 
+
+NaiveBayes does exactly the same, therefore increasing the instances to process doesn't do anything significantly. IBk decreases in accuracy signifcantly which clearly shows it first was overfitted. This also means the most accurate model is RandomForest and the second best model is OneR. Since the lower the bucket size of OneR means more overfitting and a bucket size of twenty is only a bit less accurate than a bucket size of six, the edited OneR model will be used for feature selection later on.
+
+
+Next 
+
                                
-                               
-It's clear that only IBk does significantly better on the log_p data. All other algorithms don't do any better significantly. This means that the log data is better to use for differentiating the levels.
 
 The run time data can also be saved to csv by choosing CSV file under "Results destination", giving the desired location and then run the setup again.
-Let's see what the run data looks like
+Let's see what the run data looks like.
 
 ```{r}
 experimenter.two.files <- read.csv("Experimenter/default_two_files.csv", header = T, sep = ",")
 head(experimenter.two.files)
 ```
 
-There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Then it's show how many number of times the levels are guessed correctly and incorrectly. The means of that data is shown in the tables above. Additionally to those tables a histogram is made of the amount of true positives, false positives, false negatives and true negatives.
+There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Furthermore it shows how many number of times the levels are guessed correctly and incorrectly. The means of that data is also shown. From the columns with the amounts of true positives, false positives, false negatives and true negatives will be plotted per model. Showing those amounts gives a better display of the accuracy per model.
 
 ```{r}
-ggplot(experimenter.two.files, aes(x=Key_Scheme, y=Num_true_positives)) + geom_histogram(color = "black", bins = 39) + 
-  ylab("Number of TPs") + theme(axis.title.y = element_text(size = 8))
+#ggplot(experimenter.two.files, aes(x=Key_Scheme, y=Num_true_positives)) + geom_histogram(color = "black", bins = 39) + 
+  #ylab("Number of TPs") + theme(axis.title.y = element_text(size = 8))
 
-ggplot(patient.data, aes(x = Key_Scheme, y = Num_true_positives)) + geom_bar() + xlab("Status") + 
-  ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
+#ggplot(patient.data, aes(x = Key_Scheme, y = Num_true_positives)) + geom_bar() + xlab("Status") + 
+  #ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
 ```
+
+
+### Select features in explorer
+
+This chapter is for searching the best attributes (features).
+Earlier several attributes were found with interesting behaviours. By applying attribute selection to the dataset the best "attributes" can be found.
+
+#### Single-attribute evaluation
+
+This evaluation removes features that are less informative than the top informative features.
+
+**WrapperSubsetEval**
+Since the most accurate model was RandomForest lets choose in "Select Attributes" under "Attribute evaluator": WrapperSubsetEval and for "Search method": BestFirst by pressing WrapperSubsetEval a window pops out. As classifier RandomForest is chosen and as evaluationMeasure "accuracy" for discrete class only. Since the log data was better for RandomForest it will be chosen for this run.
+
+Selected attributes: 1,3,5,14,15,22 : 6
+                     MDVP.Fo.Hz.
+                     MDVP.Flo.Hz.
+                     MDVP.Jitter.Abs.
+                     Shimmer.DDA
+                     NHR
+                     PPE
+                     
+Some of these attributes that are found remarkably coincide with what attributes where labeled interesting in the EDA chapter. Primarily the best features are MDVP.Fo.Hz. and MDVP.Flo.Hz.
+
+Let's now look at how OneR performs with the same settings.
+
+Selected attributes: 22 : 1
+                     PPE
+
+OneR finds PPE as the best attribute which is also included by RandomForest.
+
+The third best model is the edited J48 model.
+
+
+Selected attributes: 1,5,6,22 : 4
+                     MDVP.Fo.Hz.
+                     MDVP.Jitter.Abs.
+                     MDVP.RAP
+                     PPE
+                     
+Again MDVP.Fo.Hz has been predicted as the best attribute. A new attribute in the top three is MDVP.RAP.
+
+
+**CorrelationAttributeeval**
+
+
+
+**GainRatio**
+
+**InformationGain**
+
+**OneRAttributeEval**
+
+#### Attribute-subset evaluation
+
+This evaluation evaluates groups of attributes together
+
+**CfsSubsetEval**
 
 \pagebreak
 
