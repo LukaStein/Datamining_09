@@ -588,7 +588,7 @@ The six attributes show low differences in the statuses or negative correlations
 
 First let's see in the Explorer mode how several algorithms perform on the original data.
 
-ZeroR
+#### ZeroR
 
 ZeroR predicts class value: sick
 Correctly Classified Instances         147               75.3846 %
@@ -598,7 +598,7 @@ As expected does ZeroR a fair guess what rows are labeled sick.
 
 &nbsp;
 
-OneR
+#### OneR
 
 PPE:
 	< 0.1044335	-> healthy
@@ -615,7 +615,7 @@ two times healthy and sick constantly higher than the previous. There isn't a re
 
 &nbspl
 
-The next Explored mode will be J48 pruned tree
+#### The next Explored mode will be J48 pruned tree
 
 Correctly Classified Instances         157               80.5128 %
 Incorrectly Classified Instances        38               19.4872 %
@@ -657,10 +657,10 @@ write.csv(edit.patientData, file = "patient_data_labels.csv", row.names = FALSE)
 
 When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
 
-
+#### Default parameters
 For the first test the algorithms Ibk, J48, ZeroR, OneR, RandomForest and NaiveBayes are tested with the default parameters and Weka settings.
 
-Dataset                |   (1) rules.Zero | (2) rules.One |(3) bayes |(4) trees (J48) |(5) trees (RandomForest) |(6) lazy.
+Dataset                |   (1) rules.Zero | (2) rules.One |(3) bayes |(4) trees (J48) |(5) trees (RandomForest) |(6) lazy. IBk
 log_patient_data       |  (100)   75.39 |   87.81 v |  72.75   |  84.63 v |  91.70 v |  93.03 v
 patient_data_labels    |  (100)   75.39 |   87.70 v |  70.14   |  84.79 v |  91.41 v |  95.91 v
                        |        (v/ /*) |   (2/0/0) |  (0/2/0) |  (2/0/0) |  (2/0/0) |  (2/0/0)
@@ -669,38 +669,175 @@ patient_data_labels    |  (100)   75.39 |   87.70 v |  70.14   |  84.79 v |  91.
                                
 NaiveBayes is the least accurate and IBk is the most, though the model IBk is overfitted with the default option of KNN = 1. RandomForest tries voting for better results, which is reflected with it's accuracy if ~ 91 percent.
 
-Next let's compare the default models with edited models. 
+**Retrospective**
+IBk -1 and RandomForest are most accurate.
 
-What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? Also for OneR the bucketsize is set to 20. What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. Also by pressing Swap and then e.g. IBk (6) the models are compared to that model. The differences of those models with that model is shown with the (v) and less significant than that is the star (*) symbol.
+
+#### Edited parameters
+Next let's compare the default models with edited models. The first comparison field will be percent_correct. Let's also sort the results by pressing Sorting (asc.) by e.g. percent_correct. For each next run the sort by will be applied with its corresponding comparison field.
+
+##### Percent_correct
+What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The bucketsize of OneR is set to twenty and the batchsize to 120. Also for NaiveBayes one model is added with a batchsize of 120 and one is added of 80. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. The significant differences between models is shown with the (v) and less significant than that is the star (*) symbol.
 
 
-Dataset                   (1) log_pati | (2) patie
---------------------------------------------------
-rules.ZeroR '' 4805554146(100)   75.39 |   75.39  
-rules.OneR '-B 20' -34594(100)   85.00 |   85.10  
-rules.OneR '-B 6' -345942(100)   87.81 |   87.70  
-trees.J48 '-C 0.25 -M 2' (100)   84.63 |   84.79  
-trees.J48 '-U -M 3' -2177(100)   84.93 |   84.83  
-bayes.NaiveBayes '' 59952(100)   72.75 |   70.14  
-bayes.NaiveBayes '-batch-(100)   72.75 |   70.14  
-trees.RandomForest '-P 10(100)   91.70 |   91.41  
-lazy.IBk '-K 1 -W 0 -A (100)     93.03 |   95.91 v
-lazy.IBk '-K 20 -W 0 -A (100)    84.78 |   82.52  
---------------------------------------------------
-                               (v/ /*) |   (1/9/0)
+Dataset                   (1) log_patient_data | (2) patient_data_
+------------------------------------------------------------------
+bayes.NaiveBayes '-batch-(100)   72.7526316100 |   70.1368421900  
+bayes.NaiveBayes '' 59952(100)   72.7526316100 |   70.1368421900  
+bayes.NaiveBayes '-batch-(100)   72.7526316100 |   70.1368421900  
+rules.ZeroR '' 4805554146(100)   75.3947369000 |   75.3947369000  
+trees.J48 '-C 0.25 -M 2' (100)   84.6289472600 |   84.7868420200  
+lazy.IBk '-K 20 -W 0 -A (100)    84.7815788300 |   82.5236840600  
+trees.J48 '-U -M 3' -2177(100)   84.9342104200 |   84.8315788500  
+rules.OneR '-B 20 -batch-(100)   85.0026314700 |   85.1026314700  
+rules.OneR '-B 6' -345942(100)   87.8052630800 |   87.6999999200  
+trees.RandomForest '-P 10(100)   91.7026315000 |   91.4052630800  
+lazy.IBk '-K 1 -W 0 -A (100)     93.0315788800 |   95.9052631200 v
+------------------------------------------------------------------
+                                       (v/ /*) |          (1/10/0)
+
+
 
 First of all generally the log_patient data does better than the normal patient data. Though there are no real significant differences in accuracy, except for the overfitted IBk.
 
 J48 seems to increase in accuracy with a small amount with no pruning, which means that pruning removes some branches that are actually good. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where a best attribute is chosen from. The less buckets are made in a dataset the chance then increases for errors to be made. 
 
-NaiveBayes does exactly the same, therefore increasing the instances to process doesn't do anything significantly. IBk decreases in accuracy signifcantly which clearly shows it first was overfitted. This also means the most accurate model is RandomForest and the second best model is OneR. Since the lower the bucket size of OneR means more overfitting and a bucket size of twenty is only a bit less accurate than a bucket size of six, the edited OneR model will be used for feature selection later on.
+NaiveBayes does exactly the same, therefore increasing or decreasing the instances to process doesn't do anything significantly. IBk decreases in accuracy signifcantly which clearly shows it first was overfitted. This also means the most accurate model is RandomForest and the second best model is OneR. Since the lower the bucket size of OneR means more overfitting and a bucket size of twenty is only a bit less accurate than a bucket size of six, the edited OneR model will be used for feature selection later on.
+
+**Retrospective**
+IBk is overfitted and therefore default RandomForest and OneR -B 6 are most accurate when edited models are included.
+
+##### Precision
+Which values are labeled True Positive and are actually True positive? I.e. how many of the instances that are actually sick are labeled sick? This is know as the Positive Predictive Value or precision. Therefore choose IR_precision.
+
+Dataset                   (1) log_patient | (2) patient_
+--------------------------------------------------------
+rules.ZeroR '' 4805554146(100)   0.753947 |   0.753947  
+lazy.IBk '-K 20 -W 0 -A (100)    0.846298 |   0.815966 *
+rules.OneR '-B 20 -batch-(100)   0.853003 |   0.854281  
+rules.OneR '-B 6' -345942(100)   0.881296 |   0.880171  
+trees.J48 '-U -M 3' -2177(100)   0.904740 |   0.906888  
+trees.J48 '-C 0.25 -M 2' (100)   0.905209 |   0.907908  
+bayes.NaiveBayes '' 59952(100)   0.924107 |   0.962795  
+bayes.NaiveBayes '-batch-(100)   0.924107 |   0.962795  
+bayes.NaiveBayes '-batch-(100)   0.924107 |   0.962795  
+trees.RandomForest '-P 10(100)   0.926479 |   0.922424  
+lazy.IBk '-K 1 -W 0 -A   (100)   0.961346 |   0.985999 v
+--------------------------------------------------------
+                                  (v/ /*) |      (1/9/1)
+
+Assuming the higher the value the better the precision, the overfitted IBk stands number one in precision and the RandomForest tree model is second. Also generally the precision is divided more evenly over the two datasets, but a bit better for the original data. Furthermore it´s interesting to see that IBk -20 is next to ZeroR with weakest precision. NaiveBayes does observably better on the original data.
+
+**Retrospective**
+RandomForest and NaiveBayes have the best precision. The overfitted IBk will be ignored every retrospective.
 
 
-Next 
+##### False negative Rate                                  
+More importantly how many values have been assigned negative, but are actually positive i.e. is sick and is assigned healthy? Choose the False_negative_Rate.
 
+Dataset                   (1) log_patient | (2) patient_
+--------------------------------------------------------
+rules.ZeroR '' 4805554146(100)   0.000000 |   0.000000  
+lazy.IBk '-K 20 -W 0 -A (100)    0.020333 |   0.003381  
+rules.OneR '-B 20 -batch-(100)   0.025191 |   0.025238  
+rules.OneR '-B 6' -345942(100)   0.026667 |   0.026667  
+trees.RandomForest '-P 10(100)   0.028476 |   0.027714  
+lazy.IBk '-K 1 -W 0 -A   (100)   0.052048 |   0.039714  
+trees.J48 '-U -M 3' -2177(100)   0.099286 |   0.104048  
+trees.J48 '-C 0.25 -M 2' (100)   0.104619 |   0.105952  
+bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
+bayes.NaiveBayes '' 59952(100)   0.299667 |   0.369524 v
+bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
+--------------------------------------------------------
+                                  (v/ /*) |      (3/8/0)
+
+Assuming the higher the value is the more mistakes are made, predicting is the worst for NaiveBayes. Obviously ZeroR makes the least mistakes, because it only chooses TP or TN. More interestingly IBk -20 makes the least mistakes and RandomForest has dipped down a bit.
+
+**Retrospective**
+NaiveBayes predicts false negative the most, but IBK -20 and OneR -B 20 predict the least (ignoring ZeroR). 
+
+##### Area Under the (ROC) Curve (AUC)
+Next let's set the comparison field to the Area Under the (ROC) Curve. This setting shows the extent of which a model can distinguish. Also the higher the value is, the higher quality measure the model has.
+
+Dataset                   (1) log_patient | (2) patient_
+--------------------------------------------------------
+rules.ZeroR '' 4805554146(100)   0.500000 |   0.500000  
+rules.OneR '-B 20 -batch-(100)   0.722155 |   0.724131  
+rules.OneR '-B 6' -345942(100)   0.779917 |   0.777917  
+trees.J48 '-C 0.25 -M 2' (100)   0.796614 |   0.802952  
+trees.J48 '-U -M 3' -2177(100)   0.803164 |   0.817257  
+bayes.NaiveBayes '' 59952(100)   0.871567 |   0.863045  
+bayes.NaiveBayes '-batch-(100)   0.871567 |   0.863045  
+bayes.NaiveBayes '-batch-(100)   0.871567 |   0.863045  
+lazy.IBk '-K 1 -W 0 -A   (100)   0.912726 |   0.958643 v
+lazy.IBk '-K 20 -W 0 -A  (100)   0.917840 |   0.926007  
+trees.RandomForest '-P 10(100)   0.966750 |   0.964724  
+--------------------------------------------------------
+                                  (v/ /*) |     (1/10/0)
+                                  
+Assuming the higher the values the better the quality wherein a model can distinguish, RandomForest takes the price. Also IBk -20 is the second best in distinguishing. From observing the previous comparison fields with the current one J48 is usually around the middle, which means it neither bad nor good for these datasets.
+                              
+**Retrospective**
+ZeroR and OneR -B 20 are the worst at distinguishing. RandomForest and IBk -20 do the best.
+                      
+##### Runtime (Elapsed_time_Training)
+Also how fast is the runtime of training for each model? Choose Elapsed_time_Training under comparison field. Since the models are generally really fast the runtime's will be close to zero. To solve results of only zero press Select next to Output Format and increase the mean and stDev precision rates until the values are comparable to the eye. For this data the rates are increased to six.
+
+Dataset                   (1) log_patient | (2) patient_
+--------------------------------------------------------
+lazy.IBk '-K 1 -W 0 -A   (100)   0.000040 |   0.000050  
+lazy.IBk '-K 20 -W 0 -A  (100)   0.000080 |   0.000070  
+rules.ZeroR '' 4805554146(100)   0.000150 |   0.000140  
+bayes.NaiveBayes '-batch-(100)   0.000340 |   0.000360  
+bayes.NaiveBayes '-batch-(100)   0.000350 |   0.000350  
+bayes.NaiveBayes '' 59952(100)   0.000710 |   0.000500  
+rules.OneR '-B 20 -batch-(100)   0.000830 |   0.000850  
+rules.OneR '-B 6' -345942(100)   0.001140 |   0.000880  
+trees.J48 '-U -M 3' -2177(100)   0.001590 |   0.001710  
+trees.J48 '-C 0.25 -M 2' (100)   0.001870 |   0.001820  
+trees.RandomForest '-P 10(100)   0.024750 |   0.023530  
+--------------------------------------------------------
+                                  (v/ /*) |     (0/11/0)
+
+Assuming that the runtime is in seconds and zero is the fastest both IBk's take the cherry on the cake. As expected the trees perform worse. For J48 making branches takes more time and RandomForest is additionally to making branches also run several times with different coincidence values, which takes even more time.
+
+**Retrospective**
+Both IBk have the fastest runtimes and both trees have the slowest runtimes. Though no significant differences.
                                
+##### F_measure                              
+Since the values are distributed unevenly 3-1 ratio, a different way of evaluating the accuracy of the model can be chosen. By choosing F_measure, the levels are weighted evenly between both precision (PPV) and recall (TPR). The values lie between zero and one, where zero has no relevant information gain and one if all information gained is relevant. Look at the bibliography under F-measure for the complete definition by SpringerLink.
 
-The run time data can also be saved to csv by choosing CSV file under "Results destination", giving the desired location and then run the setup again.
+Dataset                   (1) log_patient | (2) patient_
+--------------------------------------------------------
+bayes.NaiveBayes '-batch-(100)   0.790983 |   0.755226 *
+bayes.NaiveBayes '' 59952(100)   0.790983 |   0.755226 *
+bayes.NaiveBayes '-batch-(100)   0.790983 |   0.755226 *
+rules.ZeroR '' 4805554146(100)   0.859588 |   0.859588  
+trees.J48 '-C 0.25 -M 2' (100)   0.897293 |   0.898118  
+trees.J48 '-U -M 3' -2177(100)   0.899971 |   0.898636  
+lazy.IBk '-K 20 -W 0 -A  (100)   0.907115 |   0.896487  
+rules.OneR '-B 20 -batch-(100)   0.907970 |   0.908560  
+rules.OneR '-B 6' -345942(100)   0.923791 |   0.923171  
+trees.RandomForest '-P 10(100)   0.946769 |   0.945139  
+lazy.IBk '-K 1 -W 0 -A   (100)   0.953035 |   0.972186  
+--------------------------------------------------------
+                                  (v/ /*) |      (0/8/3)
+Next to the overfitted IBk, RandomForest has the second best relevant information gain and OneR places third. NaiveBayes and ZeroR have the least relevant information gain.
+
+**Retrospective**
+
+RandomForest and default OneR have the best relevant information gain.
+
+**Retrospective of all comparisons**
+
+On average RandomForest does the best. It does worse for runtime, but it's still really fast and therefore redundant. OneR -B 20 usually also does quite good. Since OneR -B 6 is known for overfitting, OneR -B 20 will be placed second best model for these datasets. 
+
+
+
+### Observing accuracy file
+
+The run time data of can also be saved to csv by choosing CSV file under "Results destination", giving the desired location and then run the setup again.
+
 Let's see what the run data looks like.
 
 ```{r}
@@ -741,34 +878,138 @@ Selected attributes: 1,3,5,14,15,22 : 6
                      
 Some of these attributes that are found remarkably coincide with what attributes where labeled interesting in the EDA chapter. Primarily the best features are MDVP.Fo.Hz. and MDVP.Flo.Hz.
 
-Let's now look at how OneR performs with the same settings.
+Let's now look at how OneR -B 20 performs with the same settings as above.
 
 Selected attributes: 22 : 1
                      PPE
 
 OneR finds PPE as the best attribute which is also included by RandomForest.
 
-The third best model is the edited J48 model.
-
-
-Selected attributes: 1,5,6,22 : 4
-                     MDVP.Fo.Hz.
-                     MDVP.Jitter.Abs.
-                     MDVP.RAP
-                     PPE
-                     
-Again MDVP.Fo.Hz has been predicted as the best attribute. A new attribute in the top three is MDVP.RAP.
 
 
 **CorrelationAttributeeval**
+With the Correlation attribute evaluator and ranker search method a ranking can be made of the extent how relevant the attributes are according to distinguishing the class status.
 
+Attribute Evaluator (supervised, Class (nominal): 23 status):
+	Correlation Ranking Filter
+Ranked attributes:
+ 0.614   22 PPE
+ 0.565   19 spread1
+ 0.472    5 MDVP.Jitter.Abs.
+ 0.46    13 MDVP.APQ
+ 0.447   20 spread2
+ 0.412    9 MDVP.Shimmer
+ 0.412   10 MDVP.Shimmer.dB.
+ 0.393    7 MDVP.PPQ
+ 0.391   12 Shimmer.APQ5
+ 0.386    4 MDVP.Jitter...
+ 0.381   15 NHR
+ 0.374    8 Jitter.DDP
+ 0.374    6 MDVP.RAP
+ 0.373   11 Shimmer.APQ3
+ 0.373   14 Shimmer.DDA
+ 0.35    21 D2
+ 0.345    3 MDVP.Flo.Hz.
+ 0.337    1 MDVP.Fo.Hz.
+ 0.335   16 HNR
+ 0.305   17 RPDE
+ 0.231   18 DFA
+ 0.203    2 MDVP.Fhi.Hz.
 
+Selected attributes: 22,19,5,13,20,9,10,7,12,4,15,8,6,11,14,21,3,1,16,17,18,2 : 22
 
-**GainRatio**
+Assuming towards zero is worse than towards one PPE and MDVP.Jitter.Abs return in the top three. Also in the EDA spread1 was a notable attribute and now it is ranked as second best attribute.
 
-**InformationGain**
+**GainRatioAttributeEval**
+For GainRatio let's also choose Ranker as search method.
+
+Ranked attributes:
+ 0.394     3 MDVP.Flo.Hz.
+ 0.219    19 spread1
+ 0.2157   13 MDVP.APQ
+ 0.2103   22 PPE
+ 0.1976   15 NHR
+ 0.1951   20 spread2
+ 0.1914    2 MDVP.Fhi.Hz.
+ 0.1881    8 Jitter.DDP
+ 0.1881    6 MDVP.RAP
+ 0.1878    9 MDVP.Shimmer
+ 0.1828   12 Shimmer.APQ5
+ 0.1753   10 MDVP.Shimmer.dB.
+ 0.1675    1 MDVP.Fo.Hz.
+ 0.1609   11 Shimmer.APQ3
+ 0.1609   14 Shimmer.DDA
+ 0.1594    5 MDVP.Jitter.Abs.
+ 0.1565    7 MDVP.PPQ
+ 0.1484    4 MDVP.Jitter...
+ 0.1099   16 HNR
+ 0.0844   17 RPDE
+ 0.0783   21 D2
+ 0.0723   18 DFA
+
+Selected attributes: 3,19,13,22,15,20,2,8,6,9,12,10,1,11,14,5,7,4,16,17,21,18 : 22
+
+GainRatio ranks MDVP.Flo.Hz, spread1 and MDVP.APQ in the top three. MDVP.APQ was also high in CorrelationAttributeeval. And PPE and NHR follow the top three.
+
+**InfoGainAttributeEval**
+
+Ranked attributes:
+ 0.3746   22 PPE
+ 0.3325   19 spread1
+ 0.2899    1 MDVP.Fo.Hz.
+ 0.2242    5 MDVP.Jitter.Abs.
+ 0.2135   13 MDVP.APQ
+ 0.1825   12 Shimmer.APQ5
+ 0.1824    9 MDVP.Shimmer
+ 0.1816    3 MDVP.Flo.Hz.
+ 0.1707    8 Jitter.DDP
+ 0.1707    6 MDVP.RAP
+ 0.1703    2 MDVP.Fhi.Hz.
+ 0.1679   10 MDVP.Shimmer.dB.
+ 0.1661   20 spread2
+ 0.1562   11 Shimmer.APQ3
+ 0.1562   14 Shimmer.DDA
+ 0.1437    7 MDVP.PPQ
+ 0.1406   15 NHR
+ 0.1274    4 MDVP.Jitter...
+ 0.1039   16 HNR
+ 0.0834   17 RPDE
+ 0.0781   21 D2
+ 0.0648   18 DFA
+
+Selected attributes: 22,19,1,5,13,12,9,3,8,6,2,10,20,11,14,7,15,4,16,17,21,18 : 22
+
+InformationGain evaluates PPE, spread1 and MDVP.Fo.Hz. in the top three. Again MDVP.Jitter.Abs. and MDVP.APQ remain high in the rankings.
 
 **OneRAttributeEval**
+This evaluator evaluates each attribute using OneR. Again the bucketsize is set to twenty, though the batchsize here is immutable. Also let's choose cross-validation since that was the same in the experimenter. As search method choose Ranker.
+
+average merit      average rank  attribute
+84.903 +- 1.114      1.6 +- 0.66    19 spread1
+84.844 +- 1.249      1.8 +- 0.87    22 PPE
+83.135 +- 0.555      3   +- 0.63     3 MDVP.Flo.Hz.
+82.393 +- 1.204      3.7 +- 0.9      1 MDVP.Fo.Hz.
+78.686 +- 2.215      6.9 +- 2.66    15 NHR
+78.123 +- 1.693      7   +- 1.61    20 spread2
+77.724 +- 2.403      7.6 +- 3.17     7 MDVP.PPQ
+76.696 +- 1.322     10   +- 4.02    16 HNR
+75.385 +- 0.202     11.5 +- 2.06    17 RPDE
+75.156 +- 0.461     12.7 +- 2.53     5 MDVP.Jitter.Abs.
+75.099 +- 0.866     13.5 +- 3.32    21 D2
+74.758 +- 1.365     13.7 +- 4.45    18 DFA
+74.532 +- 3.349     13.8 +- 5.74     4 MDVP.Jitter...
+74.93  +- 3.493     13.9 +- 5.91     8 Jitter.DDP
+74.304 +- 1.351     14.8 +- 4.17    10 MDVP.Shimmer.dB.
+74.417 +- 3.288     15.3 +- 5.71     6 MDVP.RAP
+74.017 +- 1.985     15.4 +- 3.83     9 MDVP.Shimmer
+73.617 +- 1.647     16.3 +- 3.69     2 MDVP.Fhi.Hz.
+73.558 +- 1.641     16.9 +- 4.16    13 MDVP.APQ
+72.994 +- 1.596     17.7 +- 2.41    11 Shimmer.APQ3
+73.051 +- 1.655     17.8 +- 2.44    14 Shimmer.DDA
+72.878 +- 1.823     18.1 +- 3.27    12 Shimmer.APQ5
+
+
+
 
 #### Attribute-subset evaluation
 
@@ -786,10 +1027,13 @@ Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from d
 
 \bibitem{Indeed negative correlation}
 Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
-  
+
+\bibitem{F-measure}
+Ethan Zhang. 
+
 \end{thebibliography}
 ```
 
-
+https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483
 
 
