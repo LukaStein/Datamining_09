@@ -876,7 +876,7 @@ Selected attributes: 1,3,5,14,15,22 : 6
                      NHR
                      PPE
                      
-Some of these attributes that are found remarkably coincide with what attributes where labeled interesting in the EDA chapter. Primarily the best features are MDVP.Fo.Hz. and MDVP.Flo.Hz.
+Some of these attributes that are found remarkably coincide with what attributes where labeled interesting in the EDA chapter. Primarily the best features are MDVP.Fo.Hz. and MDVP.Flo.Hz. 
 
 Let's now look at how OneR -B 20 performs with the same settings as above.
 
@@ -982,40 +982,180 @@ Selected attributes: 22,19,1,5,13,12,9,3,8,6,2,10,20,11,14,7,15,4,16,17,21,18 : 
 InformationGain evaluates PPE, spread1 and MDVP.Fo.Hz. in the top three. Again MDVP.Jitter.Abs. and MDVP.APQ remain high in the rankings.
 
 **OneRAttributeEval**
-This evaluator evaluates each attribute using OneR. Again the bucketsize is set to twenty, though the batchsize here is immutable. Also let's choose cross-validation since that was the same in the experimenter. As search method choose Ranker.
+This evaluator evaluates each attribute using OneR. Again the bucketsize is set to twenty, though the batchsize here is immutable. Also let's choose full training set. As search method choose Ranker.
 
-average merit      average rank  attribute
-84.903 +- 1.114      1.6 +- 0.66    19 spread1
-84.844 +- 1.249      1.8 +- 0.87    22 PPE
-83.135 +- 0.555      3   +- 0.63     3 MDVP.Flo.Hz.
-82.393 +- 1.204      3.7 +- 0.9      1 MDVP.Fo.Hz.
-78.686 +- 2.215      6.9 +- 2.66    15 NHR
-78.123 +- 1.693      7   +- 1.61    20 spread2
-77.724 +- 2.403      7.6 +- 3.17     7 MDVP.PPQ
-76.696 +- 1.322     10   +- 4.02    16 HNR
-75.385 +- 0.202     11.5 +- 2.06    17 RPDE
-75.156 +- 0.461     12.7 +- 2.53     5 MDVP.Jitter.Abs.
-75.099 +- 0.866     13.5 +- 3.32    21 D2
-74.758 +- 1.365     13.7 +- 4.45    18 DFA
-74.532 +- 3.349     13.8 +- 5.74     4 MDVP.Jitter...
-74.93  +- 3.493     13.9 +- 5.91     8 Jitter.DDP
-74.304 +- 1.351     14.8 +- 4.17    10 MDVP.Shimmer.dB.
-74.417 +- 3.288     15.3 +- 5.71     6 MDVP.RAP
-74.017 +- 1.985     15.4 +- 3.83     9 MDVP.Shimmer
-73.617 +- 1.647     16.3 +- 3.69     2 MDVP.Fhi.Hz.
-73.558 +- 1.641     16.9 +- 4.16    13 MDVP.APQ
-72.994 +- 1.596     17.7 +- 2.41    11 Shimmer.APQ3
-73.051 +- 1.655     17.8 +- 2.44    14 Shimmer.DDA
-72.878 +- 1.823     18.1 +- 3.27    12 Shimmer.APQ5
+Ranked attributes:
+88.2051   22 PPE
+84.6154    1 MDVP.Fo.Hz.
+83.5897    5 MDVP.Jitter.Abs.
+83.0769   19 spread1
+81.0256    3 MDVP.Flo.Hz.
+79.4872    7 MDVP.PPQ
+77.9487   15 NHR
+76.9231    2 MDVP.Fhi.Hz.
+76.9231    4 MDVP.Jitter...
+76.4103    8 Jitter.DDP
+74.8718    6 MDVP.RAP
+73.8462   13 MDVP.APQ
+73.8462   20 spread2
+73.8462   16 HNR
+73.3333   17 RPDE
+72.3077   11 Shimmer.APQ3
+72.3077   14 Shimmer.DDA
+70.7692   21 D2
+69.7436   18 DFA
+69.7436   10 MDVP.Shimmer.dB.
+68.2051   12 Shimmer.APQ5
+66.6667    9 MDVP.Shimmer
 
+Selected attributes: 22,1,5,19,3,7,15,2,4,8,6,13,20,16,17,11,14,21,18,10,12,9 : 22
 
+Again attribute PPE is the best and generally the same attributes remain top. Though MDVP.Shimmer has dropped down all the way to the bottom.
 
 
 #### Attribute-subset evaluation
 
-This evaluation evaluates groups of attributes together
+This evaluation evaluates groups of attributes together. Let's choose GreedyStepwise for search method and turn generateRanking to True.
 
 **CfsSubsetEval**
+
+Ranked attributes:
+ 0.29    22 PPE
+ 0.363    3 MDVP.Flo.Hz.
+ 0.398   13 MDVP.APQ
+ 0.422    2 MDVP.Fhi.Hz.
+ 0.431    1 MDVP.Fo.Hz.
+ 0.44    15 NHR
+ 0.45    20 spread2
+ 0.453   19 spread1
+ 0.456    6 MDVP.RAP
+ 0.454   21 D2
+ 0.451   12 Shimmer.APQ5
+ 0.449   18 DFA
+ 0.443    5 MDVP.Jitter.Abs.
+ 0.438    9 MDVP.Shimmer
+ 0.432   17 RPDE
+ 0.427    8 Jitter.DDP
+ 0.421   10 MDVP.Shimmer.dB.
+ 0.414    7 MDVP.PPQ
+ 0.406   11 Shimmer.APQ3
+ 0.399    4 MDVP.Jitter...
+ 0.391   14 Shimmer.DDA
+ 0.383   16 HNR
+
+Selected attributes: 22,3,13,2,1,15,20,19,6,21,12,18,5,9,17,8,10,7,11,4,14,16 : 22
+
+Again PPE is at the top and MDVP.APQ has risen to the third place. All MDVP.Flo/Fhi/- and Fo.Hz attributes are at the top as well. Also NHR and spread1 are fairly high as well. 
+
+
+**Retrospective**
+
+The observation from Cfs above actually summarizes the general best placement for all attributes per method. After comparing all methods PPE seems the best attribute to split on and spread1 as second attribute. As MDVP.Flo.Hz and MDVP.Jitter.Abs are also mainly quite good.
+
+### Baselearners & increasing performance
+
+There are several methods for combining algorithms and increasing performance.
+
+#### Vote
+
+With the vote meta classifier algorithms results can be combined for a new outcome via voting. Choose classifiers in the vote menu and add the preferred classifiers. So for this experiment RandomForest and oneR with -B 20 and batchsize 120. Also let's choose Majority voting for combinationRule.
+
+Correctly Classified Instances         165               84.6154 %
+Incorrectly Classified Instances        30               15.3846 %
+
+The accuracy is less than RandomForest on its own.
+
+   a   b   <-- classified as
+ 142   5 |   a = sick
+  25  23 |   b = healthy
+  
+Though very few false negatives remain.  
+  
+PPE:
+	< -2.25923967465801	-> healthy
+	'>= -2.25923967465801	-> sick
+(168/195 instances correct)
+
+PPE was found as the best attribute to split on and a clear boundary was found to differentiate healthy from sick.
+
+#### Bagging
+
+A classifier for reducing variance. Choose the preferred classifier in the Bagging menu.
+
+**RandomForest**
+
+Correctly Classified Instances         180               92.3077 %
+Incorrectly Classified Instances        15                7.6923 %
+
+From the experiment it became clear that default RandomForest = 91.7026315000 |   91.4052630800. The bagging method increases the accuracy of RandomForest by about one percent.
+
+   a   b   <-- classified as
+ 144   3 |   a = sick
+  12  36 |   b = healthy
+  
+The amount of FP and FN's have decreased in comparison to the combination of RandomForest and OneR.
+
+**OneR**
+
+Correctly Classified Instances         162               83.0769 %
+Incorrectly Classified Instances        33               16.9231 %
+
+From the experiment it became clear that the edited OneR = 85.0026314700 |   85.1026314700. Therefore bagging affects the results negatively by about two percent.
+
+   a   b   <-- classified as
+ 141   6 |   a = sick
+  27  21 |   b = healthy
+  
+The amount of FP and FN's have increased in comparison to the combination of RandomForest and OneR.
+
+#### Stacking 
+
+A classifier for assessing the outcomes of algorithms using a meta-learner, which then tries to provide new predictions. The classifiers can be added under classifiers in the Stacking menu and the meta-learner can be chosen under metaClassifier. Let's choose J48 with unpruning to True, the confidenceFactor to 0.20 and the minNumObj to three as meta-learner.
+
+Correctly Classified Instances         173               88.7179 %
+Incorrectly Classified Instances        22               11.2821 %
+
+J48 was 84.9342104200 |   84.8315788500 percent and therefore has increase by about four percent. Though it didn´t surpass RandomForest, it did surpass OneR.
+
+
+If J48 and oneR are swapped from meta-learner to classifier i.e. if oneR learns from J48 and RandomForest, how will that affect oneR's results?
+
+Correctly Classified Instances         174               89.2308 %
+Incorrectly Classified Instances        21               10.7692 %
+
+OneR increases by four percent and surpasses the previous J48 meta-learner with approximately 0.5 percent.
+
+**Retrospective**
+Using base learning techniques RandomForest and OneR's performance can be increased. The stacking method didn´t work positively though stacking and bagging did. Using bagging RandomForest was increased and using stacking OneR increased by meta-learning. The quality of these new models will be tested in the next part. The model runs will be saved for plotting through the experimenter where each model is saved separately. This is done the same way as in part "Observing accuracy file".
+
+### ROC-curve
+
+Of each model-run the quality can be determined by making a ROC-curve. This is done by plotting FPR (specificity) against TPR (sensitivity). 
+
+
+
+**RandomForest + Bagging**
+
+```{r}
+randomForest.data <- data.frame(read.csv("Final_models/RF_bagging.arff", skip = 18))
+colnames(randomForest.data) <- c("Instance_number", "True_Positives", "False_Negatives","False_Positives",
+                                 "True_Negatives", "False_Positive_Rate", "True_Positive_Rate",
+                                 "Precision", "Recall", "Fallout", "FMeasure", "Sample_Size",
+                                 "Lift", "Threshold")
+ggplot(randomForest.data, aes(x = False_Positive_Rate, y = True_Positive_Rate)) + geom_line(color = "green2", size = 1) +
+  labs(title = "ROC-curve of optimised RandomForest model")
+```
+**OneR + Stacking**
+
+```{r}
+oneR.data <- data.frame(read.csv("Final_models/OneR_stacking.arff", skip = 18))
+colnames(oneR.data) <- c("Instance_number", "True_Positives", "False_Negatives","False_Positives",
+                                 "True_Negatives", "False_Positive_Rate", "True_Positive_Rate",
+                                 "Precision", "Recall", "Fallout", "FMeasure", "Sample_Size",
+                                 "Lift", "Threshold")
+oneR.data
+ggplot(oneR.data, aes(x = False_Positive_Rate, y = True_Positive_Rate)) + geom_line(color = "green2", size = 1)
+```
 
 \pagebreak
 
