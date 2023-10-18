@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'nl.bioinf.lts.JavaWrapper'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable
+    implementation group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.5'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
