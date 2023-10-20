@@ -4,7 +4,7 @@ import weka.classifiers.Classifier;
 import weka.core.SerializationHelper;
 
 public class LoadClassifier {
-    private final String MODELCLASSIFIER = "NB_iris.model";
+    private final String MODELCLASSIFIER = "bagging_randomforest.model";
 
     public Classifier loadClassifier(String MODELNAME) {
         try {
