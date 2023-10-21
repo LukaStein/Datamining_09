@@ -5,36 +5,30 @@ package nl.bioinf.lts;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
-import java.util.Arrays;
-import java.util.List;
-// Options CommandLine CommandLinePartser -> command line interface
-
 public class Main {
     public static void main(String[] args) {
         try {
             System.out.println("Hello, starting WrapClassifier...");
             Main main = new Main();
-            main.start();
+            main.start(args);
             System.out.println("Closing WrapClassifier, goodbye...");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RuntimeException e) {
+            Controller controller = new Controller();
+            controller.printHelp();
         }
-
     }
 
-    private void start() throws Exception {
-        // Type with more usable implementations than String[]
-        String[] args = {"logPatientData.arff", "-accuracy"};
-        List<String> argsList = Arrays.asList(args);
-        // Instantiate controller
+    private void start(String[] args) {
+
+        // Instantiate controller && pass args to controller
         Controller controller = new Controller();
-        controller.userInterface(argsList);
+        controller.args = args;
         // Laad model
         LoadClassifier loadModel = new LoadClassifier();
-        Classifier model = loadModel.loadClassifier("bagging_randomforest.model");
+        Classifier model = loadModel.loadClassifier();
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        Instances data = loadFile.loadData(argsList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
+        Instances data = loadFile.loadData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
         // Voorspel labels
         ClassifyData classifying = new ClassifyData();
         Instances predictions = classifying.classifyData(model, data);
@@ -45,6 +39,6 @@ public class Main {
         // summary goed en fout
         String summary = accuracyAnnotations.summary(predictions);
         // finally choose the users chosen output
-        controller.chooseOutput(argsList, confusionMatrix, predictions, summary);
+        controller.chooseOutput(confusionMatrix, predictions, summary);
     }
 }

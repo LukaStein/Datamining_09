@@ -4,12 +4,12 @@ import weka.classifiers.Classifier;
 import weka.core.SerializationHelper;
 
 public class LoadClassifier {
-    private final String MODELCLASSIFIER = "bagging_randomforest.model";
 
-    public Classifier loadClassifier(String MODELNAME) {
+    public Classifier loadClassifier() {
         try {
             SerializationHelper reader = new SerializationHelper();
-            return (Classifier) reader.read(MODELNAME);
+            String NAMECLASSIFIER = "bagging_randomforest.model";
+            return (Classifier) reader.read(NAMECLASSIFIER);
         } catch (Exception e) {
             // file not found  && write log away
             throw new RuntimeException();

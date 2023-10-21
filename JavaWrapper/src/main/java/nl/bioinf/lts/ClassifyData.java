@@ -5,9 +5,9 @@ import weka.core.Instances;
 
 public class ClassifyData {
     public Instances classifyData(Classifier model, Instances data){
+        // dataframe labeled
+        Instances labeled = new Instances(data);
         try {
-            // dataframe labeled
-            Instances labeled = new Instances(data);
             for (int i = 0; i < data.numInstances(); i++) {
                 // get one instance
                 double label = model.classifyInstance(data.instance(i));
