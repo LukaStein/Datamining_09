@@ -17,7 +17,7 @@ public class Controller {
     public void chooseOutput(String confusionMatrix, Instances predictions,
                              String summary) {
         CommandLine cmd = processCLArguments.commandLineParser(this.args);
-        List<String> argList = cmd.getArgList();;
+        List<String> argList = cmd.getArgList();
         if (argList.contains("help")) {
             this.printHelp();
         }
@@ -44,12 +44,14 @@ public class Controller {
     }
 
     public void printHelp(){
-        System.out.println("\nUsage: Main.java filename.arff\n" +
-                "[optional = help (for help)]\n" +
-                "Choose the keywords below for certain output\n" +
-                "-\taccuracy (output of confusion matrix and summary of accuracy)\n" +
-                "-\tpredict (output of predictions)\n" +
-                "-\te.g. (script.java filename.arff accuracy predict)" + "]");
+        System.out.println("""
+
+                Usage: Main.java filename.arff
+                [optional = help (for help)]
+                Choose the keywords below for certain output
+                -\taccuracy (output of confusion matrix and summary of accuracy)
+                -\tpredict (output of predictions)
+                -\te.g. (script.java filename.arff accuracy predict)]""");
     }
 
     private void printConfusionMatrix(String confusionMatrix, String summary){
