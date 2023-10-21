@@ -2,6 +2,7 @@ package nl.bioinf.lts;
 
 import weka.core.Instances;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 //   a   b   <-- classified as
 //        144   3 |   a = sick

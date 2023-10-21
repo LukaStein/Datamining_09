@@ -28,7 +28,7 @@ public class Main {
         Classifier model = loadModel.loadClassifier();
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        Instances data = loadFile.loadData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
+        Instances data = loadFile.loadTrainingData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
         // Voorspel labels
         ClassifyData classifying = new ClassifyData();
         Instances predictions = classifying.classifyData(model, data);

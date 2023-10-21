@@ -1,10 +1,14 @@
 package nl.bioinf.lts;
 
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LoadTextSeparatedFile {
-    public Instances loadData(String FILENAME) {
+    public Instances loadTrainingData(String FILENAME) {
         try {
             // load dataset
             ConverterUtils.DataSource reader = new ConverterUtils.DataSource(FILENAME);
@@ -15,5 +19,33 @@ public class LoadTextSeparatedFile {
             // file not found  && write log away
             throw new RuntimeException();
         }
+    }
+
+    // method that loads statusless data. A new status attribute is added at the end for predicting
+    public Instances loadTestData(String FILENAME) {
+        try {
+            // load dataset
+            ConverterUtils.DataSource reader = new ConverterUtils.DataSource(FILENAME);
+            Instances data = reader.getDataSet();
+//            @attribute status {sick,healthy}
+            this.addClassAttribute(data);
+            return data;
+        } catch (Exception e){
+            // file not found  && write log away
+            throw new RuntimeException();
+        }
+    }
+
+    private void addClassAttribute(Instances data){
+        // prepare levels
+        List<String> statusLabels = new ArrayList<>();
+        statusLabels.add("healthy");
+        statusLabels.add("sick");
+        // instantiate status attribute
+        Attribute status = new Attribute("status", statusLabels);
+        // insert and assign class attribute
+        data.insertAttributeAt(status, data.numAttributes());
+        // position 24 attr. is position 23 due to starting index of zero.
+        data.setClassIndex(data.numAttributes() - 1);
     }
 }

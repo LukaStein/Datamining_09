@@ -35,6 +35,7 @@ public class Controller {
         availableOptions.add("help");
         availableOptions.add("predict");
         availableOptions.add("accuracy");
+        availableOptions.add("training");
         for (int index = 1; index < cmd.getArgs().length; index++) {
             if (!availableOptions.contains(argList.get(index))) {
                 System.out.println("\nOption: " + this.args[index] + " does not exist.\n" +
@@ -49,8 +50,9 @@ public class Controller {
                 Usage: Main.java filename.arff
                 [optional = help (for help)]
                 Choose the keywords below for certain output
+                -\ttraining (Predicting training dataset)
+                -\ttest (Predicting test dataset)
                 -\taccuracy (output of confusion matrix and summary of accuracy)
-                -\tpredict (output of predictions)
                 -\te.g. (script.java filename.arff accuracy predict)]""");
     }
 
