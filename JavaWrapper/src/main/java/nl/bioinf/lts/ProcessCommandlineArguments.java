@@ -16,6 +16,7 @@ public class ProcessCommandlineArguments {
         options.addOption(new Option("training", false, "Predicting training dataset"));
         options.addOption(new Option("test", false, "Predicting test dataset"));
         options.addOption(new Option("accuracy", false, "Accuracy output"));
+        // TODO: voeg optie toe voor opslaan van output
         return options;
     }
 
@@ -31,9 +32,18 @@ public class ProcessCommandlineArguments {
 
 
     public boolean predictionOption(List<String> argsList){
-        if(argsList.contains("test")){
+        if (!argsList.contains("test") && !argsList.contains("training")) {
+            System.err.println("No prediction argument given.\n" +
+                    "Choose \"test\" or \"training\"\n" +
+                    "Or approach \"help\" for detailed summary of available arguments");
+            System.exit(0);
             return false;
-        } else return argsList.contains("training");
+        }
+        else if(argsList.contains("test")){
+            return false;
+        } else {
+            return argsList.contains("training");
+        }
     }
 
     public boolean helpOption(List<String> argsList) {

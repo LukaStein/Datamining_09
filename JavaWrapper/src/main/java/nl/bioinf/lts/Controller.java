@@ -33,9 +33,10 @@ public class Controller {
         if (verifyPredictionOption && verifyAccuracy){
             this.printAccuracy(outputObjects.get(1).toString(), outputObjects.get(2).toString());
         }
-
-
-
+        if (!verifyPredictionOption && verifyAccuracy){
+            System.err.println("Accuracy can only be calculated for training data." +
+                    "\nPlease only give \"test\" as argument for predicting on testing data without a class attribute.");
+        }
     }
 
     private void invalidOptionGiven(List<String> argList, CommandLine cmd) {
