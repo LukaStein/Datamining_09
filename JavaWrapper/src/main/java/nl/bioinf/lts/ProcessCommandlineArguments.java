@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import weka.core.Instances;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ProcessCommandlineArguments {
 
@@ -29,13 +30,19 @@ public class ProcessCommandlineArguments {
     }
 
 
-    public void predictionType(String[] args){
-        LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        if(args[0].equals("training")){
-            Instances data = loadFile.loadTrainingData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
-        }
-        if(args[0].equals("test")){
-            Instances data = loadFile.loadTestData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
-        }
+    public boolean predictionOption(List<String> argsList){
+        if(argsList.contains("test")){
+            return false;
+        } else return argsList.contains("training");
+    }
+
+    public boolean helpOption(List<String> argsList) {
+        return argsList.contains("help");
+    }
+
+    public boolean accuracyOption(List<String> argList){
+        return argList.contains("accuracy");
     }
 }
+
+

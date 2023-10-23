@@ -14,7 +14,7 @@ public class ClassifyData {
                 labeled.instance(i).setClassValue(label);
             }
             return labeled;
-        } catch(Exception e) {
+        } catch(Exception e) { //TODO : handle wrong data and prediction combination
             // exception occurred while predicting data && write log away
             throw new RuntimeException();
         }

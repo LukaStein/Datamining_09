@@ -1,7 +1,7 @@
 package nl.bioinf.lts;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.ArrayList;
@@ -14,38 +14,74 @@ public class Controller {
     public String[] args;
 
 
-    public void chooseOutput(String confusionMatrix, Instances predictions,
-                             String summary) {
+    protected void chooseOutput() {
         CommandLine cmd = processCLArguments.commandLineParser(this.args);
         List<String> argList = cmd.getArgList();
-        if (argList.contains("help")) {
+        this.invalidOptionGiven(argList, cmd);
+
+        boolean verifyHelp =  processCLArguments.helpOption(argList);
+        if (verifyHelp){
             this.printHelp();
         }
-        if (argList.contains("predict")) {
-            this.printPredictions(predictions);
+        boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
+        ArrayList outputObjects = this.classification(verifyPredictionOption, argList);
+        this.printPredictions(outputObjects.get(0).toString());
+
+        boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
+
+        // Accuracy output only possible for training data set!
+        if (verifyPredictionOption && verifyAccuracy){
+            this.printAccuracy(outputObjects.get(1).toString(), outputObjects.get(2).toString());
         }
-        if (argList.contains("accuracy")) {
-            this.printConfusionMatrix(confusionMatrix, summary);
-        }
-        this.invalidOptionGiven(argList, cmd);
+
+
+
     }
 
-    public void invalidOptionGiven(List<String> argList, CommandLine cmd) {
+    private void invalidOptionGiven(List<String> argList, CommandLine cmd) {
         List<String> availableOptions = new ArrayList<>();
         availableOptions.add("help");
-        availableOptions.add("predict");
+        availableOptions.add("test");
         availableOptions.add("accuracy");
         availableOptions.add("training");
         for (int index = 1; index < cmd.getArgs().length; index++) {
             if (!availableOptions.contains(argList.get(index))) {
-                System.out.println("\nOption: " + this.args[index] + " does not exist.\n" +
-                        "Choose from the following options: h predict accuracy");
+                System.err.println("\nOption: " + this.args[index] + " does not exist.\n" +
+                        "Choose from the following options:" + availableOptions);
+                System.exit(0);
             }
         }
     }
 
+    private ArrayList<Object> classification(boolean verifyPredictionOption, List<String> argList){
+        // Instantiate data object
+        Instances data;
+        // Laad model
+        LoadClassifier loadModel = new LoadClassifier();
+        Classifier model = loadModel.loadClassifier();
+        // Laad data
+        LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
+        if(verifyPredictionOption){
+            data = loadFile.loadTrainingData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
+        } else {
+            data = loadFile.loadTestData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
+        }
+        // Voorspel labels
+        ClassifyData classifying = new ClassifyData();
+        Instances predictions = classifying.classifyData(model, data);
+        // Constructing accuracy data
+        ClassifierAccuracy accuracyAnnotations = new ClassifierAccuracy();
+        accuracyAnnotations.confusionMatrix(data, predictions);
+        String confusionMatrix = accuracyAnnotations.confusionMatrixToString();
+        // summary goed en fout
+        String summary = accuracyAnnotations.summary(predictions);
+        return new ArrayList<>(Arrays.asList(predictions, confusionMatrix, summary));
+    }
+
+
+
     public void printHelp(){
-        System.out.println("""
+        System.err.println("""
 
                 Usage: Main.java filename.arff
                 [optional = help (for help)]
@@ -56,14 +92,14 @@ public class Controller {
                 -\te.g. (script.java filename.arff accuracy predict)]""");
     }
 
-    private void printConfusionMatrix(String confusionMatrix, String summary){
+    private void printAccuracy(String confusionMatrix, String summary){
         // Bepaal goed en fout
         System.out.println(confusionMatrix);
         System.out.println(summary);
     }
 
-    private void printPredictions(Instances predictions){
+    private void printPredictions(String predictions){
         System.out.println(predictions);
-
     }
+
 }

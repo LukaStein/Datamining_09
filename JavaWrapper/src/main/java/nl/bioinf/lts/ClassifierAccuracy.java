@@ -37,7 +37,7 @@ public class ClassifierAccuracy {
 
 
     public String confusionMatrixToString(){
-        return "a   b   <-- classified as\n"
+        return "\n\na   b   <-- classified as\n"
                 + TP + " " + FN + " | " +  "a = sick\n"
                 + FP + " " +  TN + " | " + "b = healthy";
     }

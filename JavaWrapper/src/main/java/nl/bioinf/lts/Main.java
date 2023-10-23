@@ -23,22 +23,7 @@ public class Main {
         // Instantiate controller && pass args to controller
         Controller controller = new Controller();
         controller.args = args;
-        // Laad model
-        LoadClassifier loadModel = new LoadClassifier();
-        Classifier model = loadModel.loadClassifier();
         // Laad data
-        LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        Instances data = loadFile.loadTrainingData(args[0]); // argsList.contains(*.arff) // "logPatientData.arff"
-        // Voorspel labels
-        ClassifyData classifying = new ClassifyData();
-        Instances predictions = classifying.classifyData(model, data);
-        // Constructing accuracy data
-        ClassifierAccuracy accuracyAnnotations = new ClassifierAccuracy();
-        accuracyAnnotations.confusionMatrix(data, predictions);
-        String confusionMatrix = accuracyAnnotations.confusionMatrixToString();
-        // summary goed en fout
-        String summary = accuracyAnnotations.summary(predictions);
-        // finally choose the users chosen output
-        controller.chooseOutput(confusionMatrix, predictions, summary);
+        controller.chooseOutput();
     }
 }
