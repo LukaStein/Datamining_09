@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+
+
 // User interface choosing what the program must do
 public class Controller {
     private final ProcessCommandlineArguments processCLArguments = new ProcessCommandlineArguments();
@@ -19,23 +24,28 @@ public class Controller {
         List<String> argList = cmd.getArgList();
         this.invalidOptionGiven(argList, cmd);
 
-        boolean verifyHelp =  processCLArguments.helpOption(argList);
-        if (verifyHelp){
+        boolean verifyHelp = processCLArguments.helpOption(argList);
+        if (verifyHelp) {
             this.printHelp();
         }
         boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
-        ArrayList outputObjects = this.classification(verifyPredictionOption, argList);
+        ArrayList<Object> outputObjects = this.classification(verifyPredictionOption, argList);
         this.printPredictions(outputObjects.get(0).toString());
 
         boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
 
         // Accuracy output only possible for training data set!
-        if (verifyPredictionOption && verifyAccuracy){
+        if (verifyPredictionOption && verifyAccuracy) {
             this.printAccuracy(outputObjects.get(1).toString(), outputObjects.get(2).toString());
         }
-        if (!verifyPredictionOption && verifyAccuracy){
+        if (!verifyPredictionOption && verifyAccuracy) {
             System.err.println("Accuracy can only be calculated for training data." +
                     "\nPlease only give \"test\" as argument for predicting on testing data without a class attribute.");
+        }
+
+        boolean verifySaving = processCLArguments.saveOption(argList);
+        if (verifySaving) {
+            this.writeOutputAway(outputObjects);
         }
     }
 
@@ -45,6 +55,10 @@ public class Controller {
         availableOptions.add("test");
         availableOptions.add("accuracy");
         availableOptions.add("training");
+        availableOptions.add("save");
+        if (argList.contains("save")){
+            availableOptions.add(argList.get(argList.size() - 1));
+        }
         for (int index = 1; index < cmd.getArgs().length; index++) {
             if (!availableOptions.contains(argList.get(index))) {
                 System.err.println("\nOption: " + this.args[index] + " does not exist.\n" +
@@ -54,7 +68,7 @@ public class Controller {
         }
     }
 
-    private ArrayList<Object> classification(boolean verifyPredictionOption, List<String> argList){
+    private ArrayList<Object> classification(boolean verifyPredictionOption, List<String> argList) {
         // Instantiate data object
         Instances data;
         // Laad model
@@ -62,7 +76,7 @@ public class Controller {
         Classifier model = loadModel.loadClassifier();
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        if(verifyPredictionOption){
+        if (verifyPredictionOption) {
             data = loadFile.loadTrainingData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
         } else {
             data = loadFile.loadTestData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
@@ -80,8 +94,7 @@ public class Controller {
     }
 
 
-
-    public void printHelp(){
+    public void printHelp() {
         System.err.println("""
 
                 Usage: Main.java filename.arff
@@ -89,18 +102,30 @@ public class Controller {
                 Choose the keywords below for certain output
                 -\ttraining (Predicting training dataset)
                 -\ttest (Predicting test dataset)
-                -\taccuracy (output of confusion matrix and summary of accuracy)
+                -\taccuracy (Output of confusion matrix and summary of accuracy)
+                -\tsave filename.txt (Save output of program run to a new specified file)
                 -\te.g. (script.java filename.arff accuracy predict)]""");
     }
 
-    private void printAccuracy(String confusionMatrix, String summary){
+    private void printAccuracy(String confusionMatrix, String summary) {
         // Bepaal goed en fout
         System.out.println(confusionMatrix);
         System.out.println(summary);
     }
 
-    private void printPredictions(String predictions){
+    private void printPredictions(String predictions) {
         System.out.println(predictions);
     }
 
+    private void writeOutputAway(ArrayList<Object> outputObj) {
+        if (!this.args[this.args.length - 1].isEmpty()) {
+            OutputFile outputObject = new OutputFile();
+            outputObject.createOutputFile(this.args[this.args.length - 1]);
+            outputObject.writeOutputToNewFile(outputObj, this.args[this.args.length - 1]);
+        }
+    }
 }
+
+
+
+

@@ -17,6 +17,7 @@ public class ProcessCommandlineArguments {
         options.addOption(new Option("test", false, "Predicting test dataset"));
         options.addOption(new Option("accuracy", false, "Accuracy output"));
         // TODO: voeg optie toe voor opslaan van output
+        options.addOption(new Option("save", false, "Write output to new file"));
         return options;
     }
 
@@ -52,6 +53,10 @@ public class ProcessCommandlineArguments {
 
     public boolean accuracyOption(List<String> argList){
         return argList.contains("accuracy");
+    }
+
+    public boolean saveOption(List<String> argsList){
+        return argsList.contains("save");
     }
 }
 

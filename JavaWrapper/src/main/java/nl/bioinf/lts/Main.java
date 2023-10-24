@@ -13,6 +13,7 @@ public class Main {
             main.start(args);
             System.out.println("Closing WrapClassifier, goodbye...");
         } catch (RuntimeException e) {
+            e.printStackTrace();
             Controller controller = new Controller();
             controller.printHelp();
         }
