@@ -13,10 +13,10 @@ public class OutputFile {
             if (instantiateFileObject.createNewFile()){
                 System.out.println("File:\t-" + instantiateFileObject.getName() + "- Created successfully");
             } else {
-                System.err.println("File with specified name already exist.");
+                System.err.println("\nFile with specified name already exist.");
             }
         } catch (IOException e) {
-            System.err.println("Couldn't make file.");
+            System.err.println("\nCouldn't make file.");
         }
     }
 

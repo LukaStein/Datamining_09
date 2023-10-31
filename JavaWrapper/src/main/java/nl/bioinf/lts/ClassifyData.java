@@ -19,7 +19,7 @@ public class ClassifyData {
                 extractClasslabel.add(data.classAttribute().value((int) label));
             }
             return extractClasslabel;
-        } catch(Exception e) { //TODO : handle wrong data and prediction combination
+        } catch(Exception e) {
             // exception occurred while predicting data && write log away
             throw new RuntimeException();
         }

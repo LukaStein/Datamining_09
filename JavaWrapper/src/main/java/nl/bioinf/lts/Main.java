@@ -2,8 +2,6 @@ package nl.bioinf.lts;
 //javac -cp .:/commons/java/weka-3-8-5/weka.jar Main.java
 //java -cp .:/commons/java/weka-3-8-5/weka.jar Main.java
 
-import weka.classifiers.Classifier;
-import weka.core.Instances;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,7 +11,6 @@ public class Main {
             main.start(args);
             System.out.println("Closing WrapClassifier, goodbye...");
         } catch (RuntimeException e) {
-            e.printStackTrace();
             Controller controller = new Controller();
             controller.printHelp();
         }

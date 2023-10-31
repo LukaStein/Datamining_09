@@ -17,6 +17,7 @@ public class LoadTextSeparatedFile {
             return data;
         } catch (Exception e){
             // file not found  && write log away
+            System.err.println("Check if the the correct dataset file is chosen for the type of predicting");
             throw new RuntimeException();
         }
     }
@@ -32,6 +33,7 @@ public class LoadTextSeparatedFile {
             return data;
         } catch (Exception e){
             // file not found  && write log away
+            System.err.println("Check if the the correct dataset is chosen for the type of predicting");
             throw new RuntimeException();
         }
     }

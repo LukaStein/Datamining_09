@@ -27,7 +27,7 @@ public class Controller {
         }
         boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
         ArrayList<String> outputObjects = this.classification(verifyPredictionOption, argList);
-        this.printPredictions(outputObjects.get(0).toString());
+        this.printPredictions(outputObjects.get(0) + "\n");
 
         boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
 
@@ -36,8 +36,10 @@ public class Controller {
             this.printAccuracy(outputObjects.get(1), outputObjects.get(2));
         }
         if (!verifyPredictionOption && verifyAccuracy) {
-            System.err.println("Accuracy can only be calculated for training data." +
-                    "\nPlease only give \"test\" as argument for predicting on testing data without a class attribute.");
+            System.err.println("""
+                    \n
+                    Accuracy can only be calculated for training data.
+                    Please only give "test" as argument for predicting on testing data without a class attribute.""");
         }
 
         boolean verifySaving = processCLArguments.saveOption(argList);
@@ -126,7 +128,7 @@ public class Controller {
     }
 
     private void printPredictions(String predictions) {
-        System.out.println(predictions); // TODO: output onder elkaar
+        System.out.println(predictions);
     }
 
     private void writeOutputAway(ArrayList<String> outputObj) {
