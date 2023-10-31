@@ -6,11 +6,8 @@ import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
 
 
 // User interface choosing what the program must do
@@ -29,14 +26,14 @@ public class Controller {
             this.printHelp();
         }
         boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
-        ArrayList<Object> outputObjects = this.classification(verifyPredictionOption, argList);
+        ArrayList<String> outputObjects = this.classification(verifyPredictionOption, argList);
         this.printPredictions(outputObjects.get(0).toString());
 
         boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
 
         // Accuracy output only possible for training data set!
         if (verifyPredictionOption && verifyAccuracy) {
-            this.printAccuracy(outputObjects.get(1).toString(), outputObjects.get(2).toString());
+            this.printAccuracy(outputObjects.get(1), outputObjects.get(2));
         }
         if (!verifyPredictionOption && verifyAccuracy) {
             System.err.println("Accuracy can only be calculated for training data." +
@@ -68,7 +65,7 @@ public class Controller {
         }
     }
 
-    private ArrayList<Object> classification(boolean verifyPredictionOption, List<String> argList) {
+    private ArrayList<String> classification(boolean verifyPredictionOption, List<String> argList) {
         // Instantiate data object
         Instances data;
         // Laad model
@@ -76,21 +73,27 @@ public class Controller {
         Classifier model = loadModel.loadClassifier();
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
-        if (verifyPredictionOption) {
-            data = loadFile.loadTrainingData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
-        } else {
-            data = loadFile.loadTestData(argList.get(0)); // argsList.contains(*.arff) // "logPatientData.arff"
+        if (verifyPredictionOption) { // training
+            data = loadFile.loadTrainingData(argList.get(0));
+            // Voorspel labels
+            ClassifyData classifying = new ClassifyData();
+            List<String> predictions = classifying.classifyData(model, data);
+            // Constructing accuracy data
+            ClassifierAccuracy accuracyAnnotations = new ClassifierAccuracy();
+            accuracyAnnotations.confusionMatrix(data, predictions);
+            String confusionMatrix = accuracyAnnotations.confusionMatrixToString();
+            // summary goed en fout
+            String summary = accuracyAnnotations.summary(predictions);
+            String predLabels = this.formatPredictions(predictions);
+            return new ArrayList<>(Arrays.asList(predLabels, confusionMatrix, summary));
+        } else { // test
+            data = loadFile.loadTestData(argList.get(0));
+            // Voorspel labels
+            ClassifyData classifying = new ClassifyData();
+            List<String> predictions = classifying.classifyData(model, data);
+            String predLabels = formatPredictions(predictions);
+            return new ArrayList<>(Collections.singletonList(predLabels));
         }
-        // Voorspel labels
-        ClassifyData classifying = new ClassifyData();
-        Instances predictions = classifying.classifyData(model, data);
-        // Constructing accuracy data
-        ClassifierAccuracy accuracyAnnotations = new ClassifierAccuracy();
-        accuracyAnnotations.confusionMatrix(data, predictions);
-        String confusionMatrix = accuracyAnnotations.confusionMatrixToString();
-        // summary goed en fout
-        String summary = accuracyAnnotations.summary(predictions);
-        return new ArrayList<>(Arrays.asList(predictions, confusionMatrix, summary));
     }
 
 
@@ -107,6 +110,15 @@ public class Controller {
                 -\te.g. (script.java filename.arff accuracy predict)]""");
     }
 
+    private String formatPredictions(List<String> predictions){
+        String predLabels = """
+                    """;
+        for (String label : predictions) {
+            predLabels = predLabels + label + "\n";
+        }
+        return predLabels;
+    }
+
     private void printAccuracy(String confusionMatrix, String summary) {
         // Bepaal goed en fout
         System.out.println(confusionMatrix);
@@ -114,10 +126,10 @@ public class Controller {
     }
 
     private void printPredictions(String predictions) {
-        System.out.println(predictions);
+        System.out.println(predictions); // TODO: output onder elkaar
     }
 
-    private void writeOutputAway(ArrayList<Object> outputObj) {
+    private void writeOutputAway(ArrayList<String> outputObj) {
         if (!this.args[this.args.length - 1].isEmpty()) {
             OutputFile outputObject = new OutputFile();
             outputObject.createOutputFile(this.args[this.args.length - 1]);

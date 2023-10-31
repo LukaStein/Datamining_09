@@ -1,8 +1,10 @@
 package nl.bioinf.lts;
 
+import weka.core.Instance;
 import weka.core.Instances;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.List;
 
 //   a   b   <-- classified as
 //        144   3 |   a = sick
@@ -14,22 +16,23 @@ public class ClassifierAccuracy {
     private int FN = 0;
     private String sick = "sick";
     private String healthy = "healthy";
-    public void confusionMatrix(Instances data, Instances predictions){
-        for (int logRow = 0; logRow < predictions.size(); logRow++){
-            String[] firstInstanceData = data.get(logRow).toString().split(",");
-            String[] firstInstancePred = predictions.get(logRow).toString().split(",");
-            String dataClassifier = firstInstanceData[firstInstanceData.length-1];
-            String predClassifier = firstInstancePred[firstInstancePred.length-1];
-            if ((dataClassifier.equals(sick) && predClassifier.equals(sick))){
+
+
+    public void confusionMatrix(Instances data, List<String> predictionLabel){
+        for (int row = 0; row < data.size(); row++){
+            Instance supervisedInstance = data.instance(row);
+            double classIndex = supervisedInstance.classValue();
+            String supervisedLabel = data.classAttribute().value((int) classIndex);
+            if ((supervisedLabel.equals(sick) && predictionLabel.get(row).equals(sick))){
                 TP += 1;
             }
-            if ((dataClassifier.equals(sick) && predClassifier.equals(healthy))){
+            if ((supervisedLabel.equals(sick) && predictionLabel.get(row).equals(healthy))){
                 FP += 1;
             }
-            if ((dataClassifier.equals(healthy) && predClassifier.equals(healthy))){
+            if ((supervisedLabel.equals(healthy) && predictionLabel.get(row).equals(healthy))){
                 TN += 1;
             }
-            if ((dataClassifier.equals(healthy) && predClassifier.equals(sick))){
+            if ((supervisedLabel.equals(healthy) && predictionLabel.get(row).equals(sick))){
                 FN += 1;
             }
         }
@@ -41,13 +44,13 @@ public class ClassifierAccuracy {
                 + TP + " " + FN + " | " +  "a = sick\n"
                 + FP + " " +  TN + " | " + "b = healthy";
     }
-    public String summary(Instances predictions){
-        double numInstances = predictions.numInstances();
+    public String summary(List<String> predictions){
+        double numInstances = predictions.size();
         double correct = ((TP + TN)/numInstances) * 100;
         double incorrect = ((FP + FN)/numInstances) * 100;
         DecimalFormat twoDec = new DecimalFormat("##.00");
         return "\nSummary:\n" +
                 "Correct:\t" + twoDec.format(correct) + " %\n" +
-                "Incorrect:\t" + twoDec.format(incorrect) + " %";
+                "Incorrect:\t" + twoDec.format(incorrect) + " %\n";
     }
 }

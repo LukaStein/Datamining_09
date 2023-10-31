@@ -16,7 +16,6 @@ public class ProcessCommandlineArguments {
         options.addOption(new Option("training", false, "Predicting training dataset"));
         options.addOption(new Option("test", false, "Predicting test dataset"));
         options.addOption(new Option("accuracy", false, "Accuracy output"));
-        // TODO: voeg optie toe voor opslaan van output
         options.addOption(new Option("save", false, "Write output to new file"));
         return options;
     }

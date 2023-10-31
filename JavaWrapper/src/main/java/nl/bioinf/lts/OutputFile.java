@@ -20,10 +20,12 @@ public class OutputFile {
         }
     }
 
-    public void writeOutputToNewFile(ArrayList<Object> outputVar, String FILENAME){
+    public void writeOutputToNewFile(ArrayList<String> outputVar, String FILENAME){
         try{
             FileWriter instantiateWriterObject = new FileWriter(FILENAME);
-            instantiateWriterObject.write(String.valueOf(outputVar));
+            for (String outputobj : outputVar) {
+                instantiateWriterObject.write(outputobj + "\n");
+            }
             instantiateWriterObject.close();
             System.out.println("File:\t-" + FILENAME + "- Written output successfully" );
         } catch (IOException e) {
