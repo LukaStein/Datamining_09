@@ -83,4 +83,74 @@ If option save is chosen, the method writeOutputAway in class Controller instant
 This class creates an output file with a name given by the user and then writes the output to that file.
 
 
+## Installation 
+To run the program only a JDK needs to be installed. If it's desired to run the project itself from an IDE then read
+*External libraries*, since the libraries will be outdated in the future.
 
+### JDK (required)
+The advantage of Java is that running of jar archives isn't chained to one OS system. A JDK enables exactly that.
+On Oracle a JDK can be downloaded, for this project JDK 19 is installed.
+> Link: https://www.oracle.com/java/technologies/javase/jdk19-archive-downloads.html
+
+
+Choose the right JDK for your operating system or search the web for advise what to download. 
+For windows that would be **Windows x64 Installer**. 
+
+Depending on your OS you might have to setup a JDK differently.
+For example in Windows you have to set up system environment variables first.
+Consult the following website so you get the gist for Windows or Mac.
+> Link: https://www.freecodecamp.org/news/how-to-set-up-java-development-environment-a-comprehensive-guide/
+
+If you use Linux consult Oracle.
+> Link: https://docs.oracle.com/javase/8/docs/technotes/guides/install/linux_jdk.html
+
+### External libraries (optional)
+This project's packages are from two main external libraries. In build.gradle they are added under dependencies
+```groovy
+dependencies {
+    implementation group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.5' // weka
+    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+    implementation('commons-cli:commons-cli:1.4') // org apache commons
+}
+```
+For more information about the libraries.
+> (weka)   Link: https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable
+> (apache) Link: https://mvnrepository.com/artifact/commons-cli/commons-cli/1.4
+
+
+## Usage
+It's required to have a .arff file to receive predictions. Also it's important to give a supervised file to keyword training
+and an unsupervised file to keyword test to receive the output you had in mind. 
+
+To run the jar archive use the following keywords structure: java -jar archive.jar file.arff (optional keywords*)
+*the optional keywords are *test*, *training*, *accuracy*, *save*, *help*
+
+See the following bash commands as example.
+**Test & print predictions & save**
+```bash
+java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff test save
+```
+
+**Train model & print predictions**
+````bash
+java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar logPatientData.arff training 
+````
+
+**Train model & print both predictions as model performance summary**
+````bash
+java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff training accuracy
+````
+
+**Consult help**
+````bash
+java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff help
+````
+
+> **NB** If you give an illegal keyword (combination) the program will always give a corresponding help message.
+
+## Support
+* l.t.stein@st.hanze.nl
+
+
+## Acknowledgement
+This project is made by a bio-informatics student (L T Stein) of the Hanzehogeschool Groningingen in year 3.

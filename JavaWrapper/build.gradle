@@ -21,13 +21,6 @@ test {
     useJUnitPlatform()
 }
 
-//shadowJar {
-//    archiveFileName = 'Theme09-ML-Application-' + project.version + '.jar'
-//
-//    manifest {
-//        attributes('Main-Class': 'nl.bioinf.vktalen.thema09_ml.RunWrapper')
-//    }
-//}
 
 shadowJar {
     archiveFileName = 'ParkinsonDysphonia-ML' + project.version + '.jar'
