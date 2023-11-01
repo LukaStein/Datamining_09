@@ -106,10 +106,9 @@ If you use Linux consult Oracle.
 > Link: https://docs.oracle.com/javase/8/docs/technotes/guides/install/linux_jdk.html
 
 ### Program & files (required)
-After the JDK is successfully set up, look in the PKD_ML_PROGRAM (ParkinsonDysphonia-MachineLearning) directory in the main repository.
+After the JDK is successfully set up, download the PKD_ML_PROGRAM.zip (ParkinsonDysphonia-MachineLearning) directory in the main repository.
 Inside is the program itself; a jar archive and two .arff files; one supervised and one unsupervised.
-Downloading the files is optional and instead you can use your own research files, though downloading the program
-of course is mandatory. 
+
 
 The advantage of a jar archive is that the program can be executed anywhere.
 Additionally, it's not required to first set up a Java project and handle all settings plus dependencies, 
