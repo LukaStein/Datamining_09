@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group = 'nl.bioinf.lts.JavaWrapper'
-version = '1.0-SNAPSHOT'
+group = 'nl.bioinf.lts'
+version = '0.43-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -20,3 +21,20 @@ test {
     useJUnitPlatform()
 }
 
+//shadowJar {
+//    archiveFileName = 'Theme09-ML-Application-' + project.version + '.jar'
+//
+//    manifest {
+//        attributes('Main-Class': 'nl.bioinf.vktalen.thema09_ml.RunWrapper')
+//    }
+//}
+
+shadowJar {
+    archiveFileName = 'ParkinsonDysphonia-ML' + project.version + '.jar'
+
+    manifest {
+        attributes(
+                'Main-Class': 'nl.bioinf.lts.Main'
+       )
+   }
+}

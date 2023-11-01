@@ -1,7 +1,5 @@
 package nl.bioinf.lts;
-//javac -cp .:/commons/java/weka-3-8-5/weka.jar Main.java
-//java -cp .:/commons/java/weka-3-8-5/weka.jar Main.java
-
+//java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar
 
 public class Main {
     public static void main(String[] args) {
@@ -17,7 +15,6 @@ public class Main {
     }
 
     private void start(String[] args) {
-
         // Instantiate controller && pass args to controller
         Controller controller = new Controller();
         controller.args = args;

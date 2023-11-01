@@ -1,9 +1,6 @@
 package nl.bioinf.lts;
 
 import org.apache.commons.cli.*;
-import weka.core.Instances;
-
-import java.util.Arrays;
 import java.util.List;
 
 public class ProcessCommandlineArguments {

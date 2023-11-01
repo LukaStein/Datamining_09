@@ -3,7 +3,6 @@ package nl.bioinf.lts;
 import weka.core.Instance;
 import weka.core.Instances;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.List;
 
 //   a   b   <-- classified as
