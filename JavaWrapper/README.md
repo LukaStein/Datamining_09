@@ -37,6 +37,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 20.0.2+9-78, mixed mode, sharing)
 - java.util.List;
 - java.io.File;
 - java.io.FileWriter;
+- java.io.InputStream;
 - java.io.IOException;
 - java.text.DecimalFormat;
 
@@ -84,7 +85,7 @@ This class creates an output file with a name given by the user and then writes 
 
 
 ## Installation 
-To run the program only a JDK needs to be installed. If it's desired to run the project itself from an IDE then read
+To run the program only a JDK needs to be installed, the program (jar) itself and an .arff file. If it's desired to run the project (JavaWrapper) itself from an IDE then read
 *External libraries*, since the libraries will be outdated in the future.
 
 ### JDK (required)
@@ -103,6 +104,19 @@ Consult the following website so you get the gist for Windows or Mac.
 
 If you use Linux consult Oracle.
 > Link: https://docs.oracle.com/javase/8/docs/technotes/guides/install/linux_jdk.html
+
+### Program & files (required)
+After the JDK is successfully set up, look in the PKD_ML_PROGRAM (ParkinsonDysphonia-MachineLearning) directory in the main repository.
+Inside is the program itself; a jar archive and two .arff files; one supervised and one unsupervised.
+Downloading the files is optional and instead you can use your own research files, though downloading the program
+of course is mandatory. 
+
+The advantage of a jar archive is that the program can be executed anywhere.
+Additionally, it's not required to first set up a Java project and handle all settings plus dependencies, 
+which is of course not user-friendly to those not keen on developing.
+
+> **PKD_ML_PROGRAM/ Name of program**: *ParkinsonDysphonia-ML0.43-SNAPSHOT.jar*
+> **PKD_ML_PROGRAM/ Names of files**: *logPatientData.arff* & *log_patient_data_labeless.arff*
 
 ### External libraries (optional)
 This project's packages are from two main external libraries. In build.gradle they are added under dependencies
@@ -153,4 +167,4 @@ java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_l
 
 
 ## Acknowledgement
-This project is made by a bio-informatics student (L T Stein) of the Hanzehogeschool Groningingen in year 3.
+This project is made by a bio-informatics student (L T Stein) of the Hanzehogeschool Groningen in year 3.
