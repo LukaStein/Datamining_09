@@ -4,11 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 
 // User interface choosing what the program must do
 public class Controller {
@@ -20,13 +16,14 @@ public class Controller {
         CommandLine cmd = processCLArguments.commandLineParser(this.args);
         List<String> argList = cmd.getArgList();
         this.invalidOptionGiven(argList, cmd);
-
         boolean verifyHelp = processCLArguments.helpOption(argList);
         if (verifyHelp) {
             this.printHelp();
         }
+
+        boolean verifyInputOption = processCLArguments.inputDataOption(argList);
         boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
-        ArrayList<String> outputObjects = this.classification(verifyPredictionOption, argList);
+        ArrayList<String> outputObjects = this.classification(verifyPredictionOption, verifyInputOption, argList);
         this.printPredictions(outputObjects.get(0) + "\n");
 
         boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
@@ -51,6 +48,8 @@ public class Controller {
     private void invalidOptionGiven(List<String> argList, CommandLine cmd) {
         List<String> availableOptions = new ArrayList<>();
         availableOptions.add("help");
+        availableOptions.add("instance");
+        availableOptions.add("file");
         availableOptions.add("test");
         availableOptions.add("accuracy");
         availableOptions.add("training");
@@ -67,16 +66,45 @@ public class Controller {
         }
     }
 
-    private ArrayList<String> classification(boolean verifyPredictionOption, List<String> argList) {
+    private String oneInstanceOptionVerified() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter instance (one):");
+        String inputObj = scanner.nextLine();
+        System.out.println("Received argument: " + inputObj);
+        scanner.close();
+        if (inputObj.isEmpty()) {
+            System.err.println("No file or instance given. Consult help for more details");
+            System.exit(0);
+        }
+        return inputObj;
+
+    }
+
+    private ArrayList<String> classification(boolean verifyPredictionOption,
+                                             boolean verifyInputOption,
+                                             List<String> argList) {
         // Instantiate data object
         Instances data;
+        // Instantiate FILENAME object
+        String FILENAME = "";
         // Laad model
         LoadClassifier loadModel = new LoadClassifier();
         Classifier model = loadModel.loadClassifier();
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
+
+
+        if (verifyInputOption) { // file
+            FILENAME = this.oneInstanceOptionVerified();;
+        } else { // instance
+            String oneINSTANCE = this.oneInstanceOptionVerified();
+            String tempFilename = loadFile.createTemporaryFileOfSingleInstance();
+            loadFile.writeInstanceToTempFile(oneINSTANCE);
+            FILENAME = tempFilename;
+        }
+
         if (verifyPredictionOption) { // training
-            data = loadFile.loadTrainingData(argList.get(0));
+            data = loadFile.loadTrainingData(FILENAME);
             // Voorspel labels
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
@@ -89,13 +117,14 @@ public class Controller {
             String predLabels = this.formatPredictions(predictions);
             return new ArrayList<>(Arrays.asList(predLabels, confusionMatrix, summary));
         } else { // test
-            data = loadFile.loadTestData(argList.get(0));
+            data = loadFile.loadTestData(FILENAME);
             // Voorspel labels
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
             String predLabels = formatPredictions(predictions);
             return new ArrayList<>(Collections.singletonList(predLabels));
         }
+        loadFile.deleteTemporaryFileOfSingleInstance();
     }
 
 

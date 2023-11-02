@@ -4,10 +4,41 @@ import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 public class LoadTextSeparatedFile {
+    private String tempFileName = "";
+    private File tempObj;
+
+    public String createTemporaryFileOfSingleInstance() {
+        try{
+            File tempFileObj = File.createTempFile("singleInstanceTemp", ".txt");
+            this.tempObj = tempFileObj;
+            this.tempFileName = tempFileObj.getName();
+            return this.tempFileName;
+        } catch (IOException ioe) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void writeInstanceToTempFile(String oneINSTANCE){
+        try{
+            FileWriter instantiateWriterObject = new FileWriter(this.tempFileName);
+            instantiateWriterObject.write(oneINSTANCE);
+            instantiateWriterObject.close();
+        } catch (IOException e) {
+            System.err.println("Couldn't write to file.");
+        }
+    }
+
+    public void deleteTemporaryFileOfSingleInstance() {
+        this.tempObj.delete();
+    }
+
     public Instances loadTrainingData(String FILENAME) {
         try {
             // load dataset
