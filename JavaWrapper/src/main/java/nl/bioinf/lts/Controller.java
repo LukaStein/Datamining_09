@@ -20,10 +20,9 @@ public class Controller {
         if (verifyHelp) {
             this.printHelp();
         }
-
         boolean verifyInputOption = processCLArguments.inputDataOption(argList);
         boolean verifyPredictionOption = processCLArguments.predictionOption(argList);
-        ArrayList<String> outputObjects = this.classification(verifyPredictionOption, verifyInputOption, argList);
+        ArrayList<String> outputObjects = this.classification(verifyPredictionOption, verifyInputOption);
         this.printPredictions(outputObjects.get(0) + "\n");
 
         boolean verifyAccuracy = processCLArguments.accuracyOption(argList);
@@ -66,9 +65,9 @@ public class Controller {
         }
     }
 
-    private String oneInstanceOptionVerified() {
+    private String dataOptionVerified() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter instance (one):");
+        System.out.println("Enter instance (one) or filename:");
         String inputObj = scanner.nextLine();
         System.out.println("Received argument: " + inputObj);
         scanner.close();
@@ -81,8 +80,7 @@ public class Controller {
     }
 
     private ArrayList<String> classification(boolean verifyPredictionOption,
-                                             boolean verifyInputOption,
-                                             List<String> argList) {
+                                             boolean verifyInputOption) {
         // Instantiate data object
         Instances data;
         // Instantiate FILENAME object
@@ -93,11 +91,10 @@ public class Controller {
         // Laad data
         LoadTextSeparatedFile loadFile = new LoadTextSeparatedFile();
 
-
         if (verifyInputOption) { // file
-            FILENAME = this.oneInstanceOptionVerified();;
+            FILENAME = this.dataOptionVerified();
         } else { // instance
-            String oneINSTANCE = this.oneInstanceOptionVerified();
+            String oneINSTANCE = this.dataOptionVerified();
             String tempFilename = loadFile.createTemporaryFileOfSingleInstance();
             loadFile.writeInstanceToTempFile(oneINSTANCE);
             FILENAME = tempFilename;
@@ -105,6 +102,7 @@ public class Controller {
 
         if (verifyPredictionOption) { // training
             data = loadFile.loadTrainingData(FILENAME);
+//            loadFile.deleteTemporaryFileOfSingleInstance();
             // Voorspel labels
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
@@ -118,13 +116,13 @@ public class Controller {
             return new ArrayList<>(Arrays.asList(predLabels, confusionMatrix, summary));
         } else { // test
             data = loadFile.loadTestData(FILENAME);
+//            loadFile.deleteTemporaryFileOfSingleInstance();
             // Voorspel labels
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
             String predLabels = formatPredictions(predictions);
             return new ArrayList<>(Collections.singletonList(predLabels));
         }
-        loadFile.deleteTemporaryFileOfSingleInstance();
     }
 
 

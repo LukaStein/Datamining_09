@@ -10,7 +10,8 @@ public class Main {
             System.out.println("Closing WrapClassifier, goodbye...");
         } catch (RuntimeException e) {
             Controller controller = new Controller();
-            controller.printHelp();
+            e.printStackTrace();
+//            controller.printHelp();
         }
     }
 
