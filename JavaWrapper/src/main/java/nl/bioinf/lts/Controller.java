@@ -114,7 +114,6 @@ public class Controller {
             // summary goed en fout
             String summary = accuracyAnnotations.summary(predictions);
             String predLabels = this.formatPredictions(predictions);
-            loadFile.deleteTemporaryFileOfSingleInstance();
             return new ArrayList<>(Arrays.asList(predLabels, confusionMatrix, summary));
         } else { // test
             data = loadFile.loadTestData(FILENAME);
@@ -123,7 +122,6 @@ public class Controller {
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
             String predLabels = formatPredictions(predictions);
-            loadFile.deleteTemporaryFileOfSingleInstance();
             return new ArrayList<>(Collections.singletonList(predLabels));
         }
     }

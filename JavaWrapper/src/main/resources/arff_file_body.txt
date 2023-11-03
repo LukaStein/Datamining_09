@@ -1,24 +1,8 @@
 @relation log_patient_data
 
 @attribute MDVP.Fo.Hz. numeric
-@attribute MDVP.Fhi.Hz. numeric
 @attribute MDVP.Flo.Hz. numeric
-@attribute MDVP.Jitter... numeric
 @attribute MDVP.Jitter.Abs. numeric
-@attribute MDVP.RAP numeric
-@attribute MDVP.PPQ numeric
-@attribute Jitter.DDP numeric
-@attribute MDVP.Shimmer numeric
-@attribute MDVP.Shimmer.dB. numeric
-@attribute Shimmer.APQ3 numeric
-@attribute Shimmer.APQ5 numeric
-@attribute MDVP.APQ numeric
 @attribute Shimmer.DDA numeric
 @attribute NHR numeric
-@attribute HNR numeric
-@attribute RPDE numeric
-@attribute DFA numeric
-@attribute spread1 numeric
-@attribute spread2 numeric
-@attribute D2 numeric
 @attribute PPE numeric
