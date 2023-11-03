@@ -4,30 +4,27 @@ import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
-import java.io.IOException;
+import java.util.Scanner;
 
 public class LoadTextSeparatedFile {
-    private String tempFileName = "";
     private File tempObj;
 
     public String createTemporaryFileOfSingleInstance() {
         try{
-            File tempFileObj = File.createTempFile("singleInstanceTemp", ".txt");
-            this.tempObj = tempFileObj;
-            this.tempFileName = tempFileObj.getName();
-            return this.tempFileName;
+            this.tempObj = File.createTempFile("singleInstanceTemp", ".arff");
+            return this.tempObj.getName();
         } catch (IOException ioe) {
             throw new RuntimeException();
         }
     }
 
-    public void writeInstanceToTempFile(String oneINSTANCE){
+    public void writeInstanceToTempFile(String oneINSTANCE, StringBuilder body){
         try{
-            FileWriter instantiateWriterObject = new FileWriter(this.tempFileName);
+            FileWriter instantiateWriterObject = new FileWriter(this.tempObj.getName());
+            instantiateWriterObject.write(String.valueOf(body));
             instantiateWriterObject.write(oneINSTANCE);
             instantiateWriterObject.close();
         } catch (IOException e) {
@@ -36,9 +33,10 @@ public class LoadTextSeparatedFile {
     }
 
     public void deleteTemporaryFileOfSingleInstance() {
-        this.tempObj.delete();
+        this.tempObj.deleteOnExit();
     }
 
+    // method that loads data with a class attribute present
     public Instances loadTrainingData(String FILENAME) {
         try {
             // load dataset
@@ -81,4 +79,34 @@ public class LoadTextSeparatedFile {
         // position 24 attr. is position 23 due to starting index of zero.
         data.setClassIndex(data.numAttributes() - 1);
     }
+
+
+    public StringBuilder chooseArffBody(boolean predictionOption) {
+        try {
+            StringBuilder body = new StringBuilder();
+            InputStream getFile = getClass().getClassLoader().getResourceAsStream("arff_file_body.txt");
+            assert getFile != null;
+            Scanner readArffFileObj = new Scanner(getFile);
+            while (readArffFileObj.hasNextLine()) {
+                String bodyLine = readArffFileObj.nextLine();
+                body.append(bodyLine).append("\n");
+            }
+            readArffFileObj.close();
+            if (predictionOption) { // training format
+                return new StringBuilder(body + """
+                        @attribute status {sick,healthy}
+                        
+                        @data
+                        """);
+            } else { // test format
+                return new StringBuilder(body + """
+                        
+                        @data
+                        """);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

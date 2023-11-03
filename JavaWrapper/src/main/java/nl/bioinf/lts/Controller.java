@@ -68,6 +68,7 @@ public class Controller {
     private String dataOptionVerified() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter instance (one) or filename:");
+        System.out.print("> ");
         String inputObj = scanner.nextLine();
         System.out.println("Received argument: " + inputObj);
         scanner.close();
@@ -76,7 +77,6 @@ public class Controller {
             System.exit(0);
         }
         return inputObj;
-
     }
 
     private ArrayList<String> classification(boolean verifyPredictionOption,
@@ -95,8 +95,9 @@ public class Controller {
             FILENAME = this.dataOptionVerified();
         } else { // instance
             String oneINSTANCE = this.dataOptionVerified();
+            StringBuilder body = loadFile.chooseArffBody(verifyPredictionOption);
             String tempFilename = loadFile.createTemporaryFileOfSingleInstance();
-            loadFile.writeInstanceToTempFile(oneINSTANCE);
+            loadFile.writeInstanceToTempFile(oneINSTANCE, body);
             FILENAME = tempFilename;
         }
 
@@ -113,6 +114,7 @@ public class Controller {
             // summary goed en fout
             String summary = accuracyAnnotations.summary(predictions);
             String predLabels = this.formatPredictions(predictions);
+            loadFile.deleteTemporaryFileOfSingleInstance();
             return new ArrayList<>(Arrays.asList(predLabels, confusionMatrix, summary));
         } else { // test
             data = loadFile.loadTestData(FILENAME);
@@ -121,6 +123,7 @@ public class Controller {
             ClassifyData classifying = new ClassifyData();
             List<String> predictions = classifying.classifyData(model, data);
             String predLabels = formatPredictions(predictions);
+            loadFile.deleteTemporaryFileOfSingleInstance();
             return new ArrayList<>(Collections.singletonList(predLabels));
         }
     }
@@ -155,7 +158,7 @@ public class Controller {
     }
 
     private void printPredictions(String predictions) {
-        System.out.println(predictions);
+        System.out.println("Prediction(s):\n" + predictions);
     }
 
     private void writeOutputAway(ArrayList<String> outputObj) {
