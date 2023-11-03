@@ -1157,6 +1157,25 @@ oneR.data
 ggplot(oneR.data, aes(x = False_Positive_Rate, y = True_Positive_Rate)) + geom_line(color = "green2", size = 1)
 ```
 
+### Optimize Random-forest bagging
+
+From selecting features and testing WrapperSubsetEval on Random forest the following 6 attributes ranked best :
+MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR, PPE.
+
+What if we only use these attributes and tell bagging - random forest to choose a certain amount of random attributes? Go to the settings of random forest inside the bagging menu and set the option numFeatures to seven (including status attribute).
+
+Correctly Classified Instances         182               93.3333 %
+Incorrectly Classified Instances        13                6.6667 
+
+   a   b   <-- classified as
+ 142   5 |   a = sick
+   8  40 |   b = healthy
+   
+As you can see the accuracy has increased by one percent. After testing other options it seems this will be the optimized model to use for predicting on the data.
+
+**Retrospective**
+A final model has been found with a 93.3333 percent accuracy; a by bagging optimized random forest model that chooses seven random attributes.
+
 \pagebreak
 
 ```{=tex}
