@@ -70,8 +70,8 @@ public class LoadTextSeparatedFile {
     private void addClassAttribute(Instances data){
         // prepare levels
         List<String> statusLabels = new ArrayList<>();
-        statusLabels.add("healthy");
         statusLabels.add("sick");
+        statusLabels.add("healthy");
         // instantiate status attribute
         Attribute status = new Attribute("status", statusLabels);
         // insert and assign class attribute
