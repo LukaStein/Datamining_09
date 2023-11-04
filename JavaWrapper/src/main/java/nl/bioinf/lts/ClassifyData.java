@@ -11,6 +11,7 @@ public class ClassifyData {
         // dataframe labeled
         Instances labeled = new Instances(data);
         List<String> extractClasslabel = new ArrayList<String>();
+
         try {
             for (int i = 0; i < data.numInstances(); i++) {
                 // get one instance
