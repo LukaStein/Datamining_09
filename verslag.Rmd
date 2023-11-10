@@ -1,5 +1,5 @@
 ---
-title: "Diagnostiseren Parkinson dysphonia"
+title: "Diagnostiseren parkinson dysfonie"
 author: "L T Stein"
 date: "`r Sys.Date()`"
 output:
@@ -11,7 +11,36 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Resultaten
+# Afkortingen
+Parkinson Dysphonia (PD)
+
+# Introductie
+
+Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon?
+In dit onderzoek zullen de Parkinson Dysphonia (PD) geluidsopnames van 195 individuen onderzocht worden via exploratieve data analyse (EDA) en zal er bepaald worden welke metingen het beste zijn om een PD patiënt te onderscheiden met een gezond mens. \bibitem{Kaggle dataset}. De geleverde dataset is supervised, dit betekent dat het al bekend is wie gezond is en wie PD heeft.
+
+Het onvrijwillig samentrekken van stembanden of strottenhoofd is Spasmodische dysfonie (Engels: Dysphonia). \bibitem{Dysphonia betekenis}. Dit zorgt voor vernauwde spraak en breken van stemgeluid. \bibitem{Dysphonia symptomen}. Omdat dysfonie een symptoom kan zijn van Parkison \bibitem{Parkinson en dystonie} zijn er 22 kenmerken in stemgeluid opgenomen via verschillende methoden, met als voorbeeld lage stem frequenties. Deze worden nader uitgelegd in Materiaal & methoden. 
+
+In de EDA wordt met het programma Weka via select features en baselearning bepaald wat de beste attributen zijn en welk model het beste op deze data kan trainen.
+Hieruit wordt het duidelijk dat er zes attributen (kenmerkende geluidsopnamen): MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE de beste combinatie vormen om mensen met PD te vinden. Deze groep worden gegeven aan een geoptimaliseerde Random Forest model die op de supervised data voor 93.3333 procent goed voorspeld. 
+
+Op basis van deze bevindingen is er een Java (jar) programma gemaakt die kan Voorspellen op zowel een supervised als unsupervised bestand of enkele regel (patiënt) met de zes eerder genoemde attributen.
+Om dit programma te testen is daarom de data opgesplitst in supervised data waarop het model is getrained en unsupervised data waarop het model niet op is getrained. Het programma doet het beter op de getrainde supervised data voor 98,46 procent goed en op de test data voor 96,15 procent goed. 
+
+
+
+\pagebreak
+
+# Materiaal & Methoden
+
+
+
+\pagebreak
+
+
+# Resultaten
+
+## EDA
 
 ### Volledigheid
 
@@ -26,6 +55,8 @@ De rijen zijn verdeeld in 48 gezonden instanties en 147 PD patiënten instanties
 **Figuur 1** Barplot dat de aantallen per levels laat zien. Op de x-as zijn de statussen gezond (healthy) en sick(PD patiënt) en op de y-as is de hoeveelheid uitgedrukt in mensen.
 
 Zoals te zien in figuur 1 zijn er drie keer zo veel rijen van zieke mensen dan gezonde mensen in de dataset.
+
+\pagebreak
 
 ### Attributen observeren
 
@@ -85,6 +116,12 @@ Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle corre
 
 &nbsp;
 
+\pagebreak
+
+### Supervised Machine Learning
+
+\pagebreak
+
 ## Discussie
 
 Vanwege het feit dat de hoeveelheid zieke mensen in figuur 1 drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha 0.05 te vermenigvuldigen met het aantal rijen. Al hoewel het voor onderzoek en model training genoeg data is zou als vervolg onderzoek een grotere dataset gebruikt kunnen worden om zekerder te zijn van alle observaties.
@@ -118,3 +155,37 @@ Door het observeren en testen van de parkinson data is het duidelijk geworden da
 &nbsp;
 
 Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben om statistische toevalligheden uit te sluiten, die nu meer waarschijnlijk zijn.
+
+
+\pagebreak
+#TODO alles nederlands
+```{=tex}
+\begin{thebibliography}{9}
+
+\bibitem{Dysphonic voice analysis}
+Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+\bibitem{Kaggle dataset}
+Yunfeng Wu et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
+https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
+
+\bibitem{Indeed negative correlation}
+Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
+
+\bibitem{F-measure}
+Ethan Zhang. 
+
+\bibitem{Dysphonia betekenis}
+LUMC. Betekenis van Dysponia: \texit{Spasmodische dysfonie} Link : 
+https://www.lumc.nl/over-het-lumc/afdelingen/keel--neus--en-oorheelkunde/ziektes-en-aandoeningen/spasmodische-dysfonie/spasmodische-dysfonie/#:~:text=Men%20spreekt%20van%20een%20spasmodische,normaal%20uitgesproken%20zin%20te%20maken.
+
+\bibitem{Dysphonia symptomen}
+Dr. Alexander Hillel, M.D. Symptomen en type dysphonie: \texit{Spasmodic Dysphonia} Link :
+https://www.hopkinsmedicine.org/health/conditions-and-diseases/spasmodic-dysphonia
+
+\bibitem{Parkinson en dystonie}
+Dystonie vereniging. Dystonie beschrijving: \texit{Wat is de relatie tussen Parkinson en dystonie? (B)} Link :
+https://dystonievereniging.nl/magazine/wat-is-de-relatie-tussen-parkinson-en-dystonie-b/#:~:text=Dystonie%20is%20een%20onwillekeurige%20spiercontractie,ziekte%20zelf%2C%20zonder%20andere%20symptomen.
+
+\end{thebibliography}
+```
