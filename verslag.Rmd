@@ -31,14 +31,33 @@ Om dit programma te testen is daarom de data opgesplitst in supervised data waar
 
 \pagebreak
 
-# Materiaal & Methoden
+# Materiaal & Methode
 
+In dit hoofdstuk wordt behandeld waar het gebruikte materiaal vandaan komt en welke methoden hierop zijn toegepast.
+
+## Dataset
+Via Kaggle is er een csv bestand opgehaald met 24 kolommen \bibitem{Kaggle dataset}. Twee hiervan zijn nominaal, dat betekent dat één kolom patiënten id's heeft en één kolom heeft de statussen nul en een, deze zijn respectievelijk veranderd naar "gezond" en "ziek" voor leesbaarheid. Verder bevat het bestand 195 instanties (patiënten), waarvan 147 ziek zijn (PD) en 48 zijn gezond. De 22 numerieke kolommen zijn geluidsopnames bepaald via verschillende methoden.
+
+Hieronder is een vertaald tabel dat ieder attribuut beschrijft, deze is overgenomen uit het artikel die bij de dataset hoort \bibitem{Dysphonic voice analysis} (tabel 2). 
+
+
+De attributen kunnen worden verdeeld in groepen meetmethoden, op basis van de linker delen van iedere naam: MDVP, Shimmer, harmonics, spread en losse methoden.
+De eerste groep genaamd MDVP is een programma en staat voor "Multi-Dimensional Voice Program". Hiermee kunnen 33 stem parameters geanalyseerd worden, waarmee metingen in de stem zoals frequenties of de amplitude van trillingen worden geschat \bibitem{MDVP definitie}. 
+
+De tweede groep genaamd Shimmer bestaat uit sequentiële metingen van het maximale bereik van de amplitude in de trillingen dat een stem iedere keer maakt.
+Verder beschrijft harmonics de verhouding tussen geluid in de spraak met een bepaalde tijdsduur en geluid juist zonder een bepaalde tijdsduur \bibitem{Harmonics definitie}. De attributen HNR en NHR die hierbij horen hierbij. Groep spread met attributen spread1 en spread2 en PPE zijn attributen met metingen van variaties in frequenties. Op PPE ofwel Pitch Period Entropy gaat het artikel zelf meer op in. Het is namelijk een techniek om dysfonie te meten. Het kan preciezer veranderingen in stemgeluid meten, wanneer er ruis bij betrokken is. Dit is voordelig bij stemgeluid, zoals kenmerkend bij mensen met dysfonie.
+
+De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur.
+
+## Data interpreteren
 
 
 \pagebreak
 
 
 # Resultaten
+
+In dit hoofdstuk worden de resultaten van de EDA en van Machine learning gevisualiseerd en geobserveerd.
 
 ## EDA
 
@@ -176,7 +195,7 @@ Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negati
 Ethan Zhang. 
 
 \bibitem{Dysphonia betekenis}
-LUMC. Betekenis van Dysponia: \texit{Spasmodische dysfonie} Link : 
+LUMC. Betekenis van Dysponia: \textit{Spasmodische dysfonie} Link : 
 https://www.lumc.nl/over-het-lumc/afdelingen/keel--neus--en-oorheelkunde/ziektes-en-aandoeningen/spasmodische-dysfonie/spasmodische-dysfonie/#:~:text=Men%20spreekt%20van%20een%20spasmodische,normaal%20uitgesproken%20zin%20te%20maken.
 
 \bibitem{Dysphonia symptomen}
@@ -184,8 +203,16 @@ Dr. Alexander Hillel, M.D. Symptomen en type dysphonie: \texit{Spasmodic Dysphon
 https://www.hopkinsmedicine.org/health/conditions-and-diseases/spasmodic-dysphonia
 
 \bibitem{Parkinson en dystonie}
-Dystonie vereniging. Dystonie beschrijving: \texit{Wat is de relatie tussen Parkinson en dystonie? (B)} Link :
+Dystonie vereniging. Dystonie beschrijving: \textit{Wat is de relatie tussen Parkinson en dystonie? (B)} Link :
 https://dystonievereniging.nl/magazine/wat-is-de-relatie-tussen-parkinson-en-dystonie-b/#:~:text=Dystonie%20is%20een%20onwillekeurige%20spiercontractie,ziekte%20zelf%2C%20zonder%20andere%20symptomen.
+
+\bibitem{MDVP definitie}
+M. Nicastri, G. Chiarella, L. Gallo en M Catalano. Wat betekent MDVP: \textit{Multidimensional Voice Program (MDVP) and amplitude variation parameters in euphonic adult subjects. Normative study} Link :
+https://www.researchgate.net/publication/7789462_Multidimensional_Voice_Program_MDVP_and_amplitude_variation_parameters_in_euphonic_adult_subjects_Normative_study#:~:text=Thanks%20to%20the%20marketing%2C%20in,any%20sonority%20gap%20and%20diplophony. 
+
+\bibitem{Harmonics definitie}
+J. Fernandes, F. Teixeira , V.  Guedes, A. Junior en J. Paulo Teixeira. Wat betekent NHR: \texttit{Harmonic to Noise Ratio Measurement - Selection of Window and Length} Link :
+https://www.sciencedirect.com/science/article/pii/S1877050918316739#:~:text=Harmonic%20to%20Noise%20Ratio%20(HNR,analysis%20to%20diagnose%20pathologic%20voices.
 
 \end{thebibliography}
 ```
