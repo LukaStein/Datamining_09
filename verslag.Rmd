@@ -47,9 +47,73 @@ De eerste groep genaamd MDVP is een programma en staat voor "Multi-Dimensional V
 De tweede groep genaamd Shimmer bestaat uit sequentiële metingen van het maximale bereik van de amplitude in de trillingen dat een stem iedere keer maakt.
 Verder beschrijft harmonics de verhouding tussen geluid in de spraak met een bepaalde tijdsduur en geluid juist zonder een bepaalde tijdsduur \bibitem{Harmonics definitie}. De attributen HNR en NHR die hierbij horen hierbij. Groep spread met attributen spread1 en spread2 en PPE zijn attributen met metingen van variaties in frequenties. Op PPE ofwel Pitch Period Entropy gaat het artikel zelf meer op in. Het is namelijk een techniek om dysfonie te meten. Het kan preciezer veranderingen in stemgeluid meten, wanneer er ruis bij betrokken is. Dit is voordelig bij stemgeluid, zoals kenmerkend bij mensen met dysfonie.
 
-De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur.
+De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen de verschillen tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur. Attributen DFA (detrended fluctuation analysis) en RPDE (recurrence period density entropy) worden gebruikt voor het detecteren van algemene stemstoornissen, door te kijken naar ruis of willekeurigheid in stemgeluid. Het laatste attribuut D2 is een correlatiedimensie dat ingewikkelde dynamiek schetst behorend bij dysfonia \bibitem{Dysphonic voice analysis}. 
 
-## Data interpreteren
+## Data interpreteren en opschonen
+
+Zie log.Rmd in https://github.com/Coldbirdie/Datamining_09 voor volledige uitwerking van het interpreteren en onderzoeken.
+
+Met ggpairs uit het "GGally" pakket zijn correlatie figuren gemaakt om verbanden in gedrag te vinden tussen attributen. Met gedrag wordt er bijvoorbeeld bedoeld dat de ene meetwaarden omhoog of omlaag gaan vergeleken met andere meetwaarden. Hieronder is voorbeeld code om een pairs plot te maken. Hierbij zijn de data MDVP.small vijf attributen betrokken bij MDVP.
+
+```{}
+ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=levels.of.status, alpha = 0.5), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six MDVP attributes\n and showing how similar the status data is between them") + theme(axis.text.x = element_text(angle=90, hjust = 1),
+        axis.text.y = element_blank())                                                                                                                                                                
+```
+
+
+Tevens zijn er correlatie matrices gemaakt via ggcorrplot van pakket "ggcorrplot" die met kleuren en waarden tussen min één en één (negatieve tot positieve correlatie) attributen vergelijken. Middels het observeren van hele positieve of negatieve waarden zijn er attributen genoteerd met als hypothese dat de attributen met sterke correlaties samen, goed gezond kunnen onderscheiden van ziek. Hieronder is voorbeeld code om een correlatie matrix te maken. De matrix die eerst wordt aangemaakt bedraagt de eerste zes en de laatste zes numerieke attributen.
+
+```{}
+corr.matrix3 <- cor(data.numeric[1:6], data.numeric[16:22])
+ggcorrplot(corr.matrix3, lab = T, lab_size = 2, lab_col = "black") + labs(caption = "Correlation heatmap of first and last attributes")
+```
+
+
+Door te kijken naar de normaal verdelingen van alle attributen is er bepaald dat veel data uitschieters heeft en dus niet normaal verdeeld is. De verdelingen zijn gevisualiseerd via ggplot uit het pakket "ggplot2". Hieronder is de code om dat te doen voor attribuut PPE.
+
+```{}
+F.22.log <- ggplot(patient.data, aes(x=log(PPE), fill = status)) + geom_histogram(color = "black", bins = 39)
+grid.arrange(F.22.log, ncol = 1, nrow = 2)
+```
+
+Na een 10log-transformatie van veertien attributen, vertoonde ze een betere normaal verdeling. Deze stap motiveerde om alle numerieke attributen te log-transformeren, zodat de waarden niet te veel afwijken in grootte. Omdat spread1 negatieve meetwaarden bevat, is deze niet log-getransformeerd. Tevens zijn de log-getransformeerde meetwaarden en de meetwaarden van spread1 gelijk in groottes, dus wijkt spread1 niet af.
+
+Deze stap is op de volgende manier gedaan
+```{}
+data.for.scaling <- subset(patient.data, select = c(-name, -status, -spread1))
+data.for.scaling
+logTransformed.patient.data.left <- data.frame(log(data.for.scaling[1:18]), spread1 = patient.data$spread1)
+logTransformed.patient.data.right <- data.frame(log(data.for.scaling[19:21]))
+combined.log.data <- data.frame(logTransformed.patient.data.left, logTransformed.patient.data.right, status = patient.data$status)
+write.csv(combined.log.data, file = "log_patient_data.csv", row.names = FALSE)
+```
+
+## Weka attribuut en model onderzoek
+
+Om te zien hoe deze stappen in Weka zijn uitgevoerd, zie log.Rmd voor instructies.
+
+Ten eerste zijn er modellen (bekend als classifiers) getest op de normale data in de Explorer. Vervolgens wordt tussen de modellen uit de Explorer stap gekeken via de Experimenter naar welk model het beste traint op de data. Tevens wordt vergeleken tussen de originele dataset en de log-getransformeerde dataset. Hierbij wordt de experimenter meerdere malen uitgevoerd, met verschillende parameter instellingen per model. Ook wordt er in de experimenter onderscheidt gemaakt in vergelijkings velden (comparison fields).
+
+Er wordt gekeken welk model het meest accuraat voorspeld in procent of de precisie (precision) wordt vergeleken. Verder laat de vals negatief percentage (false negative rate) zien welk model de meeste/minste zieke mensen foutief gezond voorspeld. DE AUC (Area under the Curve) curve bepaalt de kwaliteit van ieder model en runtime bepaalt de uitvoertijd per model. Als laatste geeft de F-maat (F_measure) een vergelijking naar hoe relevant de verkregen informatie is per model (relevance of information gain).
+
+Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren gekozen in combinatie met een zoekmethode. Door te kijken of er attributen voorkomen in de resultaten van alle evaluatoren samen die zijn uitgevoerd, is er bepaald welke attributen het beste lijken in het algemeen en welke het meest compatibel zijn voor de eerder gevonden beste modellen.
+
+Verder zijn de beste modellen geoptimaliseerd in Classify via Baselearners. Deze staan onder de meta folder bij het classificeer menu. Op One-R en Random Forest is Vote (stemmen), Bagging (in zakjes verdelen) en Stacking (opstapelen) toegepast. De instellingen van deze modellen zijn hetzelfde als de beste die gevonden zijn in de Experimenter stap. 
+
+Naast het optimaliseren wordt nog de kwaliteit van ieder model gevisualiseeerd in een AUC grafiek. Dit kan in Weka door rechte muis te klikken op de resulterende modellen, te drukken op "Visualize threshold curve" en vervolgens "sick" of "healhty" te kiezen. Na het vaststellen welke model beter is door te zien hoe ver naar links boven de curve staat kan het beste model gekozen worden door de kwaliteit en accuraatheid van de modellen in overweging te nemen.
+
+Het beste model is "Random Forest" en deze is verbeterd met Bagging. Als laatste stap is er geprobeerd om de parameters van Random Forest verder in te lezen en aan te passen, om het model nog accurater te maken. Tevens is uit de select features gevonden dat zes attributen het beste scoren op Random Forest via de WrapperSubsetEval attribuut evaluator. Hiervan is een nieuw arff bestand van opgeslagen inclusief de status kolom. Met dit bestand is er getest om verschillende parameters en het veranderen van numFeatures in Random Forest leverde een toename op in accuraatheid.
+
+Uit de Weka test fase zijn een beste model en de beste attributen gevonden. Het model is opgeslagen via rechter muisklik op het resultaat model en te drukken op "Save model".
+
+## Javawrapper programma en omgaan met data
+
+Om een Java programma te maken dat om kan gaan met arff data en een model zijn er verschillende pakketen gebruikt en documentatie. De pakketen en code uitwerkingen daarbij en andere benodigheden staan in de Javawrapper folder (https://github.com/Coldbirdie/Datamining_09/tree/main/JavaWrapper). In de README staan alle pakketten onder elkaar en is een gedetailleerde uitleg. Echter is hieronder een beknopt stappenplan in hoe het Java programma is opgebouwd.
+
+Ten eerste om argumenten te ontvangen van de CLI (Command line interface) is het pakket org.apache.commons.cli.* gebruikt. Vervolgens om het model en een arff bestand in te kunnen lezen en om hiermee op de data te gaan voorspellen zijn er verschillende klasses gebruikt uit twee pakketten, namelijk weka en java. Omdat apache en weka niet in Java zitten, moesten deze worden geïmplementeerd via build.gradle onder "dependencies".
+
+In het programma zijn vier vormen van voorspellen toegevoegd op twee verschillende typen data. Het programma kan voorspellen op een arff bestand met de eerder zes genoemde attributen. De eerste twee vormen van voorspellen kan op data waar al bekend is wie ziek is of niet, of er mag data gegeven worden waarin dit niet bekend is. De andere twee
+vormen van voorspellen zijn hetzelfde, maar een gebruiker hoeft maar één regel op te geven met de zes attributen in dezelfde volgorde als in een arff bestand.
 
 
 \pagebreak
