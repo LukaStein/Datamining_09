@@ -90,13 +90,16 @@ write.csv(combined.log.data, file = "log_patient_data.csv", row.names = FALSE)
 
 ## Weka attribuut en model onderzoek
 
-Om te zien hoe deze stappen in Weka zijn uitgevoerd, zie log.Rmd voor instructies.
+Om te zien hoe deze stappen in Weka zijn uitgevoerd, zie "Select features in explorer" in log.Rmd voor instructies.
 
-Ten eerste zijn er modellen (bekend als classifiers) getest op de normale data in de Explorer. Vervolgens wordt tussen de modellen uit de Explorer stap gekeken via de Experimenter naar welk model het beste traint op de data. Tevens wordt vergeleken tussen de originele dataset en de log-getransformeerde dataset. Hierbij wordt de experimenter meerdere malen uitgevoerd, met verschillende parameter instellingen per model. Ook wordt er in de experimenter onderscheidt gemaakt in vergelijkings velden (comparison fields).
+Ten eerste zijn er modellen (bekend als classifiers) getest op de normale data in de Explorer. Vervolgens wordt tussen de modellen uit de Explorer stap gekeken via de experimenter naar welk model het beste traint op de data. Tevens wordt er in de experimenter vergeleken tussen de originele dataset en de log-getransformeerde dataset. Aan de experimenter worden alle modellen toegevoegd met standaard instellingen en met aangepaste instellingen. Ook wordt er in de experimenter onderscheidt gemaakt in vergelijkings velden (comparison fields).
 
 Er wordt gekeken welk model het meest accuraat voorspeld in procent of de precisie (precision) wordt vergeleken. Verder laat de vals negatief percentage (false negative rate) zien welk model de meeste/minste zieke mensen foutief gezond voorspeld. DE AUC (Area under the Curve) curve bepaalt de kwaliteit van ieder model en runtime bepaalt de uitvoertijd per model. Als laatste geeft de F-maat (F_measure) een vergelijking naar hoe relevant de verkregen informatie is per model (relevance of information gain).
 
-Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren gekozen in combinatie met een zoekmethode. Door te kijken of er attributen voorkomen in de resultaten van alle evaluatoren samen die zijn uitgevoerd, is er bepaald welke attributen het beste lijken in het algemeen en welke het meest compatibel zijn voor de eerder gevonden beste modellen.
+Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren gekozen in combinatie met een zoekmethode. De volgende evaluatoren zijn gebruikt: WrapperSubsetEval, CorrelationAttributeeval, GainRatioAttributeEval, InfoGainAttributeEval, OneRAttributeEval en Attribute-subset evaluation. Hoe deze zijn toegepast is ook te vinden in de bijlage.
+
+Door te kijken of er attributen overlappen in de resultaten van alle evaluatoren samen die zijn uitgevoerd, is er bepaald welke attributen het beste lijken in het algemeen en welke het meest compatibel zijn voor de eerder gevonden beste modellen. Er wordt steeds gekeken naar de top zes en hiervan wordt een histogram gemaakt met alle attributen en hoe vaak op de y-as deze als beste voorkomen. Hieronder is de code te zien:
+
 
 Verder zijn de beste modellen geoptimaliseerd in Classify via Baselearners. Deze staan onder de meta folder bij het classificeer menu. Op One-R en Random Forest is Vote (stemmen), Bagging (in zakjes verdelen) en Stacking (opstapelen) toegepast. De instellingen van deze modellen zijn hetzelfde als de beste die gevonden zijn in de Experimenter stap. 
 
@@ -203,9 +206,69 @@ Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle corre
 
 ### Supervised Machine Learning
 
+#### Experimenter
+Via de experimenter in Weka zijn er tabellen gegenereerd waarin te zien is hoe alle modellen presteren bij verschillende vergelijking velden.
+Hieronder zijn drie tabellen die wat zeggen over hoe relevant of accuraat de voorspellingen zijn. In de eerste twee tabellen zijn alleen de beste modellen te zien, die niet overfit zijn.
+
+Verder geeft een v'tje een significant verschil aan tussen log-getransformeerde data en normale data, een sterretje geeft een iets minder significant verschil aan.
+
+&nbsp;
+
+Het vergelijking veld "percent_correct" gaf het volgende tabel en toont aan hoeveel procent ieder model goed voorspeld van nul (incorrect) tot honderd procent (correct). 
+
+Dataset                   (1) log_patient_data | (2) patient_data_
+------------------------------------------------------------------
+trees.J48 '-U -M 3' -2177(100)   84.9342104200 |   84.8315788500  
+rules.OneR '-B 20 -batch-(100)   85.0026314700 |   85.1026314700  
+trees.RandomForest '-P 10(100)   91.7026315000 |   91.4052630800  
+------------------------------------------------------------------
+                                       (v/ /*) |          (1/10/0)
+Uit de bovenstaande tabel is te zien dat RandomForest met normale instellingen het meest accuraat is op ongeveer 91.5 procent. Daarna voor bijna zes procent minder is OneR met een bucket size van twintig en J48 met unpruning en minNumObj op drie doet het bijna even goed als OneR.
+
+&nbsp;
+
+Het vergelijking veld "F_measure" gaf het volgende tabel en toont aan hoeveel informatie dat is verkregen daadwerkelijk relevant is, met nul (niet relevant) tot één (wel relevant).
+
+Dataset                   (1) log_patient | | (2) patient_data_
+------------------------------------------------------------------
+lazy.IBk '-K 20 -W 0 -A  (100)   0.907115 |   0.896487  
+rules.OneR '-B 20 -batch-(100)   0.907970 |   0.908560  
+trees.RandomForest '-P 10(100)   0.946769 |   0.945139  
+------------------------------------------------------------------
+                                  (v/ /*) |      (0/8/3)
+Random Forest doet het beste met ongeveer 0.94, wat dus betekent dat er veel informatie relevant is. OneR en Ibk met twintig buren doen het vrijwel even goed op ongeveer 0.90.
+
+
+&nbsp;
+
+Het vergelijking veld "False_negative_Rate" gaf het volgende tabel en toont de foutenmarge aan waarin zieke mensen zijn voorspeld als gezond, met nul is geen fouten tot één waar alle zieke mensen als gezond zijn voorspeld.
+
+Dataset                   (1) log_patient | | (2) patient_data_
+------------------------------------------------------------------
+rules.ZeroR '' 4805554146(100)   0.000000 |   0.000000  
+lazy.IBk '-K 20 -W 0 -A (100)    0.020333 |   0.003381  
+rules.OneR '-B 20 -batch-(100)   0.025191 |   0.025238  
+trees.RandomForest '-P 10(100)   0.028476 |   0.027714  
+trees.J48 '-U -M 3' -2177(100)   0.099286 |   0.104048  
+trees.J48 '-C 0.25 -M 2' (100)   0.104619 |   0.105952  
+bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
+bayes.NaiveBayes '' 59952(100)   0.299667 |   0.369524 v
+bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
+------------------------------------------------------------------
+                                  (v/ /*) |      (3/8/0)
+De standaard NaiveBayes en de andere NaiveBayes modellen met een batchsize ingesteld op honderdtwintig en tachtig maken de meesten fouten in voorspellen van zieke mensen.
+Het v'tje toont aan dat op de originele data significant meer fouten worden gemaakt dan op de log data. J48 modellen doen het op het oog veel minder slecht dan NaiveBayes. Verder maken IBk, OneR en RandomForest de minste fouten. Omdat er meer zieke patiënten zijn heeft ZeroR alles als ziek voorspeld en zijn er dus geen zieke mensen als gezond voorspeld. 
+
+#### Model en attribuut evaluatie in de Explorer
+
+
+
+
 \pagebreak
 
 ## Discussie
+
+### Figuren
 
 Vanwege het feit dat de hoeveelheid zieke mensen in figuur 1 drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha 0.05 te vermenigvuldigen met het aantal rijen. Al hoewel het voor onderzoek en model training genoeg data is zou als vervolg onderzoek een grotere dataset gebruikt kunnen worden om zekerder te zijn van alle observaties.
 
@@ -228,6 +291,8 @@ Alhoewel de heatmap naar verbanden kijkt in attributen, kan er niet uit worden g
 Aansluitend bij figuur 5 geeft figuur 6 extra informatie over het gedrag van data i.v.m. de correlatie coëfficiënten. Het werd duidelijk dat er patronen zijn die correlaties representeren, dus links onder naar rechts boven is positieve correlatie, links boven naar rechts onder is negatieve correlatie en een verspreide wolk geeft zwakkere correlatie aan. Attributen PPE en spread1 vertonen een mooie scheiding tussen de statussen, tegelijkertijd met een hoge correlatie waarde. De vraag is of deze vorm van scheiding een betere grens is tussen de statussen, dan een negatieve correlatie zoals HNR en PPE met een grotere punten wolk en dus zwakkere correlatie.
 
 Omdat er meer zieke waarden zijn, is er tussen beide attribuut paren overlap tussen de clusters. Dit laat zien dat er geen volledige splitsing is. Een manier om tijdens model training meer onderscheidt te maken is door fouten zwaarder mee te tellen voor groep gezond. Door zwaardere kosten te rekenen zal het model voorzichtiger te werk gaan tussen de groepen voor een meer zekere uitkomst hoe goed de attributen samen werken.
+
+### Werkwijze
 
 &nbsp;
 

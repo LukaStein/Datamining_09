@@ -674,10 +674,16 @@ IBk -1 and RandomForest are most accurate.
 
 
 #### Edited parameters
-Next let's compare the default models with edited models. The first comparison field will be percent_correct. Let's also sort the results by pressing Sorting (asc.) by e.g. percent_correct. For each next run the sort by will be applied with its corresponding comparison field.
+Next let's compare the default models with edited models.
+
+What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The bucketsize of OneR is set to twenty and the batchsize to 120. Also for NaiveBayes one model is added with a batchsize of 120 and one is added of 80. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. The significant differences between datasets is shown with the (v) and less significant than that is the star (*) symbol.
+
+All models will be compared wtih different comparison fields. Let's also sort the results by pressing Sorting (asc.) by e.g. percent_correct. For each next run the "sort by" will be applied with its corresponding comparison field.
+
+The first comparison field will be percent_correct that determines in percentages how well the predictions are made by each model.
 
 ##### Percent_correct
-What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The bucketsize of OneR is set to twenty and the batchsize to 120. Also for NaiveBayes one model is added with a batchsize of 120 and one is added of 80. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. The significant differences between models is shown with the (v) and less significant than that is the star (*) symbol.
+
 
 
 Dataset                   (1) log_patient_data | (2) patient_data_
@@ -845,7 +851,7 @@ experimenter.two.files <- read.csv("Experimenter/default_two_files.csv", header 
 head(experimenter.two.files)
 ```
 
-There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Furthermore it shows how many number of times the levels are guessed correctly and incorrectly. The means of that data is also shown. From the columns with the amounts of true positives, false positives, false negatives and true negatives will be plotted per model. Showing those amounts gives a better display of the accuracy per model.
+There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Furthermore it shows how many number of times the levels are guessed correctly and incorrectly. The means of that data is also shown. From the columns will the amounts of true positives, false positives, false negatives and true negatives be plotted per model. Showing those amounts gives a better display of the accuracy per model.
 
 ```{r}
 #ggplot(experimenter.two.files, aes(x=Key_Scheme, y=Num_true_positives)) + geom_histogram(color = "black", bins = 39) + 
@@ -1046,6 +1052,18 @@ Ranked attributes:
 Selected attributes: 22,3,13,2,1,15,20,19,6,21,12,18,5,9,17,8,10,7,11,4,14,16 : 22
 
 Again PPE is at the top and MDVP.APQ has risen to the third place. All MDVP.Flo/Fhi/- and Fo.Hz attributes are at the top as well. Also NHR and spread1 are fairly high as well. 
+
+
+Let's count the occurences by eye of all top six attributes and make a histogram to visualize the best attributes all round. The countings are added in a file called "best_features_counts.txt".
+
+
+ 
+```{r}
+best.features.counts <- read.csv("best_features_counts.csv", header = T)
+
+ggplot(best.features.counts, aes(x = features, fill = features)) + geom_bar() + xlab("Status") + 
+  ylab("Amount of people") + labs(title = "Number of healthy and sick people")
+```
 
 
 **Retrospective**
