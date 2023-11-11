@@ -1054,21 +1054,23 @@ Selected attributes: 22,3,13,2,1,15,20,19,6,21,12,18,5,9,17,8,10,7,11,4,14,16 : 
 Again PPE is at the top and MDVP.APQ has risen to the third place. All MDVP.Flo/Fhi/- and Fo.Hz attributes are at the top as well. Also NHR and spread1 are fairly high as well. 
 
 
-Let's count the occurences by eye of all top six attributes and make a histogram to visualize the best attributes all round. The countings are added in a file called "best_features_counts.txt".
-
+Let's count the occurences by eye of all top six attributes and make a barplot to visualize the best attributes all round. The countings are added in a file called "best_features_counts.txt".
 
  
 ```{r}
 best.features.counts <- read.csv("best_features_counts.csv", header = T)
 
-ggplot(best.features.counts, aes(x = features, fill = features)) + geom_bar() + xlab("Status") + 
-  ylab("Amount of people") + labs(title = "Number of healthy and sick people")
+ggplot(best.features.counts, aes(x = features, fill = features)) + geom_bar() + xlab("Feature names") + 
+  ylab("(n) features found") + labs(title = "Top six attributes counted from select features") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_text(stat='count', aes(label=after_stat(count)), vjust=1)
 ```
 
+In the barplot it becomes clear that five attirubtes: MDVP.APQ, MDVP.Flo.Hz, MDVP.Fo.Hz, MDVP.Jitter.Abs and spread1 occurred an equal amount of times in the top six.
+Attribute PPE occurred in the top six of all evaluations in select features, which is seven evaluations that have been performed.
 
 **Retrospective**
 
-The observation from Cfs above actually summarizes the general best placement for all attributes per method. After comparing all methods PPE seems the best attribute to split on and spread1 as second attribute. As MDVP.Flo.Hz and MDVP.Jitter.Abs are also mainly quite good.
+The observation from Cfs actually summarizes the general best placement for all attributes per evaluation method. After comparing all methods PPE seems the best attribute to split on and spread1 as second attribute. Attributes MDVP.Flo.Hz and MDVP.Jitter.Abs are also mainly quite good.
 
 ### Baselearners & increasing performance
 
@@ -1171,8 +1173,8 @@ colnames(oneR.data) <- c("Instance_number", "True_Positives", "False_Negatives",
                                  "True_Negatives", "False_Positive_Rate", "True_Positive_Rate",
                                  "Precision", "Recall", "Fallout", "FMeasure", "Sample_Size",
                                  "Lift", "Threshold")
-oneR.data
-ggplot(oneR.data, aes(x = False_Positive_Rate, y = True_Positive_Rate)) + geom_line(color = "green2", size = 1)
+ggplot(oneR.data, aes(x = False_Positive_Rate, y = True_Positive_Rate)) + geom_line(color = "green2", size = 1) +
+  labs(title = "ROC-curve of optimised OneR model")
 ```
 
 ### Optimize Random-forest bagging

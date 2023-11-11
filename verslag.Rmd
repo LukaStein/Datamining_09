@@ -96,14 +96,14 @@ Ten eerste zijn er modellen (bekend als classifiers) getest op de normale data i
 
 Er wordt gekeken welk model het meest accuraat voorspeld in procent of de precisie (precision) wordt vergeleken. Verder laat de vals negatief percentage (false negative rate) zien welk model de meeste/minste zieke mensen foutief gezond voorspeld. DE AUC (Area under the Curve) curve bepaalt de kwaliteit van ieder model en runtime bepaalt de uitvoertijd per model. Als laatste geeft de F-maat (F_measure) een vergelijking naar hoe relevant de verkregen informatie is per model (relevance of information gain).
 
-Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren gekozen in combinatie met een zoekmethode. De volgende evaluatoren zijn gebruikt: WrapperSubsetEval, CorrelationAttributeeval, GainRatioAttributeEval, InfoGainAttributeEval, OneRAttributeEval en Attribute-subset evaluation. Hoe deze zijn toegepast is ook te vinden in de bijlage.
+Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren gekozen in combinatie met een zoekmethode. De volgende evaluatie methoden zijn gebruikt: WrapperSubsetEval, CorrelationAttributeeval, GainRatioAttributeEval, InfoGainAttributeEval, OneRAttributeEval en Attribute-subset evaluation. Hoe deze zijn toegepast is ook te vinden in de bijlage.
 
 Door te kijken of er attributen overlappen in de resultaten van alle evaluatoren samen die zijn uitgevoerd, is er bepaald welke attributen het beste lijken in het algemeen en welke het meest compatibel zijn voor de eerder gevonden beste modellen. Er wordt steeds gekeken naar de top zes en hiervan wordt een histogram gemaakt met alle attributen en hoe vaak op de y-as deze als beste voorkomen. Hieronder is de code te zien:
 
 
 Verder zijn de beste modellen geoptimaliseerd in Classify via Baselearners. Deze staan onder de meta folder bij het classificeer menu. Op One-R en Random Forest is Vote (stemmen), Bagging (in zakjes verdelen) en Stacking (opstapelen) toegepast. De instellingen van deze modellen zijn hetzelfde als de beste die gevonden zijn in de Experimenter stap. 
 
-Naast het optimaliseren wordt nog de kwaliteit van ieder model gevisualiseeerd in een AUC grafiek. Dit kan in Weka door rechte muis te klikken op de resulterende modellen, te drukken op "Visualize threshold curve" en vervolgens "sick" of "healhty" te kiezen. Na het vaststellen welke model beter is door te zien hoe ver naar links boven de curve staat kan het beste model gekozen worden door de kwaliteit en accuraatheid van de modellen in overweging te nemen.
+Naast het optimaliseren wordt nog de kwaliteit van ieder model gevisualiseeerd in een AUC grafiek. Dit kan in Weka door rechte muisknop te klikken op de resulterende modellen, te drukken op "Visualize threshold curve" en vervolgens "sick" of "healhty" te kiezen. De kwaliteit van het model wordt bepaald door te kijken hoe ver de curve in de linker boven hoek ligt. Vervolgens kan het beste model gekozen worden door de kwaliteit en accuraatheid van de modellen in overweging te nemen.
 
 Het beste model is "Random Forest" en deze is verbeterd met Bagging. Als laatste stap is er geprobeerd om de parameters van Random Forest verder in te lezen en aan te passen, om het model nog accurater te maken. Tevens is uit de select features gevonden dat zes attributen het beste scoren op Random Forest via de WrapperSubsetEval attribuut evaluator. Hiervan is een nieuw arff bestand van opgeslagen inclusief de status kolom. Met dit bestand is er getest om verschillende parameters en het veranderen van numFeatures in Random Forest leverde een toename op in accuraatheid.
 
@@ -206,7 +206,7 @@ Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle corre
 
 ### Supervised Machine Learning
 
-#### Experimenter
+#### Model evaluatie in de experimenter
 Via de experimenter in Weka zijn er tabellen gegenereerd waarin te zien is hoe alle modellen presteren bij verschillende vergelijking velden.
 Hieronder zijn drie tabellen die wat zeggen over hoe relevant of accuraat de voorspellingen zijn. In de eerste twee tabellen zijn alleen de beste modellen te zien, die niet overfit zijn.
 
@@ -259,10 +259,63 @@ bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
 De standaard NaiveBayes en de andere NaiveBayes modellen met een batchsize ingesteld op honderdtwintig en tachtig maken de meesten fouten in voorspellen van zieke mensen.
 Het v'tje toont aan dat op de originele data significant meer fouten worden gemaakt dan op de log data. J48 modellen doen het op het oog veel minder slecht dan NaiveBayes. Verder maken IBk, OneR en RandomForest de minste fouten. Omdat er meer zieke patiënten zijn heeft ZeroR alles als ziek voorspeld en zijn er dus geen zieke mensen als gezond voorspeld. 
 
-#### Model en attribuut evaluatie in de Explorer
+Via bagging is RandomForest verbeterd en OneR met bucketsize twintig en een batchsize van hondertwintig is verbeterd via Stacking door te leren van RandomForest en J48 met unpruning op True, confidenceFactor op 0.20 en minNumObj op drie. 
+
+**Tabel 3** Verbeterde RandomForest en OneR met voorspellingen in procent goed
+
+RandomForest | OneR
+-------------------
+92.3077 %  | 89.2308 %
+-------------------
+
+Uit het optimaliseren is het duidelijk geworden dat RandomForest het beste voorspeld. Om de kwaliteit vast te stellen zijn er ook ROC curves gemaakt van de modellen.
+
+![](Plots/RandomForest_bagging.png) ![](Plots/OneR_stacking.png) 
+
+**Figuur 7** ROC-curves van geoptimaliseerde RandomForest en OneR. Op de x-as staat de "false positive rate" en op de y-as de "true positive rate". Hoe meer de curve naar links boven buigt hoe meer er "true positives" en hoe minder "false positives" er zijn. In andere worden hoe meer zieke mensen goed worden geraden en hoe minder zieke mensen als gezond worden geraden.
+
+In de figuur is te zien dat OneR een diagonale lijn heeft van links onder naar rechts boven, dus de goed geraden zieke mensen neemt toe tegen toename van fout geraden gezonde mensen. Verder heeft RandomForest een curve dat stijl stijgt op de y-as en daarna bijna niet meer stijgt over de toename van de x-as.
+
+#### Attribuut evaluatie en eind model optimaliseren in de Explorer
+
+Via de WrapperSubsetEval attribuut selectie methode is onderzocht welke attributen het beste waren om op te voorspellen door RandomForest.
+
+**Tabel 4** Attributen waar RandomForest het best op voorspeld.
+
+Attributen
+-----------
+MDVP.Fo.Hz.
+MDVP.Flo.Hz.
+MDVP.Jitter.Abs.
+Shimmer.DDA
+NHR
+PPE
 
 
+Via zeven evalueer methoden e.g. WrapperSubsetEval zijn er tijdens attributen selectie verschillende rangschikkingen gevormd van alle attributen. Hiervan zijn steeds de top zes attributen geteld en van die tellingen is een barplot gemaakt. 
 
+![](Plots/top_attributes.png) 
+**Figuur 8** Tellingen van de top zes attributen uit alle evaluatie methodes. Op de x-as staan de attributen, op de y-as de tellingen en de kleuren van de staven zijn arbitrair. In de legenda is een overzichtje van de attribuut namen en de bijbehorende kleuren.
+
+In de bovenstaande figuur is te zien dat attribuut PPE het vaakst (zeven keer) in de top zes was en attributen: MDVP.APQ, MDVP.Flo.Hz, MDVP.Fo.Hz, MDVP.Jitter.Abs en spread1 kwamen er vier keer in voor.
+
+Nu de beste attributen en het beste model zijn gevonden is er een poging gedaan om RandomForest te verbeteren door het willekeurig aantal gekozen attributen te zetten op zeven en vervolgens het model te laten trainen alleen op die attributen. Hierop volgde dat de verbeterde RandomForest plus de zes attributen: MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR, PPE zorgde voor de volgende resultaten.
+
+Correctly Classified Instances         182               93.3333 %
+Incorrectly Classified Instances        13                6.6667 
+
+   a   b   <-- classified as
+ 142   5 |   a = sick
+   8  40 |   b = healthy
+   
+Ziek als gezond voorspeld | 5
+Gezond als ziek voorspeld |
+Ziek goed voorspeld |
+Gezond goed voorspeld | 
+Totaal goed voorspeld (%) |
+Totaal fout voorspeld (%) |
+
+Uit de bovenstaande model en matrix is af te lezen dat voor 93.3333 procent goed wordt voorspeld wie gezond en ziek is. En in totaal worden er dertien fouten voorspellingen gemaakt.
 
 \pagebreak
 
