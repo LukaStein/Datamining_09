@@ -1201,14 +1201,15 @@ A final model has been found with a 93.3333 percent accuracy; a by bagging optim
 ```{=tex}
 \begin{thebibliography}{9}
 
-\bibitem{Dysphonic voice analysis}
-Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
-
 \bibitem{Indeed negative correlation}
 Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
 
-\bibitem{F-measure}
-Ethan Zhang. 
+\bibitem{Dysphonic voice analysis}
+Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+\bibitem{F-measure defintion}
+Zhang, E., Zhang, Y. (2009). F-Measure: \textit{F-Measure} Link : 
+https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483 
 
 \end{thebibliography}
 ```

@@ -384,58 +384,64 @@ De laatste tabel 7 toont de eind voorspellingen van het geoptimaliseerde RandomF
 Daartegenover staan acht mensen die gezond zijn en als ziek zijn voorspeld, Alhoewel dit niet levend bedreigend is voor de patiënt, kost dit wel onnodig tijd en geld voor controles.
 
 ### Werkwijze
-In dit project is er niet consequent genoeg gewerkt. Voor alle stappen had meer tijd moeten worden genomen voor efficiëntie in werk en voor meer accurate observatie van de data en resultaten. Tevens is de model training gedaan op de hele dataset, zonder in het achterhoofd te houden dat er ook test data moet worden gebruikt. Bij het testen van de Javawrapper is daarvoor het RandomForest model opnieuw getraind op zestig procent van de instanties en veertig procent wordt gebruikt als test data. In toekomstig (machine learning) onderzoeken is het belangrijk om dit te beseffen, omdat het belangrijk is om een zuivere controle groep te hebben.
+In dit project is er niet consequent genoeg gewerkt. Voor alle stappen had meer tijd moeten worden genomen voor efficiëntie in werk en voor meer accurate observatie van de data en resultaten. Tevens is de model training gedaan op de hele dataset, zonder in het achterhoofd te houden dat er ook test data moet worden gebruikt. Bij het testen van de Javawrapper is daarom het RandomForest model opnieuw getraind op zestig procent van de instanties en veertig procent wordt gebruikt als test data. In toekomstig (machine learning) onderzoeken is het belangrijk om dit te beseffen, omdat het belangrijk is om een zuivere controle groep te hebben.
 
 &nbsp;
 
 ## Conclusie en reflectie
 
-Door het observeren en testen van de parkinson data is het duidelijk geworden dat er attributen zijn die significante verschillen tussen de groepen aantonen. Dit zijn de eerste drie MDVP attributen, ook uit de correlatie matrix plus de paren matrix-grafiek zijn verschillen tussen de groepen te observeren. Het is duidelijk geworden wat de coëfficiënten betekenen en hoe die zich uiten in een punten grafiek. Ook deze vertonen onderscheidt, alleen is het niet duidelijk hoe sterk dat wordt uitgedrukt in werkelijke data. Ten slotte is het een feit dat er outliers zijn in de data en dat met log10-transformatie deze geminimaliseerd worden. Of deze impact hebben op het onderscheiden van de groepen kan worden onderzocht bij vervolgd onderzoek bij model training.
+Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon? Deze vraag is beantwoord door een geoptimaliseerde RandomForest te laten trainen op de volgende zes supervised attributen: MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE. Het merendeel van deze attributen vielen op in de EDA, door de manier dat hun instanties reageerden op de klasse labels. Tevens is het een feit dat er outliers zijn in de data en dat met log10-transformatie deze geminimaliseerd worden. Hoe sterk de impact is van outliers op het onderscheiden van de klasselabels kan worden onderzocht bij een vervolg onderzoek.
+
+In Weka voorspeld het model voor 93 en 1/3 procent goed voor wie PD heeft en wie niet op alle instanties in de dataset. Zoals in de introductie is verteld is RandomForest opnieuw getraind op 60 procent van de instanties, zodat er wel een test (controle) groep is dat 40 procent van de instanties bedraagd. De test data werd voor 96,15 procent goed voorspeld in de Javawrapper.
+
+Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen voor de gevonden attributen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben en moet er een duidelijke trainingsgroep en testgroep zijn. Op basis van deze nieuwe data kan er worden bevestigd dat op nieuwe data het model met zekerheid voorspeld met een vergelijkbare accuraatheid.
+
+
 &nbsp;
 
-Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben om statistische toevalligheden uit te sluiten, die nu meer waarschijnlijk zijn.
+
 
 
 \pagebreak
-#TODO alles nederlands
 ```{=tex}
 \begin{thebibliography}{9}
 
-\bibitem{Dysphonic voice analysis}
-Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
-
-\bibitem{Kaggle dataset}
-Yunfeng Wu et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
-https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
-
-\bibitem{Indeed negative correlation}
-Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
-
-\bibitem{F-measure}
-Ethan Zhang. 
-
-\bibitem{Dysphonia betekenis}
-LUMC. Betekenis van Dysponia: \textit{Spasmodische dysfonie} Link : 
-https://www.lumc.nl/over-het-lumc/afdelingen/keel--neus--en-oorheelkunde/ziektes-en-aandoeningen/spasmodische-dysfonie/spasmodische-dysfonie/#:~:text=Men%20spreekt%20van%20een%20spasmodische,normaal%20uitgesproken%20zin%20te%20maken.
-
-\bibitem{Dysphonia symptomen}
-Dr. Alexander Hillel, M.D. Symptomen en type dysphonie: \texit{Spasmodic Dysphonia} Link :
-https://www.hopkinsmedicine.org/health/conditions-and-diseases/spasmodic-dysphonia
+\bibitem{Naive Bayes algoritme}
+Chatterjee, S. (24-11-2019). Hoe werkt Naive Bayes op numeriek data: \textit{Use Naive Bayes Algorithm for Categorical and Numerical data classification} Link :
+https://medium.com/analytics-vidhya/use-naive-bayes-algorithm-for-categorical-and-numerical-data-classification-935d90ab273f#:~:text=Use%20Naive%20Bayes%20Algorithm%20for%20Categorical%20and%20Numerical%20data%20classification,-Soumo%20Chatterjee&text=Naive%20Bayes%20is%20a%20type,for%20doing%20its%20predictive%20analysis%20 
 
 \bibitem{Parkinson en dystonie}
 Dystonie vereniging. Dystonie beschrijving: \textit{Wat is de relatie tussen Parkinson en dystonie? (B)} Link :
-https://dystonievereniging.nl/magazine/wat-is-de-relatie-tussen-parkinson-en-dystonie-b/#:~:text=Dystonie%20is%20een%20onwillekeurige%20spiercontractie,ziekte%20zelf%2C%20zonder%20andere%20symptomen.
-
-\bibitem{MDVP definitie}
-M. Nicastri, G. Chiarella, L. Gallo en M Catalano. Wat betekent MDVP: \textit{Multidimensional Voice Program (MDVP) and amplitude variation parameters in euphonic adult subjects. Normative study} Link :
-https://www.researchgate.net/publication/7789462_Multidimensional_Voice_Program_MDVP_and_amplitude_variation_parameters_in_euphonic_adult_subjects_Normative_study#:~:text=Thanks%20to%20the%20marketing%2C%20in,any%20sonority%20gap%20and%20diplophony. 
+https://dystonievereniging.nl/magazine/wat-is-de-relatie-tussen-parkinson-en-dystonie-b/#:~:text=Dystonie%20is%20een%20onwillekeurige%20spiercontractie,ziekte%20zelf%2C%20zonder%20andere%20symptomen
 
 \bibitem{Harmonics definitie}
-J. Fernandes, F. Teixeira , V.  Guedes, A. Junior en J. Paulo Teixeira. Wat betekent NHR: \texttit{Harmonic to Noise Ratio Measurement - Selection of Window and Length} Link :
-https://www.sciencedirect.com/science/article/pii/S1877050918316739#:~:text=Harmonic%20to%20Noise%20Ratio%20(HNR,analysis%20to%20diagnose%20pathologic%20voices.
+Fernandes, J., Teixeira, F., Guedes, V., Junior, A. en Teixeira, J. P. Wat betekent NHR: \texttit{Harmonic to Noise Ratio Measurement - Selection of Window and Length} Link :
+https://www.sciencedirect.com/science/article/pii/S1877050918316739#:~:text=Harmonic%20to%20Noise%20Ratio%20(HNR,analysis%20to%20diagnose%20pathologic%20voices
 
-\bibitem{Naive Bayes algoritme}
-S. Chatterjee (24-11-2019). Hoe werkt Naive Bayes op numeriek data: \textit{Use Naive Bayes Algorithm for Categorical and Numerical data classification} Link :
-https://medium.com/analytics-vidhya/use-naive-bayes-algorithm-for-categorical-and-numerical-data-classification-935d90ab273f#:~:text=Use%20Naive%20Bayes%20Algorithm%20for%20Categorical%20and%20Numerical%20data%20classification,-Soumo%20Chatterjee&text=Naive%20Bayes%20is%20a%20type,for%20doing%20its%20predictive%20analysis%20.  
+\bibitem{Dysphonie symptomen}
+Hillel, Dr. A. Symptomen en type dysphonie: \texit{Spasmodic Dysphonia} Link :
+https://www.hopkinsmedicine.org/health/conditions-and-diseases/spasmodic-dysphonia
+
+\bibitem{Negatieve correlatie}
+Indeed editorial team (04-02-2023). Wat is negatieve correlatie: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
+
+\bibitem{Dysphonie betekenis}
+LUMC. Betekenis van Dysponia: \textit{Spasmodische dysfonie} Link : 
+https://www.lumc.nl/over-het-lumc/afdelingen/keel--neus--en-oorheelkunde/ziektes-en-aandoeningen/spasmodische-dysfonie/spasmodische-dysfonie/#:~:text=Men%20spreekt%20van%20een%20spasmodische,normaal%20uitgesproken%20zin%20te%20maken
+
+\bibitem{MDVP definitie}
+Nicastri, M., Chiarella, G., Gallo, L., Cassandro, E. en Catalano, M. Wat betekent MDVP: \textit{Multidimensional Voice Program (MDVP) and amplitude variation parameters in euphonic adult subjects. Normative study} Link :
+https://www.researchgate.net/publication/7789462_Multidimensional_Voice_Program_MDVP_and_amplitude_variation_parameters_in_euphonic_adult_subjects_Normative_study#:~:text=Thanks%20to%20the%20marketing%2C%20in,any%20sonority%20gap%20and%20diplophony
+
+\bibitem{Artikel van ncbi}
+Yunfeng, W. et al (03-05-2017). Dysfonische stemanalyse: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+\bibitem{Kaggle dataset}
+Yunfeng, W. et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
+https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
+
+\bibitem{F-maat definitie}
+Zhang, E., Zhang, Y. (2009). F-Maat: \textit{F-Measure} Link : 
+https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483 
 \end{thebibliography}
 ```
