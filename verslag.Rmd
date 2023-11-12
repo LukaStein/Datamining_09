@@ -199,14 +199,14 @@ Verder zijn er boxplots gemaakt per level van de attributen MDVP.Fo.Hz., MDVP.Fh
 
 **Figuur 3** Metingen van drie MDVP-attributen in Hertz per status. Op de x-as staan de attributen en op de y-as de frequenties (Hz).
 
-In figuur 3 hebben gezonde mensen hogere frequenties (F = 150\>200) dan mensen met PD (F= 150\<200). Uit de EDA werd dit nog sterker bevestigd met ANOVA toetsen die de volgende p-waarden gaven:
+In figuur 3 hebben gezonde mensen hogere frequenties (tussen 100 en 200 tot boven 200 Hz) dan mensen met PD (vrijwel alles onder 200 Hz). Uit de EDA werd dit nog sterker bevestigd met ANOVA toetsen die de volgende p-waarden gaven:
 
 **Tabel 3** Verschillen tussen klasse labels van drie attributen getoetst op alpha = 0.05.
 | Attributes | P-values     |
 |------------|--------------|
-| Fo.Hz      | 3.121919e-08 |
-| Fhi.Hz     | 0.02027567   |
-| Flo.Hz     | 4.197004e-08 |
+| Fo.Hz      | 3e-08 |
+| Fhi.Hz     | 2e-02 |
+| Flo.Hz     | 4e-08 |
 
 In de bovenstaande tabel is te zien dat alle p-waarden kleiner zijn dan alpha, dit betekent een significant verschil.
 
