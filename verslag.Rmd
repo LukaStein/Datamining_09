@@ -24,9 +24,9 @@ Parkinson Dysphonia (PD)
 # Introductie
 
 Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon?
-In dit onderzoek zullen de Parkinson Dysphonia (PD) geluidsopnames van 195 individuen onderzocht worden via exploratieve data analyse (EDA) en zal er bepaald worden welke metingen het beste zijn om een PD-patiënt te onderscheiden met een gezond mens. \bibitem{Kaggle dataset}. De geleverde dataset is supervised, dit betekent dat het al bekend is wie gezond is en wie PD heeft.
+In dit onderzoek zullen de Parkinson Dysphonia (PD) geluidsopnames van 195 individuen onderzocht worden via exploratieve data analyse (EDA) en zal er bepaald worden welke metingen het beste zijn om een PD-patiënt te onderscheiden met een gezond mens. De geleverde dataset is supervised, dit betekent dat het al bekend is wie gezond is en wie PD heeft (*Yunfeng, W. et al (03-05-2017)*).
 
-Het onvrijwillig samentrekken van stembanden of strottenhoofd is Spasmodische dysfonie (Engels: Dysphonia). \bibitem{Dysphonia betekenis}. Dit zorgt voor vernauwde spraak en breken van stemgeluid. \bibitem{Dysphonia symptomen}. Omdat dysfonie een symptoom kan zijn van Parkinson \bibitem{Parkinson en dystonie} zijn er 22 kenmerken in stemgeluid opgenomen via verschillende methoden, met als voorbeeld lage stem frequenties. Deze worden nader uitgelegd in Materiaal & methoden. 
+Het onvrijwillig samentrekken van stembanden of strottenhoofd is Spasmodische dysfonie (Engels: Dysphonia). (*LUMC*). Dit zorgt voor vernauwde spraak en breken van stemgeluid. (*Hillel, Dr. A.*). Omdat dysfonie een symptoom kan zijn van Parkinson (*Dystonie vereniging*) zijn er 22 kenmerken in stemgeluid opgenomen via verschillende methoden, met als voorbeeld lage stem frequenties. Deze worden nader uitgelegd in Materiaal & methoden. 
 
 In de EDA wordt met het programma Weka via select features en baselearning bepaald wat de beste attributen zijn en welk model het beste op deze data kan trainen.
 Hieruit wordt het duidelijk dat er zes attributen (kenmerkende geluidsopnamen): MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE de beste combinatie vormen om mensen met PD te vinden. Deze groep worden gegeven aan een geoptimaliseerde RandomForest model die op de supervised data voor 93.3333 procent goed voorspeld. 
@@ -43,21 +43,21 @@ Om dit programma te testen is daarom de data opgesplitst in supervised data waar
 In dit hoofdstuk wordt behandeld waar het gebruikte materiaal vandaan komt en welke methoden hierop zijn toegepast.
 
 ## Dataset
-Via Kaggle is er een csv bestand opgehaald met 24 kolommen \bibitem{Kaggle dataset}. Twee hiervan zijn nominaal. Dit betekent dat één kolom patiënten ids heeft en één kolom heeft de statussen; nul en een, deze zijn respectievelijk veranderd naar "gezond" en "ziek" voor leesbaarheid. Verder bevat het bestand 195 instanties (patiënten), waarvan 147 ziek zijn (PD) en 48 zijn gezond. De 22 numerieke kolommen zijn geluidsopnames bepaald via verschillende methoden, die verderop worden toegelicht.
+Via Kaggle is er een csv bestand opgehaald met 24 kolommen (*Kaggle - Yunfeng, W. et al (03-05-2017)*). Twee hiervan zijn nominaal. Dit betekent dat één kolom patiënten ids heeft en één kolom heeft de statussen; nul en een, deze zijn respectievelijk veranderd naar "gezond" en "ziek" voor leesbaarheid. Verder bevat het bestand 195 instanties (patiënten), waarvan 147 ziek zijn (PD) en 48 zijn gezond. De 22 numerieke kolommen zijn geluidsopnames bepaald via verschillende methoden, die verderop worden toegelicht.
 
-Hieronder is een vertaald tabel dat ieder attribuut beschrijft, deze is overgenomen uit het artikel die bij de dataset hoort \bibitem{Dysphonic voice analysis} (tabel 2). 
+Hieronder is een vertaald tabel dat ieder attribuut beschrijft, deze is overgenomen uit het artikel die bij de dataset hoort (*Yunfeng, W. et al (03-05-2017)*) (tabel 2). 
 
 **Tabel 1** Beknopt overzicht van attributen namen, de eenheden ervan, de data typen en beschrijvingen.
 
 ![](attribute_names-1.png)
 
 De attributen kunnen worden verdeeld in groepen meetmethoden, op basis van de linker delen van iedere naam: MDVP, Shimmer, harmonics, spread en losse methoden.
-De eerste groep genaamd MDVP is een programma en staat voor "Multi-Dimensional Voice Program". Hiermee kunnen 33 stem parameters geanalyseerd worden, waarmee metingen in de stem zoals frequenties of de amplitude van trillingen worden geschat \bibitem{MDVP definitie}. 
+De eerste groep genaamd MDVP is een programma en staat voor "Multi-Dimensional Voice Program". Hiermee kunnen 33 stem parameters geanalyseerd worden, waarmee metingen in de stem zoals frequenties of de amplitude van trillingen worden geschat (*Nicastri, M. et al*). 
 
 De tweede groep genaamd Shimmer bestaat uit sequentiële metingen van het maximale bereik van de amplitude in de trillingen dat een stem iedere keer maakt.
-Verder beschrijft harmonics de verhouding tussen geluid in de spraak met een bepaalde tijdsduur en geluid juist zonder een bepaalde tijdsduur \bibitem{Harmonics definitie}. De attributen HNR en NHR die hierbij horen hierbij. Groep spread met attributen spread1 en spread2 en PPE zijn attributen met metingen van variaties in frequenties. Op PPE ofwel Pitch Period Entropy gaat het artikel zelf meer op in. Het is namelijk een techniek om dysfonie te meten. Het kan preciezer veranderingen in stemgeluid meten, wanneer er ruis bij betrokken is. Dit is voordelig bij stemgeluid, zoals kenmerkend bij mensen met dysfonie.
+Verder beschrijft harmonics de verhouding tussen geluid in de spraak met een bepaalde tijdsduur en geluid juist zonder een bepaalde tijdsduur (*Fernandes, J. et al*). De attributen HNR en NHR die hierbij horen hierbij. Groep spread met attributen spread1 en spread2 en PPE zijn attributen met metingen van variaties in frequenties. Op PPE ofwel Pitch Period Entropy gaat het artikel zelf meer op in. Het is namelijk een techniek om dysfonie te meten. Het kan preciezer veranderingen in stemgeluid meten, wanneer er ruis bij betrokken is. Dit is voordelig bij stemgeluid, zoals kenmerkend bij mensen met dysfonie.
 
-De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen de verschillen tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur. Attributen DFA (detrended fluctuation analysis) en RPDE (recurrence period density entropy) worden gebruikt voor het detecteren van algemene stemstoornissen, door te kijken naar ruis of willekeurigheid in stemgeluid. Het laatste attribuut D2 is een correlatiedimensie dat ingewikkelde dynamiek schetst behorend bij dysfonie \bibitem{Dysphonic voice analysis}. 
+De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen de verschillen tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur. Attributen DFA (detrended fluctuation analysis) en RPDE (recurrence period density entropy) worden gebruikt voor het detecteren van algemene stemstoornissen, door te kijken naar ruis of willekeurigheid in stemgeluid. Het laatste attribuut D2 is een correlatiedimensie dat ingewikkelde dynamiek schetst behorend bij dysfonie (*Yunfeng, W. et al (03-05-2017)*). 
 
 ## Data interpreteren en opschonen
 
@@ -212,35 +212,94 @@ In de bovenstaande tabel is te zien dat alle p-waarden kleiner zijn dan alpha, d
 
 &nbsp;
 
-Uit het observeren van alle attributen als histogrammen werd het duidelijk dat veertien attributen niet normaal verdeeld waren. Daarom zijn deze met log10 getransformeerd en met succes vertoonden ze daarna wel normaal verdelingen. Als voorbeeld zijn worden de histogrammen van attributen MDVP getoond, omdat deze veel data naar links verdeeld hadden.
+Nadat de data werd log-getransformeerd is er een welch t-toets gedaan op elke attribuut op basis van de klasse labels, om te zien hoe erg de label data van elkaar verschilt. 
+In tabel 4 tabel is te zien hoe erg de meetwaarden uit de "gezonde" groep verschillen van de "zieke" groep voor ieder attribuut. 
+
+**Tabel 4** Welch t-toetsing van de klasse labels van alle attributen
+
+----------------------------
+    Attribute       p.value 
+------------------ ---------
+   MDVP.Fo.Hz.      8.1e-05 
+
+   MDVP.Fhi.Hz.      0.007  
+
+   MDVP.Flo.Hz.     5.7e-05 
+
+  MDVP.Jitter...    1.5e-09 
+
+ MDVP.Jitter.Abs.   2.7e-10 
+
+     MDVP.RAP       6.6e-10 
+
+     MDVP.PPQ       3.9e-11 
+
+    Jitter.DDP      6.6e-10 
+
+   MDVP.Shimmer     1.4e-14 
+
+ MDVP.Shimmer.dB.   5.6e-14 
+
+   Shimmer.APQ3      2e-11  
+
+   Shimmer.APQ5     3.3e-14 
+
+     MDVP.APQ       3.1e-18 
+
+   Shimmer.DDA      2.1e-11 
+
+       NHR          1.7e-07 
+
+       HNR          2.7e-09 
+
+       RPDE         2.9e-05 
+
+       DFA          0.0011  
+
+     spread1        1.8e-21 
+
+     spread2        3.3e-06 
+
+        D2          1.2e-06 
+
+       PPE          6.1e-17 
+----------------------------
+
+Uit tabel 4 wordt het duidelijk dat voor alle attributen een significant verschil is, omdat alle p-waarden kleiner zijn dan alpha = 0.05.
+Er is te zien dat attribuut MDVP.APQ de laagste p-waarde heeft van 3.1e-18 en vervolgens PPE met een p-waarde van 6.1e-17.
+
+&nbsp;
+
+
+Uit het observeren van alle attributen als histogrammen werd het duidelijk dat vijftien attributen niet normaal verdeeld waren. Daarom zijn deze met log10 getransformeerd en met succes vertoonden ze daarna wel normaal verdelingen. Als voorbeeld worden de histogrammen van zeven MDVP attributen getoond, omdat deze veel data naar links verdeeld hadden.
 
 ![](Plots/stapel_histogram.png) 
 
 **Figuur 4** Stapel histogrammen van MDVP-attributen voor en na log-transformatie. Op de x-as staat de verdeling per attribuut en op de y-as de grootte van de gemeten waarden. Rood is gezond en blauw is ziek.
 
-In figuur 4 is te zien dat na log-tranformatie de data naar het midden verschuift.
+In figuur 4 is te zien dat na log-transformatie de data symmetrischer verdeeld is en beter een normaalverdeling volgt.
 
 &nbsp;
 
-Vervolgens zijn er drie correlatie matrices gemaakt om de data op te delen en te vergelijken. In de onderstaande plot staat de tweede helft van alle numerieke attributen.
+Vervolgens zijn er drie correlatie matrices gemaakt om de data op te delen en te vergelijken. In de onderstaande plot staat een selectie van attributen waar een correlatiematrix de correlatiecoëfficiënten tussen paren attributen toont.
 
 ![](Plots/heatmap.png)
 
-**Figuur 5** Correlatie heatmap van tweede helft van de dataset. Op zowel de x-as als y-as staan attributen die hun eigen data representeren. De coëfficiënten worden verdeeld van paars (negatief één) naar wit (neutraal nul) tot rood (positief één).
+**Figuur 5** Correlatie heatmap van een selectie aan attributen. Op zowel de x-as als y-as staan attributen die hun eigen data representeren. De coëfficiënten worden verdeeld van paars (negatief één) naar wit (neutraal nul) tot rood (positief één).
 
-In de heatmap is te zien hoe erg de attributen waarden op elkaar reageren qua gedrag. Links onder in zijn de Shimmer attributen met correlaties van bijna één, dus meetwaarden met erg vergelijkbare oploop. Attributen HNR en NHR zijn paars, deze bevestigen hun negatieve correlatie. Verder zijn er waarden rond nul te zien en heel veel tussen nul en één in.
+In de heatmap is te zien hoe erg de attributen waarden correleren. Links onder in zijn de Shimmer attributen met correlaties van bijna één, dus meetwaarden met erg vergelijkbare oploop. Attributen HNR en NHR hebben een correlatiecoëfficiënt van -0.71, dit bevestigt hun negatieve correlatie. Verder zijn er waarden rond nul te zien en heel veel tussen nul en één in.
 
-Om meer beeld te krijgen van het gedrag tussen data dat correlatie aantoont kunnen er grotere GGpairs grafieken gemaakt worden waar de statussen zichtbaar zijn. In de volgende grafiek zijn attributen gekozen die of negatieve correlaties vertoonden of juist erg positief.
+Om meer beeld te krijgen van hoe sterk attributen paarsgewijs samenhangen, kan er een groot ggpairs figuur gemaakt worden waar de groepen zichtbaar zijn. In de volgende figuur zijn attributen gekozen die of negatieve correlaties vertoonden of juist erg positief.
 
 ![](Plots/paar_plot.png) 
 
-**Figuur 6** Correlatie paar plot tussen verschillende attributen en de twee statussen. Op de x-as de grootte van hun waarden en op de y-as verschillende weergaven om verschillen of correlaties aan te tonen.
+**Figuur 6** Correlatie paar plot tussen verschillende attributen en de twee groepen Op de x-as de grootte van hun waarden en op de y-as verschillende weergaven om verschillen of correlaties aan te tonen. Er zijn drie weergaven in de figuur waar linksonder van rechtsboven wordt gescheiden door een diagonaal van berg grafieken die de overlapping tussen statussen per attribuut weergeeft. In andere woorden hoe erg de waarden op elkaar lijken die gemeten zijn. Linksonder zijn spreidingsdiagrammen. Hieruit is de paarsgewijze samenhang van attributen af te lezen. Rechtsboven de diagonaal staan alle correlatiecoëfficiënt waarden tussen paren van attributen en hun statussen. 
 
-In figuur 6 zijn drie typen weergaven te zien. Links onder in een driehoek met puntgrafieken. Het gedrag van de correlaties is hieruit af te lezen. Bijvoorbeeld de vierde van de eerste kolom PPE gaat van links onder naar rechts boven. Die vertoond een positieve correlatie, hierin is ook een zeker onderscheidt tussen het merendeel van de statussen. Daar rechts naast is een grafiek met meer een wolk spreiding van links boven naar rechts onder. Deze vertoond negatieve correlatie.
+In de derde spreidingsdiagram van de eerste kolom PPE gaan de punten van links onder naar rechts boven. Dit vertoond een positieve correlatie, hierin is ook een zeker onderscheidt tussen het merendeel van de statussen. Daar rechts naast is een grafiek met meer een wolk spreiding van links boven naar rechts onder. Deze vertoond negatieve correlatie.
 
-Verder wordt links onder van rechts onder gescheiden door berg grafieken die de overlapping tussen statussen per attribuut weergeeft. In andere woorden hoe erg de waarden op elkaar lijken die gemeten zijn. In D2 zit er weinig verschil tussen de meetwaarden van de groepen, maar bij PPE lijkt juist een veel groter verschil.
+In de berg grafiek van D2 van zit er weinig verschil tussen de meetwaarden van de groepen, dit is te zien aan het grote overlap tussen de bergen. Daartegenover lijkt bij PPE  juist een veel groter verschil, door er maar een klein overlap is.
 
-Overigens maar zeker belangrijk bevat de driehoek van rechts boven in alle correlatie coëfficiënt waarden tussen paren van attributen en hun statussen. Spread1 en PPE heeft een erg positieve correlatie van 0.963 en de groepen verschillen maar met acht. Deze attributen reageren dus erg positief op elkaar. Daartegenover staan Shimmer.APQ3 en DFA met een correlatie vlakbij nul. Er is weinig reactie op elkaar en ook amper verschil tussen de groepen. Tevens hebben D2 en HNR juist een negatieve correlatie, ze reageren juist van elkaar weg.
+Uit het raster met correlatiecoëfficiënten is te zien dat spread1 en PPE een erg positieve correlatie hebben van 0.963 en de groepen verschillen maar met acht. Deze attributen reageren dus erg positief op elkaar. Daartegenover staan Shimmer.APQ3 en DFA met een correlatie vlakbij nul. Er is weinig reactie op elkaar en ook amper verschil tussen de groepen. Tevens hebben D2 en HNR juist een negatieve correlatie, ze reageren juist van elkaar weg.
 
 &nbsp;
 
@@ -258,7 +317,7 @@ Verder geeft een v'tje een significant verschil aan tussen log-getransformeerde 
 
 Het vergelijkings-veld "percent_correct" (procent goed) gaf het volgende tabel en toont aan hoeveel procent ieder model goed voorspeld van nul (incorrect) tot honderd procent (correct). 
 
-**Tabel 4** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst in percentages.
+**Tabel 5** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst in percentages.
 
 Dataset                   (1) log_patient_data | (2) patient_data_
 ------------------------------------------------------------------
@@ -273,7 +332,7 @@ Uit de bovenstaande tabel is te zien dat RandomForest met normale instellingen h
 
 Het vergelijkings-veld "F_measure" gaf het volgende tabel en toont aan hoeveel informatie dat is verkregen daadwerkelijk relevant is, met nul (niet relevant) tot één (wel relevant).
 
-**Tabel 5** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst op hoe relevant de verkregen informatie is en staat bekend als de F-maat.
+**Tabel 6** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst op hoe relevant de verkregen informatie is en staat bekend als de F-maat.
 
 Dataset                   (1) log_patient | | (2) patient_data_
 ------------------------------------------------------------------
@@ -289,7 +348,7 @@ RandomForest doet het beste met ongeveer 0.94, wat dus betekent dat er veel info
 
 Het vergelijkings-veld "False_negative_Rate" gaf het volgende tabel en toont de foutenmarge aan waarin zieke mensen zijn voorspeld als gezond, met nul is geen fouten tot één waar alle zieke mensen als gezond zijn voorspeld.
 
-**Tabel 6** Overzicht van alle niet overfitte modellen, deze zijn getoetst op hoeveel zieke mensen als gezond worden gemarkeerd in een marge tussen nul en één.
+**Tabel 7** Overzicht van alle niet overfitte modellen, deze zijn getoetst op hoeveel zieke mensen als gezond worden gemarkeerd in een marge tussen nul en één.
 
 Dataset                   (1) log_patient | | (2) patient_data_
 ------------------------------------------------------------------
@@ -309,7 +368,7 @@ Het v'tje toont aan dat op de originele data significant meer fouten worden gema
 
 Via bagging is RandomForest verbeterd en OneR met bucketsize twintig en een batchsize van hondertwintig is verbeterd via Stacking door te leren van RandomForest en J48 met unpruning op True, confidenceFactor op 0.20 en minNumObj op drie. 
 
-**Tabel 7** Verbeterde RandomForest en OneR met voorspellingen in procent goed
+**Tabel 8** Verbeterde RandomForest en OneR met voorspellingen in procent goed
 
 RandomForest | OneR
 -------------------
@@ -328,7 +387,7 @@ In de figuur is te zien dat OneR een diagonale lijn heeft van links onder naar r
 
 Via de WrapperSubsetEval attribuut selectie methode is onderzocht welke attributen het beste waren om op te voorspellen door RandomForest.
 
-**Tabel 8** Attributen waar RandomForest het best op voorspeld.
+**Tabel 9** Attributen waar RandomForest het best op voorspeld.
 
 Attributen
 -----------
@@ -351,7 +410,7 @@ Nu de beste attributen en het beste model zijn gevonden is er een poging gedaan 
 
 &nbsp;
 
-**Tabel 9** Voorspellingen van zieke en gezonde mensen op basis van zes attributen.
+**Tabel 10** Voorspellingen van zieke en gezonde mensen op basis van zes attributen.
 
 Ziek als gezond voorspeld | 5
 -------------------------------------
@@ -373,9 +432,9 @@ Uit de bovenstaande model en matrix is af te lezen dat voor ~ 93.3 procent goed 
 
 ### Figuren & tabellen
 
-Vanwege het feit dat de hoeveelheid zieke mensen in figuur 1 drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Uit berekening uit de EDA komen er ongeveer tien vals positieven voor, door alpha van 0.05 te vermenigvuldigen met het aantal rijen. Al hoewel het voor onderzoeken en model training genoeg data is, zou als vervolg onderzoek een grotere dataset gebruikt kunnen worden om zekerder te zijn van alle observaties.
+Vanwege het feit dat de hoeveelheid zieke mensen in figuur 1 drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Tevens is er de kans dat machine learning modellen meer trainen op de ene groep dan de andere, waardoor het model minder accuraat zal voorspellen. Al hoewel het voor onderzoeken en model training nu genoeg data is, zou als vervolg onderzoek een grotere dataset gebruikt kunnen worden om zekerder te zijn van alle observaties.
 
-In figuur 2 is er sprake van geen volledige negatieve correlatie; een verklaring kan zijn dat de formules gebruikt voor het meten van HNR en NHR niet evenredig omgekeerd zijn. Als voorbeeld 2log(8) = 3 en 2^3 = 8, de formules zijn evenredig omgekeerd verbonden aan elkaar.
+In figuur 2 is er sprake van geen volledige negatieve correlatie; een verklaring kan zijn dat de formules gebruikt voor het meten van HNR en NHR niet evenredig omgekeerd zijn. 
 
 &nbsp;
 
@@ -397,43 +456,49 @@ Omdat er meer zieke instanties zijn is er een manier om tijdens model training m
 
 &nbsp;
 
-In tabel 4 deed RandomForest het beste op goed voorspellen. Dit was al verwacht aangezien RandomForest meerdere bomen maakt waaruit een betere uitkomst bepaald wordt. Van J48 werd verwacht dat het relatief goed zou doen. Het kort knippen van takken in J48 (pruning) is uitgezet, met als motivatie zo goede voorspellingen te behouden die anders weg geknipt zouden worden. OneR heeft een bucket size van twintig, dit betekent dat de dataset van circa 200 instanties in tien emmertjes is verdeeld waarop wordt voorspeld. Door de data op te delen in een niet overdreven aantal stukjes, kunnen er minder fouten gemaakt worden bij splitsen op attributen. Met deze gedachte gang wordt verwacht dat er relatief veel goed zal worden voorspeld.
+In tabel 4 hebben attributen MDVP.APQ en PPE de kleinste p-waarden. Dit kan betekenen dat hierin het beste onderscheidt is tussen groep gezond en ziek. Tevens zouden deze attributen mogelijk goed zijn voor modellen om op te trainen.
 
 &nbsp;
 
-In tabel 5 staan RandomForest en OneR wederom in de top 2. De F-maat kijkt naar hoeveel mensen ziek zijn voorspeld, maar ook naar hoeveel mensen die ziek zijn voorspeld ook daadwerkelijk ziek zijn. OneR en RandomForest delen data op of herhalen training, wat leidt tot mindere fouten dus een hogere F-maat. Echter, waarom is lazy.Ibk met twintig buren dan in de top drie? Er zijn twintig buren die steeds stemmen voor een label van een instantie en dankzij die hoeveelheid neemt de foutenmarge af. Ook al doet lazy.Ibk het niet beter dan J48 uit tabel 4 voor alle voorspellingen, is de foutenmarge voor het voorspellen van zieke mensen lager.
+In tabel 5 deed RandomForest het beste op goed voorspellen. Dit was al verwacht aangezien RandomForest meerdere bomen maakt waaruit een betere uitkomst bepaald wordt. Van J48 werd verwacht dat het relatief goed zou doen. Het kort knippen van takken in J48 (pruning) is uitgezet, met als motivatie zo goede voorspellingen te behouden die anders weg geknipt zouden worden. OneR heeft een bucket size van twintig, dit betekent dat de dataset van circa 200 instanties in tien emmertjes is verdeeld waarop wordt voorspeld. Door de data op te delen in een niet overdreven aantal stukjes, kunnen er minder fouten gemaakt worden bij splitsen op attributen. Met deze gedachte gang wordt verwacht dat er relatief veel goed zal worden voorspeld.
 
 &nbsp;
 
-Uit tabel 6 wordt het duidelijk dat NaiveBayes de meeste vals negatieven voorspeld, oftewel zieke mensen als gezond gemarkeerd. NaiveBayes berekend de kans op ieder klasse label gegeven de attributen. Waarschijnlijk worden er meer foute voorspellingen gemaakt, doordat de kansen niet goed berekend kunnen worden op de data van de attributen. NaiveBayes berekend kansen bij numerieke data via een normaal verdeling formule op steeds een enkele instantie en het gemiddelde, de standaard deviatie van alle data met dezelfde klasse label worden hierin meegenomen. Er is een kans berekening voor de data van alle zieke mensen en een kans berekening voor de gezonden mensen in een kolom. De hogere kans is de voorspelde label. Omdat er veel meer zieke instanties zijn, is er de aanname dat het onbalans van instanties die in de twee kans berekeningen worden verwerkt, zorgt voor meer incorrecte voorspellingen. Daarom schiet NaiveBayes bovenaan in het verkeerd voorspellen van zieke mensen.
+In tabel 6 staan RandomForest en OneR wederom in de top 2. De F-maat kijkt naar hoeveel mensen ziek zijn voorspeld, maar ook naar hoeveel mensen die ziek zijn voorspeld ook daadwerkelijk ziek zijn. OneR en RandomForest delen data op of herhalen training, wat leidt tot mindere fouten dus een hogere F-maat. Echter, waarom is lazy.Ibk met twintig buren dan in de top drie? Er zijn twintig buren die steeds stemmen voor een label van een instantie en dankzij die hoeveelheid neemt de foutenmarge af. Ook al doet lazy.Ibk het niet beter dan J48 uit tabel 4 voor alle voorspellingen, is de foutenmarge voor het voorspellen van zieke mensen lager.
 
 &nbsp;
 
-Uit tabel 7 en figuur 7 wordt het duidelijk dat RandomForest het 'betere' model is voor deze data na optimalisatie vergeleken met OneR. Dit werd al verwacht, aangezien RandomForest op zichzelf al erg al erg accuraat is, bagging varieert de trainingsdata steeds en alle getrainde RandomForests bepalen samen weer een beste uitkomst. Alhoewel OneR erg verbeterd is door te leren van J48 en RandomForest, blijft het minder accuraat dan RandomForest. Tevens wordt in figuur 7 duidelijk dat RandomForest kwalitatief beter is dan OneR. Dit was te observeren uit het feit hoe de curve van RandomForest erg naar links boven neigt in het begin en daarna over de x-as sterk afneemt met dalen. De curve toont aan dat er veel zieke instanties goed worden voorspeld (True positive rate op de y-as) en weinig gezonde instanties verkeerd worden voorspeld (False positive rate op de x-as).
+Uit tabel 7 wordt het duidelijk dat NaiveBayes de meeste vals negatieven voorspeld, oftewel zieke mensen als gezond gemarkeerd. NaiveBayes berekend de kans op ieder klasse label gegeven de attributen. Waarschijnlijk worden er meer foute voorspellingen gemaakt, doordat de kansen niet goed berekend kunnen worden op de data van de attributen. NaiveBayes berekend kansen bij numerieke data via een normaal verdeling formule op steeds een enkele instantie en het gemiddelde, de standaard deviatie van alle data met dezelfde klasse label worden hierin meegenomen. Er is een kans berekening voor de data van alle zieke mensen en een kans berekening voor de gezonden mensen in een kolom. De hogere kans is de voorspelde label. Omdat er veel meer zieke instanties zijn, is er de aanname dat het onbalans van instanties die in de twee kans berekeningen worden verwerkt, zorgt voor meer incorrecte voorspellingen. Daarom schiet NaiveBayes bovenaan in het verkeerd voorspellen van zieke mensen.
+
+&nbsp;
+
+Uit tabel 8 en figuur 7 wordt het duidelijk dat RandomForest het 'betere' model is voor deze data na optimalisatie vergeleken met OneR. Dit werd al verwacht, aangezien RandomForest op zichzelf al erg al erg accuraat is, bagging varieert de trainingsdata steeds en alle getrainde RandomForests bepalen samen weer een beste uitkomst. Alhoewel OneR erg verbeterd is door te leren van J48 en RandomForest, blijft het minder accuraat dan RandomForest. Tevens wordt in figuur 7 duidelijk dat RandomForest kwalitatief beter is dan OneR. Dit was te observeren uit het feit hoe de curve van RandomForest erg naar links boven neigt in het begin en daarna over de x-as sterk afneemt met dalen. De curve toont aan dat er veel zieke instanties goed worden voorspeld (True positive rate op de y-as) en weinig gezonde instanties verkeerd worden voorspeld (False positive rate op de x-as).
 Daartegenover vertoont de diagonale lijn bij OneR dat hoe meer gezonde mensen als ziek voorspeld worden hoe meer zieke mensen goed worden voorspeld. Het voorspellen gaat wel dus goed voor zieke mensen, maar de logica wijkt af van gewoon direct instanties goed voorspellen die ziek zijn en zo min mogelijk fouten maken bij gezonde mensen. Want de bedoeling is dat een model voor beide klassen zo veel mogelijk fouten voorkomt.
 
 &nbsp;
 
-Uit tabel 8 en figuur 8 werd duidelijk welke attributen het beste zijn om op te voorspellen. Uit de EDA vielen attributen NHR, MDVP.Flo.Hz/ MDVP.Fo.Hz / MDVP.Jitter.Abs.
+Uit tabel 9 en figuur 8 werd duidelijk welke attributen het beste zijn om op te voorspellen. Uit de EDA vielen attributen NHR, MDVP.Flo.Hz/ MDVP.Fo.Hz / MDVP.Jitter.Abs.
 en PPE op. Na het selecteren van attributen en trainen van modellen werd het duidelijk dat deze inderdaad ook bij de beste attributen hoorden. Echter, viel attribuut Shimmer.DDA niet op. Tevens komt het alleen voor in de top zes van RandomForest tijdens attribuut selectie. Shimmer.DDA kijkt naar de gemiddelde verschillen tussen amplituden van trillingen van opeenvolgende tijdsduren. De waarden hiervan moeten voor RandomForest genoeg onderscheid hebben om samen met de andere vijf attributen betere voorspellingen te kunnen maken.
 
 &nbsp;
 
-De laatste tabel 9 toont eind voorspellingen van het geoptimaliseerde RandomForest met de meest compatibele attributen. Het model is best accuraat en maakt weinig fouten. Echter, worden er wel vijf mensen die ziek zijn als gezond voorspeld. In de praktijk is dit niet gewild, omdat deze mensen nu niet door verwezen worden voor medische hulp.
+De laatste tabel 10 toont eind voorspellingen van het geoptimaliseerde RandomForest met de meest compatibele attributen. Het model is best accuraat en maakt weinig fouten. Echter, worden er wel vijf mensen die ziek zijn als gezond voorspeld. In de praktijk is dit niet gewild, omdat deze mensen nu niet door verwezen worden voor medische hulp.
 Daartegenover staan acht mensen die gezond zijn en als ziek zijn voorspeld, Alhoewel dit niet levend bedreigend is voor de patiënt, kost dit wel onnodig tijd en geld voor controles.
 
 ### Werkwijze
 In dit project is er niet consequent genoeg gewerkt. Voor alle stappen had meer tijd moeten worden genomen voor efficiëntie in werk en voor meer accurate observatie van de data en resultaten. Tevens is het modeltraining gedaan op de hele dataset, zonder in het achterhoofd te houden dat er ook test data moet worden gebruikt. Bij het testen van de Javawrapper is daarom het RandomForest model opnieuw getraind op zestig procent van de instanties en veertig procent wordt gebruikt als test data. In toekomstig (machine learning) onderzoeken is het belangrijk om dit te beseffen, omdat het belangrijk is om een zuivere controle groep te hebben.
 
+Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen voor de gevonden attributen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben en moet er een duidelijke trainingsgroep en testgroep zijn. Op basis van deze nieuwe data kan er worden bevestigd dat RandomForest met een vergelijkbare accuraatheid blijft voorspellen.
+
 &nbsp;
 
-## Conclusie en reflectie
+## Conclusie
 
-Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon? Deze vraag is beantwoord door een geoptimaliseerde RandomForest te laten trainen op de volgende zes supervised attributen: MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE. Het merendeel van deze attributen vielen op in de EDA, door de manier dat hun instanties reageerden op de klasse labels. Tevens is het een feit dat er uitschieters zijn in de data en dat met log10-transformatie deze geminimaliseerd worden. Hoe sterk de impact is van uitschieters op het onderscheiden van de klasse labels kan worden onderzocht bij een vervolg onderzoek.
+Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon? Deze vraag is beantwoord door een geoptimaliseerde RandomForest te laten trainen op de volgende zes supervised attributen: MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE. Het merendeel van deze attributen viel al op bij het observeren van hun data in grafieken en toesting. 
 
-In Weka voorspeld het model voor 93 en 1/3 procent goed voor wie PD heeft en wie niet op alle instanties in de dataset. Zoals in de introductie is verteld is RandomForest opnieuw getraind op 60 procent van de instanties, zodat er wel een test (controle) groep is dat 40 procent van de instanties bedraagt. De test data werd voor 96,15 procent goed voorspeld in de Javawrapper.
+In Weka voorspeld het model voor 93 en 1/3 procent goed voor wie wel PD heeft en wie niet op alle instanties in de dataset. Zoals in de introductie is verteld is RandomForest opnieuw getraind op 60 procent van de instanties, zodat er wel een test (controle) groep is dat 40 procent van de instanties bedraagt. De test data werd voor 96,15 procent goed voorspeld in de Javawrapper. Al met al is het gelukt om een groot deel van de data goed te voorspellen, maar zijn er nog wel punten om te verbeteren.
 
-Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen voor de gevonden attributen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben en moet er een duidelijke trainingsgroep en testgroep zijn. Op basis van deze nieuwe data kan er worden bevestigd dat op nieuwe data het model met zekerheid voorspeld met een vergelijkbare accuraatheid.
+
 
 
 &nbsp;
@@ -477,7 +542,7 @@ https://www.researchgate.net/publication/7789462_Multidimensional_Voice_Program_
 Yunfeng, W. et al (03-05-2017). Dysfonische stemanalyse: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
 
 \bibitem{Kaggle dataset}
-Yunfeng, W. et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
+Kaggle - Yunfeng, W. et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
 https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
 
 \bibitem{F-maat definitie}
