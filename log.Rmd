@@ -4,7 +4,8 @@ author: "L T Stein"
 date: "`r Sys.Date()`"
 output:
   word_document: default
-  pdf_document: default
+  toc: true
+  number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -41,7 +42,7 @@ The article has found out a certain combination of measurements to predict the d
 &nbsp;
 
 The research paper's goal is to find out if healthy people can be discerned from people with Parkinson's disease using different sorts of voice recordings.
-Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnose of possible sickness. Therefore given that goal the project's research question states: "Which type of voice measurements can be used to discern a Parkinson's patient from a healthy person?"
+Based on the data that the article gives as appendix, the purpose of this project is to find out what attribute or attributes are most important to give a diagnosis of possible sickness. Therefore, given that goal the project's research question states: “Which type of voice measurements can be used to discern a Parkinson's patient from a healthy person?“
 
 ---
 
@@ -136,12 +137,12 @@ pander::pander(head(summary(patient.data)), style = "rmarkdown", caption = "Summ
 ```
 
 From observing the data above it becomes clear from the means that the values between attributes can differ highly. 
-Also the data of NHR (Noise-to-harmonics ration) and HRN (Harmonics-to-noise ratio) seem to pose that they are opposite attributes of each other.
+Also, the data of NHR (Noise-to-harmonics ration) and HRN (Harmonics-to-noise ratio) seem to pose that they are opposite attributes of each other.
 
 
 &nbsp;
 
-Barplot for showing amount of sick and healthy people
+Bar plot for showing amount of sick and healthy people
 
 ```{r}
 ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status") + 
@@ -152,7 +153,7 @@ ggplot(patient.data, aes(x = status, fill = status)) + geom_bar() + xlab("Status
 
 **Retrospective**
 
-In this dataset there are nearly thrice as much people recorded whom are sick opposing to healthy people. This means that values of the healthy status that are measured by coincidence, deal more impact to its dataset. 
+In this dataset there are nearly thrice as many people recorded whom are sick opposing to healthy people. This means that values of the healthy status that are measured by coincidence, deal more impact to its dataset. 
 
 Normally it's preferred to have a dataset with lots of values for each group. In further research the sum of false positives therefore might be more than desired.
 
@@ -170,6 +171,7 @@ This estimates that of the 48 healthy instances two values are measured by coinc
 
 **Retrospective**
 There are approximately ten false positives that probably deviate from the instances in its attribute.
+
 
 &nbsp;
 
@@ -253,7 +255,7 @@ With all p-values smaller than alpha = 0.05 there's a significant difference bet
 
 
 **Retrospective**
-There are significant differences between the levels "healthy" and "sick" in the attributes MDVP.Fo.Hz, MDVP.Fhi.Hz, MDVP.Flo.Hz. These attributes might be interesting to use in differentiating people of PD with healthy people.
+There are significant differences between the levels “healthy“ and “sick“ in the attributes MDVP.Fo.Hz, MDVP.Fhi.Hz, MDVP.Flo.Hz. These attributes might be interesting to use in differentiating people of PD with healthy people.
 
 &nbsp;
 
@@ -294,11 +296,11 @@ aov.Flo.Hz.log <- summary(aov(log(MDVP.Flo.Hz.) ~ status, data = patient.data))
 cat("Fo.Hz = ", aov.Fo.Hz.log[[1]]$`Pr(>F)`[1], "\nFhi.Hz = ", 
     aov.Fhi.Hz.log[[1]]$`Pr(>F)`[1], "\nFlo.Hz = ", aov.Flo.Hz.log[[1]]$`Pr(>F)`[1])
 ```
-After normalizing the data the differences between the levels remain significant. Though attributes Fo.Hz and Flo.Hz are less significant. This can be explained by the fact that their outliers held on more diverse values, that are now reduced.
+After normalizing the data the differences between the levels remain significant, though attributes Fo.Hz and Flo.Hz are less significant. This can be explained by the fact that their outliers held on more diverse values, that are now reduced.
 
 **Retrospective**
 
-From observing this data it can be concluded that healthy people are measured higher frequencies than sick people. Also log-transforming successfully skewers outliers.
+From observing this data it can be concluded that healthy people are measured higher frequencies than sick people. Also, log-transforming successfully skewers outliers.
 
 
 
@@ -441,10 +443,10 @@ The last six attributes seem to have well distributed data. Attribute PPE has le
 F.22.log <- ggplot(patient.data, aes(x=log(PPE), fill = status)) + geom_histogram(color = "black", bins = 39)
 grid.arrange(F.22.log, ncol = 1, nrow = 2)
 ```
-                                                                      Histogram of log-tranformed attribute "PPE"
+                                                                      Histogram of log-tranformed attribute “PPE“
 &nbsp;
 
-After log-transforming attribute "PPE" the data has shifted more towards the center with a better normal distribution.
+After log-transforming attribute “PPE“, the data has shifted more towards the center with a better normal distribution.
 
 
 **Retrospective**
@@ -470,6 +472,29 @@ write.csv(combined.log.data, file = "log_patient_data.csv", row.names = FALSE)
 
 &nbsp;
 
+Are there clear differences in the class labels of each log-transformed attribute? The following function does a Welch t-test for each attribute. This function will not run automatically since the output isn't very pretty. Therefore, it was run once and saved in csv format.
+
+```{}
+# Function that tests each attribute based on the class labels
+Welch.t.test <- function(data) {
+  for (i in 1:ncol(data)) {
+    if (is.numeric(data[, i])) {
+      sick <- data[, i][data$status == "sick"]
+      healthy <- data[, i][data$status == "healthy"]
+      cat(colnames(data)[i], ",", t.test(sick, healthy)$p.value, "\n")
+      
+    }
+  }
+}
+Welch.t.test(combined.log.data)
+```
+
+```{r}
+pander::pander(read.csv("differences_of_classLabels.csv", sep = ",", header = T))
+```
+
+From the Welch t-testing of each attribute it seems all p-values are below alpha = 0.5. This means that the data of the class labels differ significantly for each attribute. 
+Attribute MDVP.APQ has the largest difference of 3.1e-18 and PPE the second largest of 6.1e-17.
 
 \pagebreak
 
@@ -521,9 +546,9 @@ ggpairs(data.numeric[MDVP.small-2], ggplot2:: aes(color=levels.of.status, alpha 
         axis.text.y = element_blank())                                                                                                                                                                
 ```
 
-The columns MDVP.PPQ and MDVP.RAP correlate the best. Though MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a strong negative correlation, between sick and healthy. 
+The columns MDVP.PPQ and MDVP.RAP correlate the best all-round, but MDVP.RAP and MDVP.Jitter perform the best correlation value of 0.990. More interesting MDVP.Jitter.Abs and MDVP.Flo.Hz show a strong negative correlation, between sick and healthy. 
 
-Though what does negative correlation really indicate? An article from Indeed states "one variable increases in value while the other decreases.". This statement is what attributes NHR and HNR showed earlier and clarifies that the attributes MDVP.Jitter.Abs and MDVP.Flo.Hz have values that stand face to face. Since the healthy and sick values are both negative with a large difference it really tells how divided the levels are with this attributes combination. Therefore are these attributes in later modelling research very exhilirating to observe. 
+Though what does negative correlation really indicate? An article from Indeed states “one variable increases in value while the other decreases“. This statement is what attributes NHR and HNR showed earlier and clarifies that the attributes MDVP.Jitter.Abs and MDVP.Flo.Hz have values that stand face to face. Since the healthy and sick values are both negative with a large difference it really tells how divided the levels are with this attribute combination. Therefore, it's very exhilarating to observe these attributes in later modeling research. 
 
 
 
@@ -543,7 +568,7 @@ ggpairs(data.numeric[MDVP.shimmer-2], ggplot2:: aes(color=levels.of.status, alph
 
 Attributes Shimmer.APQ3 and MDVP.Shimmer show the best correlation in the plot above. Though many shimmer and MDVP attributes perform highly. The higher the correlation means the more positive the attributes react onto each other to increase their values. This can be seen in the graphs that move from the zero corner to the top right corner.
 
-Also what's quite remarkable is that the majority of the scatterplots show that healthy values cluster against the more spread lines of the sick values. This mainly occurs in graphs that correlates positively. A way of interpreting the clustering is that the values of healthy are different with a clear border from the sick values. Another idea is that the fact that most healthy values cluster, it means that all those values react according to the correlation coëfficiënt. For example all values of healthy between Shimmer.APQ5 and MDVP.APQ impact the sick values to increase in value. 
+Also, what's quite remarkable is that the majority of the scatterplots show that healthy values cluster against the more spread lines of the sick values. This mainly occurs in graphs that correlates positively. A way of interpreting the clustering is that the values of healthy are different with a clear border from the sick values. Another idea is that the fact that most healthy values cluster, it means that all those values react according to the correlation coefficients. For example all values of healthy between Shimmer.APQ5 and MDVP.APQ impact the sick values to increase in value. 
 
 
 Does behaviour of how instances move in a chart represent the similarity in data between attributes? This will be tested with a welch t-test with attributes Shimmer.APQ3 and MDVP.Shimmer.
@@ -552,7 +577,7 @@ Does behaviour of how instances move in a chart represent the similarity in data
 t.test(patient.data$Shimmer.APQ3,  patient.data$MDVP.Shimmer)
 ```
 
-Likewise to the attributes with a negative correlation, these attributes with a high positive correlation have very dissimilar data with a p-value of 2.2e-16 < 0.05. This answers the question that correlation rather shows data's behaviour than similarity of values.
+Likewise, to the attributes with a negative correlation, these attributes with a high positive correlation have very dissimilar data with a p-value of 2.2e-16 < 0.05. This answers the question that correlation rather shows data's behaviour than similarity of values.
 
 
 **Retrospective**
@@ -570,7 +595,7 @@ striking.attributes <- data.numeric[,c("PPE", "HNR", "spread1", "DFA", "Shimmer.
 ggpairs(striking.attributes, ggplot2:: aes(color=levels.of.status, alpha = 0.05), progress = FALSE, upper = list(continuous = wrap(ggally_cor, size = 3.5))) + labs(caption = "Pair plot showing correlations between six attributes with generally high (dis)similarity\n and showing how similar the status data is between them", legend = 1) + theme(axis.text.x = element_text(angle=90, hjust = 1), axis.text.y = element_blank(), legend.position = "bottom")                                                          
 ```
 
-Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. PPE and spread1 show the cleanest positive correlation in the plot with a clear difference in statuses visually. It's is interesting to find out if observing the correlation coëfficiënts is better or not than observing the scatterplots for choosing a pair that might be good for diagnosing.
+Generally the attributes statuses differ with 0-0.200. There are several combinations with negative corr values. Testing those later with a machine learning model might give perspective of how mild negative correlating attributes behave differently from strong negative correlations. Attributes DFA and HNR, Shimmer.APQ3 and PPE show differences of 0.400 and strike as best differentiating combinations for this plot. PPE and spread1 show the cleanest positive correlation in the plot with a clear difference in statuses visually. It's interesting to find out if observing the correlation coefficients is better or not than observing the scatterplots for choosing a pair that might be good for diagnosing.
 
 
 **Retrospective**
@@ -594,7 +619,7 @@ ZeroR predicts class value: sick
 Correctly Classified Instances         147               75.3846 %
 Incorrectly Classified Instances        48               24.6154 %
 
-As expected does ZeroR a fair guess what rows are labeled sick.
+ZeroR does a fair guess as expected for what rows are labeled sick.
 
 &nbsp;
 
@@ -610,10 +635,10 @@ PPE:
 Correctly Classified Instances         168               86.1538 %
 Incorrectly Classified Instances        27               13.8462 %
 
-OneR does better at guessing. Though its thresholds aren´t very logical. For attribute PPE it says
+OneR does better at guessing, though its thresholds aren't very logical. For attribute PPE it says
 two times healthy and sick constantly higher than the previous. There isn't a real boundary.
 
-&nbspl
+&nbsp;
 
 #### The next Explored mode will be J48 pruned tree
 
@@ -644,9 +669,9 @@ Even though the J48 tree is less accurate it does give more predictions. Let's m
 
 ### Experimenter
 
-This testing fase is executed in the Experimenter environment of Weka. By pressing "New" in the topright corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose"; several algorithms can be added for comparison. Under "Experiment Type" the kind of training can be chosen i.e. training dataset or cross validation. 
+This testing phase is executed in the Experimenter environment of Weka. By pressing “New“ in the top right corner the first dataset can be added. Next press "Add new" under "Datasets" towards the left and choose the file and its type you wish to use. For example iris dataset with .arff extension. After adding the desired files under Algorithms "Add new" and then "Choose"; several algorithms can be added for comparison. Under “Experiment Type“ the kind of training can be chosen i.e. training dataset or cross validation. 
 
-Next go to "Run" and press start, for this run the error "Class attribute is not nominal!" appeared. This might be because it's expected that the class attribute is the last column of the dataframe. This is tested by moving the status column to the end.
+Next go to “Run“ and press start, for this run the error “Class attribute is not nominal!“ appeared. This might be because it's expected that the class attribute is the last column of the dataframe. This is tested by moving the status column to the end.
 
 ```{r}
 # Excluding the rownames
@@ -655,10 +680,10 @@ edit.patientData <- data.frame(patient.data[, c(2,3,4,5,6,7,8,9,10,11,12,13,14,1
 write.csv(edit.patientData, file = "patient_data_labels.csv", row.names = FALSE)
 ```
 
-When running the experimenter with the new csv ordered file no errors occur. Thus when adding a csv file the nominal attribute that is splitted on must be the last column. 
+No errors occur when running the experimenter with the new csv ordered file. Thus, when adding a csv file the nominal attribute that is splitted on must be the last column. 
 
 #### Default parameters
-For the first test the algorithms Ibk, J48, ZeroR, OneR, RandomForest and NaiveBayes are tested with the default parameters and Weka settings.
+For the first test the algorithms IBk, J48, ZeroR, OneR, RandomForest and NaiveBayes are tested with the default parameters and Weka settings.
 
 Dataset                |   (1) rules.Zero | (2) rules.One |(3) bayes |(4) trees (J48) |(5) trees (RandomForest) |(6) lazy. IBk
 log_patient_data       |  (100)   75.39 |   87.81 v |  72.75   |  84.63 v |  91.70 v |  93.03 v
@@ -667,7 +692,7 @@ patient_data_labels    |  (100)   75.39 |   87.70 v |  70.14   |  84.79 v |  91.
 
                                
                                
-NaiveBayes is the least accurate and IBk is the most, though the model IBk is overfitted with the default option of KNN = 1. RandomForest tries voting for better results, which is reflected with it's accuracy if ~ 91 percent.
+NaiveBayes is the least accurate and IBk is the most, though the model IBk is overfitted with the default option of KNN = 1. RandomForest tries voting for better results, which is reflected with its accuracy if ~ 91 percent.
 
 **Retrospective**
 IBk -1 and RandomForest are most accurate.
@@ -676,9 +701,9 @@ IBk -1 and RandomForest are most accurate.
 #### Edited parameters
 Next let's compare the default models with edited models.
 
-What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The bucketsize of OneR is set to twenty and the batchsize to 120. Also for NaiveBayes one model is added with a batchsize of 120 and one is added of 80. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. The significant differences between datasets is shown with the (v) and less significant than that is the star (*) symbol.
+What would happen if for J48 the unpruning is set to true with a minNumObj to three and a confidenceFactor of 0.20? What happens if the batchSize is increased to 120, i.e. the amount in instances to process is increased. The bucketsize of OneR is set to twenty and the batchsize to 120. Also, for NaiveBayes one model is added with a batchsize of 120 and one is added of 80. The amount of KNN is increased to twenty to decrease the overfitting. RandomForest remains the same, because regardless it searches for the best/better outcome. The significant differences between datasets is shown with the (v) and less significant than that is the star (*) symbol.
 
-All models will be compared wtih different comparison fields. Let's also sort the results by pressing Sorting (asc.) by e.g. percent_correct. For each next run the "sort by" will be applied with its corresponding comparison field.
+All models will be compared with different comparison fields. Let's also sort the results by pressing Sorting (asc.) by e.g. percent_correct. For each next run the “sort by“ will be applied with its corresponding comparison field.
 
 The first comparison field will be percent_correct that determines in percentages how well the predictions are made by each model.
 
@@ -706,7 +731,7 @@ lazy.IBk '-K 1 -W 0 -A (100)     93.0315788800 |   95.9052631200 v
 
 First of all generally the log_patient data does better than the normal patient data. Though there are no real significant differences in accuracy, except for the overfitted IBk.
 
-J48 seems to increase in accuracy with a small amount with no pruning, which means that pruning removes some branches that are actually good. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where a best attribute is chosen from. The less buckets are made in a dataset the chance then increases for errors to be made. 
+J48 seems to increase in accuracy with a small amount with no pruning, which means that pruning removes some branches that are actually good. OneR's accuracy decreases by about two after increasing the bucket size of six to twenty. Since the dataset has approximately 200 rows, ten buckets are made where the best attribute is chosen from. The fewer buckets are made in a dataset, the chance then increases for errors to be made. 
 
 NaiveBayes does exactly the same, therefore increasing or decreasing the instances to process doesn't do anything significantly. IBk decreases in accuracy signifcantly which clearly shows it first was overfitted. This also means the most accurate model is RandomForest and the second best model is OneR. Since the lower the bucket size of OneR means more overfitting and a bucket size of twenty is only a bit less accurate than a bucket size of six, the edited OneR model will be used for feature selection later on.
 
@@ -714,7 +739,7 @@ NaiveBayes does exactly the same, therefore increasing or decreasing the instanc
 IBk is overfitted and therefore default RandomForest and OneR -B 6 are most accurate when edited models are included.
 
 ##### Precision
-Which values are labeled True Positive and are actually True positive? I.e. how many of the instances that are actually sick are labeled sick? This is know as the Positive Predictive Value or precision. Therefore choose IR_precision.
+Which values are labeled True Positive and are actually True positive? I.e. how many of the instances that are actually sick are labeled sick? This is known as the Positive Predictive Value or precision. Therefore, choose IR_precision.
 
 Dataset                   (1) log_patient | (2) patient_
 --------------------------------------------------------
@@ -732,7 +757,7 @@ lazy.IBk '-K 1 -W 0 -A   (100)   0.961346 |   0.985999 v
 --------------------------------------------------------
                                   (v/ /*) |      (1/9/1)
 
-Assuming the higher the value the better the precision, the overfitted IBk stands number one in precision and the RandomForest tree model is second. Also generally the precision is divided more evenly over the two datasets, but a bit better for the original data. Furthermore it´s interesting to see that IBk -20 is next to ZeroR with weakest precision. NaiveBayes does observably better on the original data.
+Assuming the higher the value the better the precision, the overfitted IBk stands number one in precision and the RandomForest tree model is second. Also, generally the precision is divided more evenly over the two datasets, but a bit better for the original data. Furthermore, it´s interesting to see that IBk -20 is next to ZeroR with weakest the precision. NaiveBayes does observably better on the original data.
 
 **Retrospective**
 RandomForest and NaiveBayes have the best precision. The overfitted IBk will be ignored every retrospective.
@@ -763,7 +788,7 @@ Assuming the higher the value is the more mistakes are made, predicting is the w
 NaiveBayes predicts false negative the most, but IBK -20 and OneR -B 20 predict the least (ignoring ZeroR). 
 
 ##### Area Under the (ROC) Curve (AUC)
-Next let's set the comparison field to the Area Under the (ROC) Curve. This setting shows the extent of which a model can distinguish. Also the higher the value is, the higher quality measure the model has.
+Next let's set the comparison field to the Area Under the (ROC) Curve. This setting shows the extent of which a model can distinguish. Also, the higher the value is, the higher quality measure the model has.
 
 Dataset                   (1) log_patient | (2) patient_
 --------------------------------------------------------
@@ -781,13 +806,13 @@ trees.RandomForest '-P 10(100)   0.966750 |   0.964724
 --------------------------------------------------------
                                   (v/ /*) |     (1/10/0)
                                   
-Assuming the higher the values the better the quality wherein a model can distinguish, RandomForest takes the price. Also IBk -20 is the second best in distinguishing. From observing the previous comparison fields with the current one J48 is usually around the middle, which means it neither bad nor good for these datasets.
+Assuming the higher the values the better the quality wherein a model can distinguish, RandomForest takes the price. Also, IBk -20 is the second best in distinguishing. From observing the previous comparison fields with the current one J48 is usually around the middle, which means it neither bad nor good for these datasets.
                               
 **Retrospective**
 ZeroR and OneR -B 20 are the worst at distinguishing. RandomForest and IBk -20 do the best.
                       
 ##### Runtime (Elapsed_time_Training)
-Also how fast is the runtime of training for each model? Choose Elapsed_time_Training under comparison field. Since the models are generally really fast the runtime's will be close to zero. To solve results of only zero press Select next to Output Format and increase the mean and stDev precision rates until the values are comparable to the eye. For this data the rates are increased to six.
+Also, how fast is the runtime of training for each model? Choose Elapsed_time_Training under comparison field. Since the models are generally really fast the runtime's will be close to zero. To solve results of only zero press Select next to Output Format and increase the mean and stDev precision rates until the values are comparable to the eye. For this data the rates are increased to six.
 
 Dataset                   (1) log_patient | (2) patient_
 --------------------------------------------------------
@@ -842,7 +867,7 @@ On average RandomForest does the best. It does worse for runtime, but it's still
 
 ### Observing accuracy file
 
-The run time data of can also be saved to csv by choosing CSV file under "Results destination", giving the desired location and then run the setup again.
+The run time data of can also be saved to csv by choosing CSV file under “Results destination“, giving the desired location and then run the setup again.
 
 Let's see what the run data looks like.
 
@@ -851,28 +876,20 @@ experimenter.two.files <- read.csv("Experimenter/default_two_files.csv", header 
 head(experimenter.two.files)
 ```
 
-There are quite a lot of interesting columns in this file. It shows that 175 of the instances are used for training and twenty for training. Furthermore it shows how many number of times the levels are guessed correctly and incorrectly. The means of that data is also shown. From the columns will the amounts of true positives, false positives, false negatives and true negatives be plotted per model. Showing those amounts gives a better display of the accuracy per model.
-
-```{r}
-#ggplot(experimenter.two.files, aes(x=Key_Scheme, y=Num_true_positives)) + geom_histogram(color = "black", bins = 39) + 
-  #ylab("Number of TPs") + theme(axis.title.y = element_text(size = 8))
-
-#ggplot(patient.data, aes(x = Key_Scheme, y = Num_true_positives)) + geom_bar() + xlab("Status") + 
-  #ylab("Amount of people") + labs(title = "Number of healthy and sick people") + geom_text(stat='count', aes(label=after_stat(count)), vjust=2)
-```
+There are quite a lot of interesting columns in this file, basically they're all statistics in how the model has performed. For example it shows that 175 of the instances are used for training and twenty for training. Furthermore, it shows how many number of times the levels are guessed correctly and incorrectly. The means of the data are also shown.
 
 
 ### Select features in explorer
 
 This chapter is for searching the best attributes (features).
-Earlier several attributes were found with interesting behaviours. By applying attribute selection to the dataset the best "attributes" can be found.
+Earlier several attributes were found with interesting behaviours. By applying attribute selection to the dataset the best “attributes“ can be found.
 
 #### Single-attribute evaluation
 
 This evaluation removes features that are less informative than the top informative features.
 
 **WrapperSubsetEval**
-Since the most accurate model was RandomForest lets choose in "Select Attributes" under "Attribute evaluator": WrapperSubsetEval and for "Search method": BestFirst by pressing WrapperSubsetEval a window pops out. As classifier RandomForest is chosen and as evaluationMeasure "accuracy" for discrete class only. Since the log data was better for RandomForest it will be chosen for this run.
+Since the most accurate model was RandomForest lets choose in "Select Attributes" under “Attribute evaluator“: WrapperSubsetEval and for “Search method“: BestFirst by pressing WrapperSubsetEval a window pops out. RandomForest is chosen as classifier and “accuracy“ as evaluationMeasure for discrete class only. Since the log data was better for RandomForest it will be chosen for this run.
 
 Selected attributes: 1,3,5,14,15,22 : 6
                      MDVP.Fo.Hz.
@@ -924,10 +941,10 @@ Ranked attributes:
 
 Selected attributes: 22,19,5,13,20,9,10,7,12,4,15,8,6,11,14,21,3,1,16,17,18,2 : 22
 
-Assuming towards zero is worse than towards one PPE and MDVP.Jitter.Abs return in the top three. Also in the EDA spread1 was a notable attribute and now it is ranked as second best attribute.
+Assuming towards zero is worse than towards one PPE and MDVP.Jitter.Abs return in the top three. Also, in the EDA spread1 was a notable attribute and now it is ranked as second best attribute.
 
 **GainRatioAttributeEval**
-For GainRatio let's also choose Ranker as search method.
+For GainRatio let's also choose Ranker as a search method.
 
 Ranked attributes:
  0.394     3 MDVP.Flo.Hz.
@@ -988,7 +1005,7 @@ Selected attributes: 22,19,1,5,13,12,9,3,8,6,2,10,20,11,14,7,15,4,16,17,21,18 : 
 InformationGain evaluates PPE, spread1 and MDVP.Fo.Hz. in the top three. Again MDVP.Jitter.Abs. and MDVP.APQ remain high in the rankings.
 
 **OneRAttributeEval**
-This evaluator evaluates each attribute using OneR. Again the bucketsize is set to twenty, though the batchsize here is immutable. Also let's choose full training set. As search method choose Ranker.
+This evaluator evaluates each attribute using OneR. Again the bucketsize is set to twenty, though the batchsize here is immutable. Also, let's choose full training set. As search method choose Ranker.
 
 Ranked attributes:
 88.2051   22 PPE
@@ -1051,10 +1068,10 @@ Ranked attributes:
 
 Selected attributes: 22,3,13,2,1,15,20,19,6,21,12,18,5,9,17,8,10,7,11,4,14,16 : 22
 
-Again PPE is at the top and MDVP.APQ has risen to the third place. All MDVP.Flo/Fhi/- and Fo.Hz attributes are at the top as well. Also NHR and spread1 are fairly high as well. 
+Again PPE is at the top and MDVP.APQ has risen to the third place. All MDVP.Flo/Fhi/- and Fo.Hz attributes are at the top as well. Also, NHR and spread1 are fairly high as well. 
 
 
-Let's count the occurences by eye of all top six attributes and make a barplot to visualize the best attributes all round. The countings are added in a file called "best_features_counts.txt".
+Let's count the occurrences by eye of all top six attributes and make a bar plot to visualize the best attributes all round. The counts are added in a file called “best_features_counts.txt“.
 
  
 ```{r}
@@ -1065,7 +1082,7 @@ ggplot(best.features.counts, aes(x = features, fill = features)) + geom_bar() + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_text(stat='count', aes(label=after_stat(count)), vjust=1)
 ```
 
-In the barplot it becomes clear that five attirubtes: MDVP.APQ, MDVP.Flo.Hz, MDVP.Fo.Hz, MDVP.Jitter.Abs and spread1 occurred an equal amount of times in the top six.
+In the bar plot it becomes clear that five attributes: MDVP.APQ, MDVP.Flo.Hz, MDVP.Fo.Hz, MDVP.Jitter.Abs and spread1 occurred an equal amount of times in the top six.
 Attribute PPE occurred in the top six of all evaluations in select features, which is seven evaluations that have been performed.
 
 **Retrospective**
@@ -1078,7 +1095,7 @@ There are several methods for combining algorithms and increasing performance.
 
 #### Vote
 
-With the vote meta classifier algorithms results can be combined for a new outcome via voting. Choose classifiers in the vote menu and add the preferred classifiers. So for this experiment RandomForest and oneR with -B 20 and batchsize 120. Also let's choose Majority voting for combinationRule.
+With the vote meta classifier algorithms results can be combined for a new outcome via voting. Choose classifiers in the vote menu and add the preferred classifiers. So for this experiment RandomForest and OneR with -B 20 and batchsize 120. Also, let's choose Majority voting for combinationRule.
 
 Correctly Classified Instances         165               84.6154 %
 Incorrectly Classified Instances        30               15.3846 %
@@ -1120,7 +1137,7 @@ The amount of FP and FN's have decreased in comparison to the combination of Ran
 Correctly Classified Instances         162               83.0769 %
 Incorrectly Classified Instances        33               16.9231 %
 
-From the experiment it became clear that the edited OneR = 85.0026314700 |   85.1026314700. Therefore bagging affects the results negatively by about two percent.
+From the experiment it became clear that the edited OneR = 85.0026314700 |   85.1026314700. Therefore, bagging affects the results negatively by about two percent.
 
    a   b   <-- classified as
  141   6 |   a = sick
@@ -1135,10 +1152,10 @@ A classifier for assessing the outcomes of algorithms using a meta-learner, whic
 Correctly Classified Instances         173               88.7179 %
 Incorrectly Classified Instances        22               11.2821 %
 
-J48 was 84.9342104200 |   84.8315788500 percent and therefore has increase by about four percent. Though it didn´t surpass RandomForest, it did surpass OneR.
+J48 was 84.9342104200 |   84.8315788500 percent and therefore has increase by about four percent. Eventhough it didn't surpass RandomForest, it did surpass OneR.
 
 
-If J48 and oneR are swapped from meta-learner to classifier i.e. if oneR learns from J48 and RandomForest, how will that affect oneR's results?
+If J48 and OneR are swapped from meta-learner to classifier i.e. if OneR learns from J48 and RandomForest, how will that affect OneR's results?
 
 Correctly Classified Instances         174               89.2308 %
 Incorrectly Classified Instances        21               10.7692 %
@@ -1146,7 +1163,7 @@ Incorrectly Classified Instances        21               10.7692 %
 OneR increases by four percent and surpasses the previous J48 meta-learner with approximately 0.5 percent.
 
 **Retrospective**
-Using base learning techniques RandomForest and OneR's performance can be increased. The stacking method didn´t work positively though stacking and bagging did. Using bagging RandomForest was increased and using stacking OneR increased by meta-learning. The quality of these new models will be tested in the next part. The model runs will be saved for plotting through the experimenter where each model is saved separately. This is done the same way as in part "Observing accuracy file".
+Using base learning techniques RandomForest and OneR's performance can be increased. The stacking method didn't work positively though stacking and bagging did. Using bagging RandomForest was increased and using stacking OneR increased by meta-learning. The quality of these new models will be tested in the next part. The model runs will be saved for plotting through the experimenter where each model is saved separately. This is done the same way as in part “Observing accuracy file“.
 
 ### ROC-curve
 
@@ -1191,29 +1208,30 @@ Incorrectly Classified Instances        13                6.6667
  142   5 |   a = sick
    8  40 |   b = healthy
    
-As you can see the accuracy has increased by one percent. After testing other options it seems this will be the optimized model to use for predicting on the data.
+The accuracy has increased by one percent. After testing other options it seems this will be the optimized model to use for predicting on the data.
 
 **Retrospective**
 A final model has been found with a 93.3333 percent accuracy; a by bagging optimized random forest model that chooses seven random attributes.
 
 \pagebreak
 
-```{=tex}
-\begin{thebibliography}{9}
 
-\bibitem{Indeed negative correlation}
-Indeed editorial team (04-02-2023). What is negative correlation: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
+# References
 
-\bibitem{Dysphonic voice analysis}
-Yunfeng Wu et al (03-05-2017). Dysphonic voice analysis: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+- Indeed editorial team (04-02-2023). *Negative Correlation: Definition and Examples (With Types)*
 
-\bibitem{F-measure defintion}
-Zhang, E., Zhang, Y. (2009). F-Measure: \textit{F-Measure} Link : 
+Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
+
+- Kaggle - Yunfeng, W. et al. (03-05-2017). *Parkinson’s Disease Data Set*
+
+Link : 
+https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
+
+- Yunfeng, W. et al. (03-05-2017). *Research from diagnosing people with PD using vocal recordings*
+
+Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+- Zhang, E., Zhang, Y. (2009). *F-Measure*
+
+Link : 
 https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483 
-
-\end{thebibliography}
-```
-
-https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483
-
-

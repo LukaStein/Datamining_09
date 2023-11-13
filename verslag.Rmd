@@ -2,16 +2,16 @@
 title: "Voorspellen van parkinson dysfonie"
 author: "L T Stein"
 date: "`r Sys.Date()`"
-output:
-  word_document: default
-  pdf_document: default
+output: 
+  word_document:
+    toc: true
+    number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-\pagebreak
 
 \tableofcontents
 
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 # Afkortingen
-Parkinson Dysphonia (PD)
+Parkinson Dysfonie (PD)
 
 # Introductie
 
@@ -41,8 +41,11 @@ Om dit programma te testen is daarom de data opgesplitst in supervised data waar
 # Materiaal & Methode
 
 In dit hoofdstuk wordt behandeld waar het gebruikte materiaal vandaan komt en welke methoden hierop zijn toegepast.
+Zie log.Rmd in https://github.com/Coldbirdie/Datamining_09 voor volledige uitwerking van het interpreteren en onderzoeken.
 
-## Dataset
+&nbsp;
+
+**Dataset**
 Via Kaggle is er een csv bestand opgehaald met 24 kolommen (*Kaggle - Yunfeng, W. et al (03-05-2017)*). Twee hiervan zijn nominaal. Dit betekent dat één kolom patiënten ids heeft en één kolom heeft de statussen; nul en een, deze zijn respectievelijk veranderd naar "gezond" en "ziek" voor leesbaarheid. Verder bevat het bestand 195 instanties (patiënten), waarvan 147 ziek zijn (PD) en 48 zijn gezond. De 22 numerieke kolommen zijn geluidsopnames bepaald via verschillende methoden, die verderop worden toegelicht.
 
 Hieronder is een vertaald tabel dat ieder attribuut beschrijft, deze is overgenomen uit het artikel die bij de dataset hoort (*Yunfeng, W. et al (03-05-2017)*) (tabel 2). 
@@ -54,15 +57,17 @@ Hieronder is een vertaald tabel dat ieder attribuut beschrijft, deze is overgeno
 De attributen kunnen worden verdeeld in groepen meetmethoden, op basis van de linker delen van iedere naam: MDVP, Shimmer, harmonics, spread en losse methoden.
 De eerste groep genaamd MDVP is een programma en staat voor "Multi-Dimensional Voice Program". Hiermee kunnen 33 stem parameters geanalyseerd worden, waarmee metingen in de stem zoals frequenties of de amplitude van trillingen worden geschat (*Nicastri, M. et al*). 
 
+&nbsp;
+
 De tweede groep genaamd Shimmer bestaat uit sequentiële metingen van het maximale bereik van de amplitude in de trillingen dat een stem iedere keer maakt.
 Verder beschrijft harmonics de verhouding tussen geluid in de spraak met een bepaalde tijdsduur en geluid juist zonder een bepaalde tijdsduur (*Fernandes, J. et al*). De attributen HNR en NHR die hierbij horen hierbij. Groep spread met attributen spread1 en spread2 en PPE zijn attributen met metingen van variaties in frequenties. Op PPE ofwel Pitch Period Entropy gaat het artikel zelf meer op in. Het is namelijk een techniek om dysfonie te meten. Het kan preciezer veranderingen in stemgeluid meten, wanneer er ruis bij betrokken is. Dit is voordelig bij stemgeluid, zoals kenmerkend bij mensen met dysfonie.
 
 De overige attributen Jitter:DDP, RPDE, DFA en D2 worden ieder anders bepaald. Ten eerste kijkt Jitter:DDP naar het gemiddelde volledige verschil tussen de verschillen tussen ieder keer dat een stem wordt opgenomen gedeeld door de gemiddelde tijdsduur. Attributen DFA (detrended fluctuation analysis) en RPDE (recurrence period density entropy) worden gebruikt voor het detecteren van algemene stemstoornissen, door te kijken naar ruis of willekeurigheid in stemgeluid. Het laatste attribuut D2 is een correlatiedimensie dat ingewikkelde dynamiek schetst behorend bij dysfonie (*Yunfeng, W. et al (03-05-2017)*). 
 
-## Data interpreteren en opschonen
+&nbsp;
+\pagebreak
 
-Zie log.Rmd in https://github.com/Coldbirdie/Datamining_09 voor volledige uitwerking van het interpreteren en onderzoeken.
-
+**Pakketten en functies**
 De volgende pakketten zijn ingeladen om figuren te maken en om deze netjes te maken.
 
 ```{}
@@ -78,6 +83,8 @@ library("gridExtra")
 # Pakket om een paar plot
 library("GGally")
 ```
+
+&nbsp;
 
 Met ggpairs uit het "GGally" pakket zijn correlatie figuren gemaakt om verbanden in gedrag te vinden tussen attributen. Plot methode 'ggpairs' maakt een matrix van de ontvangen attributen en kijkt naar hoe de waarden zijn opgebouwd en vergelijkt deze met elkaar. Dit kan ook wel het gedrag van de gemeten data worden genoemd en de vergelijking wordt uitgedrukt in een correlatie coëfficiënt. Deze ligt tussen één (positieve feedback (terugkoppeling) in gedrag), naar nul (weinig tot geen feedback in gedrag) tot min één (negatieve feedback in gedrag). Met gedrag wordt er bijvoorbeeld bedoeld dat de ene meetwaarden omhoog of omlaag gaan vergeleken met andere meetwaarden. Hieronder is voorbeeld code om een pairs plot te maken. Hierbij zitten er vijf MDVP-attributen in MDVP.small.
 
@@ -114,30 +121,47 @@ combined.log.data <- data.frame(logTransformed.patient.data.left, logTransformed
 write.csv(combined.log.data, file = "log_patient_data.csv", row.names = FALSE)
 ```
 
-## Weka attribuut en model onderzoek
+&nbsp;
 
+\pagebreak
+
+**Weka analyse**
 Om te zien hoe deze stappen in Weka zijn uitgevoerd, zie "Select features in explorer" in log.Rmd voor instructies.
 
 Ten eerste zijn er modellen (bekend als classifiers) getest op de normale data in de Explorer. Vervolgens wordt tussen de modellen uit de Explorer stap gekeken via de experimenter naar welk model het beste traint op de data. Tevens wordt er in de experimenter vergeleken tussen de originele dataset en de log-getransformeerde dataset. Aan de experimenter worden alle modellen toegevoegd met standaard instellingen en met aangepaste instellingen. Ook wordt er in de experimenter onderscheidt gemaakt in vergelijkings-velden (comparison fields).
 
 Er wordt gekeken welk model het meest accuraat voorspeld in procent of de precisie (precision) wordt vergeleken. Verder laat de vals negatief percentage (false negative rate) zien welk model de meeste- of minste zieke mensen foutief gezond voorspeld. DE AUC (Area under the Curve) curve bepaalt de kwaliteit van ieder model en runtime bepaalt de uitvoertijd per model. Als laatste geeft de F-maat (F_measure) een vergelijking naar hoe relevant de verkregen informatie is per model (relevance of information gain).
 
+&nbsp;
+
 Op basis van deze resultaten is er bepaald welke modellen het beste zijn. De volgende stap "select features" ofwel kies attributen, kijkt welke attributen het meest optimaal zijn voor ieder model om goed te voorspellen. Er is tussen verschillende attribuut evaluatoren (attribute evaluators) gekozen in combinatie met een zoekmethode. De volgende evaluatie methoden zijn gebruikt: WrapperSubsetEval, CorrelationAttributeeval, GainRatioAttributeEval, InfoGainAttributeEval, OneRAttributeEval en Attribute-subset evaluation. Hoe deze zijn toegepast is ook te vinden in de bijlage.
 
 Door te kijken of er attributen overlappen in de resultaten van alle evaluatoren samen die zijn uitgevoerd, is er bepaald welke attributen het beste lijken in het algemeen en welke het meest compatibel zijn voor de eerder gevonden beste modellen. Er wordt steeds gekeken naar de top zes en hiervan wordt een histogram gemaakt met alle attributen en hoe vaak op de y-as deze als beste voorkomen. Hieronder is de code te zien:
 
+&nbsp;
 
 Verder zijn de beste modellen geoptimaliseerd in Classify via Baselearners. Deze staan onder de meta folder bij het classificeer menu. Op One-R en RandomForest is Vote (stemmen), Bagging (in zakjes verdelen) en Stacking (opstapelen) toegepast. De instellingen van deze modellen zijn hetzelfde als de beste die gevonden zijn in de Experimenter stap. 
 
 Naast het optimaliseren wordt nog de kwaliteit van ieder model gevisualiseerd in een AUC grafiek. Dit kan in Weka door rechte muisknop te klikken op de resulterende modellen, te drukken op "Visualize threshold curve" en vervolgens "sick" of "healhty" te kiezen. De kwaliteit van het model wordt bepaald door te kijken hoe ver de curve in de linker boven hoek ligt. Vervolgens kan het beste model gekozen worden door de kwaliteit en accuraatheid van de modellen in overweging te nemen.
 
+&nbsp;
+
 Het beste model is "RandomForest" en deze is verbeterd met Bagging. Als laatste stap is er geprobeerd om de parameters van RandomForest verder in te lezen en aan te passen, om het model nog accurater te maken. Tevens is uit de select features gevonden dat zes attributen het beste scoren op RandomForest via de WrapperSubsetEval attribuut evaluator. Hiervan is een nieuw arff bestand van opgeslagen inclusief de status kolom. Met dit bestand is er getest om verschillende parameters en het veranderen van numFeatures in RandomForest leverde een toename op in accuraatheid.
 
 Uit de Weka test fase zijn een beste model en de beste attributen gevonden. Het model is opgeslagen via rechter muisklik op het resultaat model en te drukken op "Save model".
 
-## Javawrapper programma en omgaan met data
 
-Om een Java programma te maken dat om kan gaan met arff data en een model zijn er verschillende pakketten gebruikt en documentatie. De pakketten en code uitwerkingen daarbij en andere benodigdheden staan in de Javawrapper folder (https://github.com/Coldbirdie/Datamining_09/tree/main/JavaWrapper). In het "README" bestand staan alle pakketten onder elkaar en is een gedetailleerde uitleg. Echter, is hieronder een beknopt stappenplan in hoe het Java programma is opgebouwd.
+&nbsp;
+
+\pagebreak
+
+**Javawrapper**
+De gevonden attributen en het model zijn tevens in een een javawrapper verwerkt.
+Om een Java programma te maken dat om kan gaan met arff data en een model zijn er verschillende pakketten gebruikt en documentatie. De pakketten en code uitwerkingen daarbij en andere benodigdheden staan in de Javawrapper folder (https://github.com/Coldbirdie/Datamining_09/tree/main/JavaWrapper). 
+
+In het "README" bestand staan alle pakketten onder elkaar en is een gedetailleerde uitleg. Echter, is hieronder een beknopt stappenplan in hoe het Java programma is opgebouwd.
+
+&nbsp;
 
 Ten eerste om argumenten te ontvangen van de CLI (Command line interface) is het pakket org.apache.commons.cli.* gebruikt. Vervolgens om het model en een arff bestand in te kunnen lezen en om hiermee op de data te gaan voorspellen zijn er verschillende klassen gebruikt uit twee pakketten, namelijk weka en java. Omdat apache en weka niet in Java zitten, moesten deze worden geïmplementeerd via build.gradle onder "dependencies".
 
@@ -154,8 +178,6 @@ In dit hoofdstuk worden de resultaten van de EDA en van Machine learning gevisua
 
 ## EDA
 
-### Volledigheid
-
 De dataset omvatte 24 kenmerken die gemeten waren voor 195 individuen, hiervan 147 patienten en 48 gezonde personen, en bevatte geen ontbrekende waarden
 
 &nbsp;
@@ -170,7 +192,6 @@ Zoals te zien in figuur 1 zijn er drie keer zo veel zieke dan gezonde mensen in 
 
 \pagebreak
 
-### Attributen observeren
 
 **Tabel 2** Samenvattting (summary) van meetwaarden in NHR en HNR.
 
@@ -201,19 +222,23 @@ Verder zijn er boxplots gemaakt per level van de attributen MDVP.Fo.Hz., MDVP.Fh
 
 In figuur 3 hebben gezonde mensen hogere frequenties (tussen 100 en 200 tot boven 200 Hz) dan mensen met PD (vrijwel alles onder 200 Hz). Uit de EDA werd dit nog sterker bevestigd met ANOVA toetsen die de volgende p-waarden gaven:
 
-**Tabel 3** Verschillen tussen klasse labels van drie attributen getoetst op alpha = 0.05.
-| Attributes | P-values     |
-|------------|--------------|
-| Fo.Hz      | 3e-08 |
-| Fhi.Hz     | 2e-02 |
-| Flo.Hz     | 4e-08 |
+**** Verschillen tussen klasse labels van drie attributen getoetst op alpha = 0.05.
+
+| Attributen | P-waarden |
+|------------|----------|
+| Fo.Hz      | 3e-08    |
+| Fhi.Hz     | 2e-02    |
+| Flo.Hz     | 4e-08    |
+
 
 In de bovenstaande tabel is te zien dat alle p-waarden kleiner zijn dan alpha, dit betekent een significant verschil.
 
 &nbsp;
 
+\pagebreak
+
 Nadat de data werd log-getransformeerd is er een welch t-toets gedaan op elke attribuut op basis van de klasse labels, om te zien hoe erg de label data van elkaar verschilt. 
-In tabel 4 tabel is te zien hoe erg de meetwaarden uit de "gezonde" groep verschillen van de "zieke" groep voor ieder attribuut. 
+In tabel 4 is te zien hoe erg de meetwaarden uit de "gezonde" groep verschillen van de "zieke" groep voor ieder attribuut. 
 
 **Tabel 4** Welch t-toetsing van de klasse labels van alle attributen
 
@@ -305,9 +330,8 @@ Uit het raster met correlatiecoëfficiënten is te zien dat spread1 en PPE een e
 
 \pagebreak
 
-### Supervised Machine Learning
+## Supervised Machine Learning
 
-#### Model evaluatie in de experimenter
 Via de experimenter in Weka zijn er tabellen gegenereerd waarin te zien is hoe alle modellen presteren bij verschillende vergelijking velden.
 Hieronder zijn drie tabellen die wat zeggen over hoe relevant of accuraat de voorspellingen zijn. In de eerste twee tabellen zijn alleen de beste modellen te zien, die niet overfit zijn.
 
@@ -319,13 +343,13 @@ Het vergelijkings-veld "percent_correct" (procent goed) gaf het volgende tabel e
 
 **Tabel 5** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst in percentages.
 
-Dataset                   (1) log_patient_data | (2) patient_data_
-------------------------------------------------------------------
-trees.J48 '-U -M 3' -2177(100)   84.9342104200 |   84.8315788500  
-rules.OneR '-B 20 -batch-(100)   85.0026314700 |   85.1026314700  
-trees.RandomForest '-P 10(100)   91.7026315000 |   91.4052630800  
-------------------------------------------------------------------
-                                       (v/ /*) |          (1/10/0)
+| Dataset                   | (1) log_patient_data  | (2) patient_data_ |
+|---------------------------|-----------------------|--------------------|
+| trees.J48 '-U -M 3' -2177|    84.9342104200      |   84.8315788500   |
+| rules.OneR '-B 20 -batch-|    85.0026314700      |   85.1026314700   |
+| trees.RandomForest '-P 10|    91.7026315000      |   91.4052630800   |
+|                           |         (v/ /*)       |      (1/10/0)     |
+
 Uit de bovenstaande tabel is te zien dat RandomForest met normale instellingen het meest accuraat is op ongeveer 91.5 procent. Daarna voor bijna zes procent minder is OneR met een bucket size van twintig en J48 met unpruning, confidenceFactor op 0.20 en minNumObj op drie, doet het bijna even goed als OneR.
 
 &nbsp;
@@ -334,13 +358,13 @@ Het vergelijkings-veld "F_measure" gaf het volgende tabel en toont aan hoeveel i
 
 **Tabel 6** Overzicht van de top drie modellen die hebben voorspeld, deze zijn getoetst op hoe relevant de verkregen informatie is en staat bekend als de F-maat.
 
-Dataset                   (1) log_patient | | (2) patient_data_
-------------------------------------------------------------------
-lazy.IBk '-K 20 -W 0 -A  (100)   0.907115 |   0.896487  
-rules.OneR '-B 20 -batch-(100)   0.907970 |   0.908560  
-trees.RandomForest '-P 10(100)   0.946769 |   0.945139  
-------------------------------------------------------------------
-                                  (v/ /*) |      (0/8/3)
+| Dataset                   | (1) log_patient  | (2) patient_data_ |
+|---------------------------|-----------------|--------------------|
+| lazy.IBk '-K 20 -W 0 -A  |    0.907115     |     0.896487       |
+| rules.OneR '-B 20 -batch-|    0.907970     |     0.908560       |
+| trees.RandomForest '-P 10|    0.946769     |     0.945139       |
+|                           |      (v/ /*)    |      (0/8/3)       |
+
 RandomForest doet het beste met ongeveer 0.94, wat dus betekent dat er veel informatie relevant is. OneR en Ibk met twintig buren doen het vrijwel even goed op ongeveer 0.90.
 
 
@@ -350,19 +374,19 @@ Het vergelijkings-veld "False_negative_Rate" gaf het volgende tabel en toont de 
 
 **Tabel 7** Overzicht van alle niet overfitte modellen, deze zijn getoetst op hoeveel zieke mensen als gezond worden gemarkeerd in een marge tussen nul en één.
 
-Dataset                   (1) log_patient | | (2) patient_data_
-------------------------------------------------------------------
-rules.ZeroR '' 4805554146(100)   0.000000 |   0.000000  
-lazy.IBk '-K 20 -W 0 -A (100)    0.020333 |   0.003381  
-rules.OneR '-B 20 -batch-(100)   0.025191 |   0.025238  
-trees.RandomForest '-P 10(100)   0.028476 |   0.027714  
-trees.J48 '-U -M 3' -2177(100)   0.099286 |   0.104048  
-trees.J48 '-C 0.25 -M 2' (100)   0.104619 |   0.105952  
-bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
-bayes.NaiveBayes '' 59952(100)   0.299667 |   0.369524 v
-bayes.NaiveBayes '-batch-(100)   0.299667 |   0.369524 v
-------------------------------------------------------------------
-                                  (v/ /*) |      (3/8/0)
+| Dataset                   | (1) log_patient  | (2) patient_data_ |
+|---------------------------|-----------------|--------------------|
+| rules.ZeroR '' 4805554146 |      0.000000   |      0.000000      |
+| lazy.IBk '-K 20 -W 0 -A  |      0.020333   |      0.003381      |
+| rules.OneR '-B 20 -batch-|      0.025191   |      0.025238      |
+| trees.RandomForest '-P 10|      0.028476   |      0.027714      |
+| trees.J48 '-U -M 3' -2177|      0.099286   |      0.104048      |
+| trees.J48 '-C 0.25 -M 2' |      0.104619   |      0.105952      |
+| bayes.NaiveBayes '-batch-|      0.299667   |      0.369524 v    |
+| bayes.NaiveBayes '' 59952|      0.299667   |      0.369524 v    |
+| bayes.NaiveBayes '-batch-|      0.299667   |      0.369524 v    |
+|                           |      (v/ /*)    |      (3/8/0)       |
+                                  
 De standaard NaiveBayes en de andere NaiveBayes modellen met een batchsize ingesteld op honderdtwintig en tachtig maken de meesten fouten in voorspellen van zieke mensen.
 Het v'tje toont aan dat op de originele data significant meer fouten worden gemaakt dan op de log data. J48 modellen doen het op het oog veel minder slecht dan NaiveBayes. Verder maken IBk, OneR en RandomForest de minste fouten. Omdat er meer zieke patiënten zijn heeft ZeroR alle instanties als ziek voorspeld en zijn er dus geen zieke mensen als gezond voorspeld. 
 
@@ -370,10 +394,10 @@ Via bagging is RandomForest verbeterd en OneR met bucketsize twintig en een batc
 
 **Tabel 8** Verbeterde RandomForest en OneR met voorspellingen in procent goed
 
-RandomForest | OneR
--------------------
-92.3077 %  | 89.2308 %
--------------------
+| RandomForest | OneR     |
+|--------------|----------|
+| 92.3077 %    | 89.2308 %|
+
 
 Uit het optimaliseren is het duidelijk geworden dat RandomForest het beste voorspeld. Om de kwaliteit vast te stellen zijn er ook ROC-curven gemaakt van de modellen.
 
@@ -383,20 +407,22 @@ Uit het optimaliseren is het duidelijk geworden dat RandomForest het beste voors
 
 In de figuur is te zien dat OneR een diagonale lijn heeft van links onder naar rechts boven, dus de goed geraden zieke mensen neemt toe tegen toename van fout geraden gezonde mensen. Verder heeft RandomForest een curve dat stijl stijgt op de y-as en daarna bijna niet meer stijgt over de toename van de x-as.
 
-#### Attribuut evaluatie en eind model optimaliseren in de Explorer
+\pagebreak
+
+**Attribuut evaluatie en eind model optimaliseren in de Explorer**
 
 Via de WrapperSubsetEval attribuut selectie methode is onderzocht welke attributen het beste waren om op te voorspellen door RandomForest.
 
 **Tabel 9** Attributen waar RandomForest het best op voorspeld.
 
-Attributen
------------
-MDVP.Fo.Hz.
-MDVP.Flo.Hz.
-MDVP.Jitter.Abs.
-Shimmer.DDA
-NHR
-PPE
+Attributen  | 
+----------- |
+MDVP.Fo.Hz. |
+MDVP.Flo.Hz. |
+MDVP.Jitter.Abs. |
+Shimmer.DDA |
+NHR |
+PPE |
 
 
 Via zeven evalueer methoden e.g. WrapperSubsetEval zijn er tijdens attributen selectie verschillende rangschikkingen gevormd van alle attributen. Hiervan zijn steeds de top zes attributen geteld en van die tellingen is een bar plot gemaakt. 
@@ -412,25 +438,23 @@ Nu de beste attributen en het beste model zijn gevonden is er een poging gedaan 
 
 **Tabel 10** Voorspellingen van zieke en gezonde mensen op basis van zes attributen.
 
-Ziek als gezond voorspeld | 5
--------------------------------------
-Gezond als ziek voorspeld | 8
--------------------------------------
-Ziek goed voorspeld | 142
--------------------------------------
-Gezond goed voorspeld | 40 
--------------------------------------
-Totaal goed voorspeld (%) | 93.3333 %
--------------------------------------
-Totaal fout voorspeld (%) |  6.6667 %
+| Voorspellingen             | Waarden    |
+|----------------------------|------------|
+| Ziek als gezond voorspeld  | 5          |
+| Gezond als ziek voorspeld  | 8          |
+| Ziek goed voorspeld        | 142        |
+| Gezond goed voorspeld      | 40         |
+| Totaal goed voorspeld (%)  | 93.3333 %  |
+| Totaal fout voorspeld (%)  | 6.6667 %   |
+
 
 Uit de bovenstaande model en matrix is af te lezen dat voor ~ 93.3 procent goed wordt voorspeld wie gezond en ziek is. En in totaal worden er dertien fouten voorspellingen gemaakt van de 195.
 
 \pagebreak
 
-## Discussie
+# Discussie
 
-### Figuren & tabellen
+## Figuren & tabellen
 
 Vanwege het feit dat de hoeveelheid zieke mensen in figuur 1 drie keer zo veel is als gezonde mensen, moet er rekening gehouden worden dat statistisch gezien meer toevallige data punten voorkomen en de observaties zullen daarom minder als hard bewijs gezien worden. Tevens is er de kans dat machine learning modellen meer trainen op de ene groep dan de andere, waardoor het model minder accuraat zal voorspellen. Al hoewel het voor onderzoeken en model training nu genoeg data is, zou als vervolg onderzoek een grotere dataset gebruikt kunnen worden om zekerder te zijn van alle observaties.
 
@@ -485,14 +509,14 @@ en PPE op. Na het selecteren van attributen en trainen van modellen werd het dui
 De laatste tabel 10 toont eind voorspellingen van het geoptimaliseerde RandomForest met de meest compatibele attributen. Het model is best accuraat en maakt weinig fouten. Echter, worden er wel vijf mensen die ziek zijn als gezond voorspeld. In de praktijk is dit niet gewild, omdat deze mensen nu niet door verwezen worden voor medische hulp.
 Daartegenover staan acht mensen die gezond zijn en als ziek zijn voorspeld, Alhoewel dit niet levend bedreigend is voor de patiënt, kost dit wel onnodig tijd en geld voor controles.
 
-### Werkwijze
+## Werkwijze
 In dit project is er niet consequent genoeg gewerkt. Voor alle stappen had meer tijd moeten worden genomen voor efficiëntie in werk en voor meer accurate observatie van de data en resultaten. Tevens is het modeltraining gedaan op de hele dataset, zonder in het achterhoofd te houden dat er ook test data moet worden gebruikt. Bij het testen van de Javawrapper is daarom het RandomForest model opnieuw getraind op zestig procent van de instanties en veertig procent wordt gebruikt als test data. In toekomstig (machine learning) onderzoeken is het belangrijk om dit te beseffen, omdat het belangrijk is om een zuivere controle groep te hebben.
 
 Om dit onderzoek voort te zetten zou er meer data gemeten moeten worden van mensen met Parkinson en gezonde mensen voor de gevonden attributen. Bovendien zou deze dataset ongeveer evenveel instanties per groep moeten hebben en moet er een duidelijke trainingsgroep en testgroep zijn. Op basis van deze nieuwe data kan er worden bevestigd dat RandomForest met een vergelijkbare accuraatheid blijft voorspellen.
 
 &nbsp;
 
-## Conclusie
+# Conclusie
 
 Welke type stemopnames kunnen gebruikt worden om een Parkinson patiënt te onderscheiden van een gezond persoon? Deze vraag is beantwoord door een geoptimaliseerde RandomForest te laten trainen op de volgende zes supervised attributen: MDVP.Fo.Hz., MDVP.Flo.Hz.,  MDVP.Jitter.Abs., Shimmer.DDA, NHR en PPE. Het merendeel van deze attributen viel al op bij het observeren van hun data in grafieken en toesting. 
 
@@ -508,45 +532,53 @@ In Weka voorspeld het model voor 93 en 1/3 procent goed voor wie wel PD heeft en
 
 \pagebreak
 
-```{=tex}
-\begin{thebibliography}{9}
+# Literatuurlijst
 
-\bibitem{Naive Bayes algoritme}
-Chatterjee, S. (24-11-2019). Hoe werkt Naive Bayes op numeriek data: \textit{Use Naive Bayes Algorithm for Categorical and Numerical data classification} Link :
-https://medium.com/analytics-vidhya/use-naive-bayes-algorithm-for-categorical-and-numerical-data-classification-935d90ab273f#:~:text=Use%20Naive%20Bayes%20Algorithm%20for%20Categorical%20and%20Numerical%20data%20classification,-Soumo%20Chatterjee&text=Naive%20Bayes%20is%20a%20type,for%20doing%20its%20predictive%20analysis%20 
+- Chatterjee, S. (24-11-2019). *Use Naive Bayes Algorithm for Categorical and Numerical data classification*
 
-\bibitem{Parkinson en dystonie}
-Dystonie vereniging. Dystonie beschrijving: \textit{Wat is de relatie tussen Parkinson en dystonie? (B)} Link :
+Link : 
+https://rb.gy/d570rg
+
+- Dystonie vereniging. *Wat is de relatie tussen Parkinson en dystonie? (B)* 
+
+Link :
 https://dystonievereniging.nl/magazine/wat-is-de-relatie-tussen-parkinson-en-dystonie-b/#:~:text=Dystonie%20is%20een%20onwillekeurige%20spiercontractie,ziekte%20zelf%2C%20zonder%20andere%20symptomen
 
-\bibitem{Harmonics definitie}
-Fernandes, J., Teixeira, F., Guedes, V., Junior, A. en Teixeira, J. P. Wat betekent NHR: \texttit{Harmonic to Noise Ratio Measurement - Selection of Window and Length} Link :
+- Fernandes, J., Teixeira, F., Guedes, V., Junior, A. en Teixeira, J. P. *Harmonic to Noise Ratio Measurement - Selection of Window and Length* 
+
+Link :
 https://www.sciencedirect.com/science/article/pii/S1877050918316739#:~:text=Harmonic%20to%20Noise%20Ratio%20(HNR,analysis%20to%20diagnose%20pathologic%20voices
 
-\bibitem{Dysfonie symptomen}
-Hillel, Dr. A. Symptomen en type dysfonie: \texit{Spasmodic Dysphonia} Link :
+- Hillel, Dr. A. *Spasmodic Dysphonia*
+
+Link :
 https://www.hopkinsmedicine.org/health/conditions-and-diseases/spasmodic-dysphonia
 
-\bibitem{Negatieve correlatie}
-Indeed editorial team (04-02-2023). Wat is negatieve correlatie: \textit{Negative Correlation: Definition and Examples (With Types)} Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
+- Indeed editorial team (04-02-2023). *Negative Correlation: Definition and Examples (With Types)*
 
-\bibitem{Dysfonie betekenis}
-LUMC. Betekenis van dysponie: \textit{Spasmodische dysfonie} Link : 
-https://www.lumc.nl/over-het-lumc/afdelingen/keel--neus--en-oorheelkunde/ziektes-en-aandoeningen/spasmodische-dysfonie/spasmodische-dysfonie/#:~:text=Men%20spreekt%20van%20een%20spasmodische,normaal%20uitgesproken%20zin%20te%20maken
+Link : https://www.indeed.com/career-advice/career-development/negative-correlation-definition-and-examples 
 
-\bibitem{MDVP definitie}
-Nicastri, M., Chiarella, G., Gallo, L., Cassandro, E. en Catalano, M. Wat betekent MDVP: \textit{Multidimensional Voice Program (MDVP) and amplitude variation parameters in euphonic adult subjects. Normative study} Link :
-https://www.researchgate.net/publication/7789462_Multidimensional_Voice_Program_MDVP_and_amplitude_variation_parameters_in_euphonic_adult_subjects_Normative_study#:~:text=Thanks%20to%20the%20marketing%2C%20in,any%20sonority%20gap%20and%20diplophony
+- LUMC. *Spasmodische dysfonie* 
 
-\bibitem{Artikel van ncbi}
-Yunfeng, W. et al (03-05-2017). Dysfonische stemanalyse: \textit{Research from diagnosing people with PD using vocal recordings} Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+Link : 
+https://rb.gy/m4rawe
 
-\bibitem{Kaggle dataset}
-Kaggle - Yunfeng, W. et al (03-05-2017). Kaggle: \textit{Parkinson’s Disease Data Set} Link : 
+- Nicastri, M., Chiarella, G., Gallo, L., Cassandro, E. en Catalano, M. *Multidimensional Voice Program (MDVP) and amplitude variation parameters in euphonic adult subjects. Normative study*
+
+Link :
+https://rb.gy/724wgm
+
+- Yunfeng, W. et al (03-05-2017). *Research from diagnosing people with PD using vocal recordings*
+
+Link : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5434464/
+
+- Kaggle - Yunfeng, W. et al (03-05-2017). *Parkinson’s Disease Data Set*
+
+Link : 
 https://www.kaggle.com/datasets/vikasukani/parkinsons-disease-data-set?resource=download
 
-\bibitem{F-maat definitie}
-Zhang, E., Zhang, Y. (2009). F-Maat: \textit{F-Measure} Link : 
+- Zhang, E., Zhang, Y. (2009). *F-Measure*
+
+Link : 
 https://link.springer.com/referenceworkentry/10.1007/978-0-387-39940-9_483 
-\end{thebibliography}
-```
+
