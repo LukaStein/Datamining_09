@@ -1,9 +1,10 @@
 # Datamining_09
 Project applying machinelearning
-Luka Stein from the university of applied sciences 'Hanzehogeschool Groningen'
+
+>Luka Stein from the university of applied sciences 'Hanzehogeschool Groningen'
 
 
-## Tijdlijn
+## Timeline
 
 1. Explorative Data Analysis (EDA)
    + data clean up
