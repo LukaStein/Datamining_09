@@ -1,3 +1,7 @@
+## See User_Application directory for running the tool
+- Download & unzip the directory for use
+- Inside is the jar program and a directory filled with files to use
+- See [Usage](#usage)
 ## Author
 - L T Stein
 ## Date
@@ -54,11 +58,11 @@ This means the user can test how well the model; amplified Random Forest using b
 Or the user can give a file where the diagnosis is yet unknown and the model will predict instead, with a 91 percent accuracy.
 In the example data folder are two files that represent these descriptions.
 
-There are five options: help, test, accuracy, training and save.
-Option help gives a message on what options there are and how to use them. Furthermore option training and accuracy can be used
+There are five options: help, test, accuracy, labeled and save.
+Option help gives a message on what options there are and how to use them. Furthermore option labeled and accuracy can be used
 together, for predicting on supervised (diagnosed) data and returning an accuracy summary of how well the model performed.
 The option test can't be combined with accuracy, since there's nothing to compare with to show its performance. Instead test
-returns only the predicted labels. Both the output of test as for training can be saved using option save, by
+returns only the predicted labels. Both the output of test as for labeled can be saved using option save, by
 typing save name_of_new_file. The default extension is .txt and is not required to add.
 
 These options are realised by the use of seven classes called by the main class and inside are methods applied from libraries weka (external),
@@ -76,7 +80,7 @@ if finished a LoadTextSeparatedFile object is made for reading the given file.
 By verifying the prediction option the right reader method can be called i.e. that prepares and
 returns either supervised data or unsupervised data for the classifying step.
 
-If option training or test is chosen the model and data is passed to class ClassifyData for classification. Also, when option accuracy is given alongside training,
+If option labeled or test is chosen the model and data is passed to class ClassifyData for classification. Also, when option accuracy is given alongside labeled,
 the data and the predictions are passed to class ClassifierAccuracy, a confusion matrix and summary are made.
 At the end the predictions are formatted for prettier output.
 
@@ -132,31 +136,31 @@ For more information about the libraries.
 
 
 ## Usage
-It's required to have a .arff file to receive predictions. Also it's important to give a supervised file to keyword training
-and an unsupervised file to keyword test to receive the output you had in mind. 
+It's required to have a .arff file to receive predictions. Also it's important to give a supervised file to keyword labeled
+and an unsupervised file to keyword labeless to receive the output you had in mind. 
 
 To run the jar archive use the following keywords structure: java -jar archive.jar file.arff (optional keywords*)
-*the optional keywords are *test*, *training*, *accuracy*, *save*, *help*
+*the optional keywords are *labeless*, *labeled*, *accuracy*, *save*, *help*
 
 See the following bash commands as example.
 **Test & print predictions & save**
 ```bash
-java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff test save
+java -jar ParkinsonDysphonia-ML0.43-SNAPSHOT.jar Files_For_Usage/log_patient_data_labeless.arff labeless save
 ```
 
 **Train model & print predictions**
 ````bash
-java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar logPatientData.arff training 
+java -jar ParkinsonDysphonia-ML0.43-SNAPSHOT.jar Files_For_Usage/logPatientData.arff labeled 
 ````
 
 **Train model & print both predictions as model performance summary**
 ````bash
-java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff training accuracy
+java -jar ParkinsonDysphonia-ML0.43-SNAPSHOT.jar Files_For_Usage/log_patient_data_labeless.arff labeled accuracy
 ````
 
 **Consult help**
 ````bash
-java -jar .\build\libs\ParkinsonDysphonia-ML0.43-SNAPSHOT.jar log_patient_data_labeless.arff help
+java -jar ParkinsonDysphonia-ML0.43-SNAPSHOT.jar help
 ````
 
 > **NB** If you give an illegal keyword (combination) the program will always give a corresponding help message.
