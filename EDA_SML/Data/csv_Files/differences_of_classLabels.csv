@@ -1,0 +1,23 @@
+Attribute, p-value
+MDVP.Fo.Hz. , 8.1e-05 
+MDVP.Fhi.Hz. , 7.0e-03
+MDVP.Flo.Hz. , 5.7e-05 
+MDVP.Jitter... , 1.5e-09 
+MDVP.Jitter.Abs. , 2.7e-10 
+MDVP.RAP , 6.6e-10 
+MDVP.PPQ , 3.9e-11 
+Jitter.DDP , 6.6e-10 
+MDVP.Shimmer , 1.4e-14 
+MDVP.Shimmer.dB. , 5.6e-14 
+Shimmer.APQ3 , 2.0e-11 
+Shimmer.APQ5 , 3.3e-14 
+MDVP.APQ , 3.1e-18 
+Shimmer.DDA , 2.1e-11 
+NHR , 1.7e-07 
+HNR , 2.7e-09 
+RPDE , 2.9e-05 
+DFA , 1.1e-03
+spread1 , 1.8e-21 
+spread2 , 3.3e-06 
+D2 , 1.2e-06 
+PPE , 6.1e-17 
